@@ -51,10 +51,17 @@ export default {
         }
 
         // Context-Aware Memory Tie-Breakers
-        if (detectedTopic === 'pricing' && (cleanMsg.includes('how much') || cleanMsg.includes('pay') || cleanMsg.includes('buy'))) {
-          response = "Our Premium plans unlock instant keys upon completion. View specific tier parameters right on our /pricing layout page!";
-          matched = true;
+        if (detectedTopic === 'pricing') {
+          if (cleanMsg.includes('how much') || cleanMsg.includes('pay') || cleanMsg.includes('buy')) {
+            response = "Our Premium plans unlock instant keys upon completion. View specific tier parameters right on our /pricing layout page!";
+            matched = true;
+          } else {
+            // Safe fallback if it's a general pricing question containing words like "price"
+            response = KNOWLEDGE_BASE['pricing'];
+            matched = true;
+          }
         }
+
 
         // Core Knowledge Base Matrix Lookup Loop
         if (!matched) {
