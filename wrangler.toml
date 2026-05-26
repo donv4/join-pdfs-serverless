@@ -5,4 +5,4 @@ pages_build_output_dir = "dist"
 
 [[kv_namespaces]]
 binding = "JOIN_PDFS_STORE"
-id = "6cbd55b4-efec-408a-bebd-0bd8d7a1660c"
+id = "f5d7ce2c1ca14511bc557f14abbc3ce1"
