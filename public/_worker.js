@@ -126,7 +126,46 @@ export default {
       }
     }
 
-    // ─── 3. STATIC FILES REWRITE ACCELERATOR ───
+        // ─── 3. SECURE ADMIN DATA ENDPOINT ───
+    if (url.pathname === "/api/admin-data" && request.method === "GET") {
+      try {
+        // Secure Server-Side Basic Auth Validation
+        const authHeader = request.headers.get('Authorization');
+        if (!authHeader) {
+          return new Response('Unauthorized Access', {
+            status: 401, headers: { 'WWW-Authenticate': 'Basic realm="Admin Protected Dashboard"' }
+          });
+        }
+
+        const [type, credentials] = authHeader.split(' ');
+        const [username, password] = atob(credentials).split(':');
+
+        // Fallbacks to default constants matching your configuration framework settings
+        const ADMIN_USER = env.ADMIN_USER || 'admin';
+        const ADMIN_PASS = env.ADMIN_PASS || 'password';
+
+        if (username !== ADMIN_USER || password !== ADMIN_PASS) {
+          return new Response('Invalid Admin Credentials', { status: 403 });
+        }
+
+        // Pull fresh dynamic records from live database loop variables
+        const kvStore = env.JOIN_PDFS_STORE;
+        let activeKeys = {};
+        let pendingPurchases = {};
+
+        if (kvStore) {
+          activeKeys = await kvStore.get('premium_keys', { type: 'json' }) || {};
+          pendingPurchases = await kvStore.get('pending_purchases', { type: 'json' }) || {};
+        }
+
+        return new Response(JSON.stringify({ activeKeys, pendingPurchases }), {
+          status: 200, headers: { 'Content-Type': 'application/json' }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ error: 'Database authentication error' }), { status: 500 });
+      }
+    }
+
     return env.ASSETS.fetch(request);
   }
 };
