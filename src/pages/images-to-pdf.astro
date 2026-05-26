@@ -1,0 +1,233 @@
+---
+// src/pages/images-to-pdf.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Convert Images to PDF Online - Free Tool | Join-PDFs" 
+    description="Convert JPG, PNG, GIF, BMP images to PDF online. Combine multiple images into one PDF document. Free, no watermarks."
+>
+    <!-- Inject page-specific stylesheet from your public folder assets -->
+    <link rel="stylesheet" href="/css/images_to_pdf.css" slot="extra-head" />
+
+    <!-- Header -->
+    <div class="upload-header">
+        <h2><i class="fas fa-images"></i> Convert Images to PDF</h2>
+        <p class="subtitle">Combine multiple images into a single PDF document</p>
+    </div>
+
+    <!-- Info Boxes -->
+    <div class="upload-info">
+        <div class="info-box">
+            <i class="fas fa-layer-group"></i>
+            <p>Combine Images</p>
+            <p class="small">Merge multiple images</p>
+        </div>
+        <div class="info-box">
+            <i class="fas fa-bolt"></i>
+            <p>Fast Conversion</p>
+            <p class="small">Process in seconds</p>
+        </div>
+        <div class="info-box">
+            <i class="fas fa-shield-alt"></i>
+            <p>Secure</p>
+            <p class="small">Processed completely locally in browser</p>
+        </div>
+        <div class="info-box">
+            <i class="fas fa-sort"></i>
+            <p>Reorder Images</p>
+            <p class="small">Drag & drop to arrange</p>
+        </div>
+    </div>
+
+    <!-- Upload Area -->
+    <div class="upload-area" id="uploadZone">
+        <div class="upload-icon">
+            <i class="fas fa-file-upload"></i>
+        </div>
+        <h3>Drag & Drop Your Images Here</h3>
+        <p class="upload-hint">Supports JPG, PNG, GIF, BMP • Up to 20 files</p>
+        <input type="file" id="fileInput" accept="image/*" multiple style="display: none;" />
+        <button class="browse-btn" id="browseBtn">
+            <i class="fas fa-folder-open"></i> Select Image Files
+        </button>
+    </div>
+
+    <!-- Image Preview & Options -->
+    <div class="image-options-section" id="imageOptionsSection" style="display: none;">
+        <div class="section-header">
+            <h3><i class="fas fa-cog"></i> Conversion Options</h3>
+        </div>
+        
+        <div class="options-grid">
+            <!-- Page Size -->
+            <div class="option-card">
+                <div class="option-header">
+                    <i class="fas fa-expand-alt"></i>
+                    <h4>Page Size</h4>
+                </div>
+                <select class="form-select" id="pageSize">
+                    <option value="A4">A4 (210 × 297 mm)</option>
+                    <option value="Letter" selected>Letter (8.5 × 11 in)</option>
+                    <option value="Legal">Legal (8.5 × 14 in)</option>
+                    <option value="Fit">Fit to Image</option>
+                </select>
+            </div>
+            
+            <!-- Orientation -->
+            <div class="option-card">
+                <div class="option-header">
+                    <i class="fas fa-sync-alt"></i>
+                    <h4>Orientation</h4>
+                </div>
+                <select class="form-select" id="orientation">
+                    <option value="portrait" selected>Portrait</option>
+                    <option value="landscape">Landscape</option>
+                    <option value="auto">Auto (based on image)</option>
+                </select>
+            </div>
+            
+            <!-- Margin -->
+            <div class="option-card">
+                <div class="option-header">
+                    <i class="fas fa-border-style"></i>
+                    <h4>Margin</h4>
+                </div>
+                <select class="form-select" id="margin">
+                    <option value="0">No Margin</option>
+                    <option value="10" selected>Small (10px)</option>
+                    <option value="20">Medium (20px)</option>
+                    <option value="30">Large (30px)</option>
+                </select>
+            </div>
+            
+            <!-- Image Quality -->
+            <div class="option-card">
+                <div class="option-header">
+                    <i class="fas fa-bullseye"></i>
+                    <h4>Image Quality</h4>
+                </div>
+                <div class="slider-container">
+                    <input type="range" id="imageQuality" min="50" max="100" value="90" class="quality-slider" />
+                    <div class="slider-labels">
+                        <span>Smaller</span>
+                        <span>Balanced</span>
+                        <span>Better</span>
+                    </div>
+                    <div class="quality-value">Quality: <span id="qualityValue">90</span>%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image List -->
+    <div class="image-list-section" id="imageListSection" style="display: none;">
+        <div class="section-header">
+            <h3><i class="fas fa-list"></i> Selected Images</h3>
+            <div class="badge" id="imageCount">0 images</div>
+        </div>
+        
+        <div class="image-list" id="imageList">
+            <!-- Images will be added here dynamically -->
+        </div>
+        
+        <p class="hint-text">
+            <i class="fas fa-info-circle"></i> Drag images to reorder. Images will appear in PDF in this order.
+        </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button class="btn-primary" id="convertBtn" disabled>
+            <i class="fas fa-file-pdf"></i> Convert to PDF
+        </button>
+        <button class="btn-secondary" id="clearBtn" disabled>
+            <i class="fas fa-trash"></i> Clear All
+        </button>
+    </div>
+
+    <p class="security-note">
+        <i class="fas fa-lock"></i> Your images are secure and will be processed completely locally in your browser
+    </p>
+
+    <!-- Progress Overlay -->
+    <div class="progress-overlay" id="progressOverlay">
+        <div class="progress-content">
+            <div class="spinner">
+                <div class="spinner-circle"></div>
+            </div>
+            <h3 id="progressText">Converting Images to PDF...</h3>
+            <p>Please wait while we process your images</p>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text">
+                <span id="progressPercent">0%</span>
+                <span id="progressFile">Preparing...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Conversion Complete!</h3>
+            <p>Your images have been successfully converted to PDF</p>
+
+            <div class="success-stats">
+                <div class="stat-item">
+                    <i class="fas fa-images"></i>
+                    <span>Images Converted</span>
+                    <strong id="successImages">0</strong>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>PDF Pages</span>
+                    <strong id="successPages">0</strong>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-bolt"></i>
+                    <span>Processing Time</span>
+                    <strong id="successTime">0s</strong>
+                </div>
+            </div>
+
+            <div class="success-buttons">
+                <a href="#" class="btn-download" id="downloadBtn">
+                    <i class="fas fa-download"></i> Download PDF
+                </a>
+                <button class="btn-secondary" id="newConvertBtn">
+                    <i class="fas fa-redo"></i> Convert More Images
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade CTA Section -->
+    <div class="upgrade-cta" style="margin: 40px 0; padding: 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
+        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 280px;">
+                <h3 style="color: white; margin: 0 0 10px 0;">Need More Than Conversion?</h3>
+                <p style="margin: 0; opacity: 0.9;">Our free tool processes your images securely, but what if you need to:</p>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                    <li>Edit text directly in PDFs?</li>
+                    <li>Add e-signatures or annotations?</li>
+                    <li>Convert scanned documents with OCR?</li>
+                    <li>Process 100+ files at once?</li>
+                </ul>
+            </div>
+            <div style="text-align: center; min-width: 200px; margin-top: 10px;">
+                <a href="/pdf-comparison" style="display: inline-block; background: white; color: #667eea; padding: 12px 30px; border-radius: 30px; text-decoration: none; font-weight: bold; transition: all 0.3s;">
+                    Compare Premium Solutions →
+                </a>
+                <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.8;">Find the right tool for advanced needs</p>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<!-- Core browser-side functionality module scripts from public folder -->
+<script is:inline src="/js/images_to_pdf.js"></script>

@@ -1,0 +1,297 @@
+---
+// src/pages/index.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Free PDF Tools - Merge, Split, Compress PDFs Online | Join-PDFs" 
+    description="Free online PDF tools. Merge, split, compress, convert PDFs. No watermarks, no limits. 100% secure and free."
+>
+    <!-- Inject your page-specific style sheets directly here -->
+    <link rel="stylesheet" href="/css/index.css" slot="extra-head" />
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1>Free PDF Tools</h1>
+            <p class="hero-subtitle">Merge, split, compress, and convert PDFs online. No watermarks, no limits.</p>
+            
+            <div class="hero-buttons">
+                <a href="/merge" class="btn-primary btn-large">
+                    <i class="fas fa-object-group"></i> Merge PDFs
+                </a>
+                <a href="/split" class="btn-secondary btn-large">
+                    <i class="fas fa-cut"></i> Split PDF
+                </a>
+                <a href="/compress" class="btn-secondary btn-large">
+                    <i class="fas fa-compress-alt"></i> Compress PDF
+                </a>
+            </div>
+            
+            <div class="hero-features">
+                <div class="feature">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Secure & Private</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-bolt"></i>
+                    <span>Fast Processing</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-unlock"></i>
+                    <span>No Registration</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-infinity"></i>
+                    <span>Free Forever</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tools Grid -->
+    <div class="tools-section">
+        <div class="section-header">
+            <h2>All PDF Tools</h2>
+            <p>Choose from our collection of free PDF utilities</p>
+        </div>
+        
+        <div class="tools-grid">
+            <!-- Merge PDF -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-object-group"></i>
+                </div>
+                <h3>Merge PDF</h3>
+                <p class="tool-desc">Combine multiple PDF files into a single document</p>
+                <a href="/merge" class="btn-primary">
+                    <i class="fas fa-play"></i> Use Tool
+                </a>
+            </div>
+            
+            <!-- Split PDF -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-cut"></i>
+                </div>
+                <h3>Split PDF</h3>
+                <p class="tool-desc">Extract specific pages or split PDF into multiple files</p>
+                <a href="/split" class="btn-primary">
+                    <i class="fas fa-play"></i> Use Tool
+                </a>
+            </div>
+            
+            <!-- Compress PDF -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-compress-alt"></i>
+                </div>
+                <h3>Compress PDF</h3>
+                <p class="tool-desc">Reduce PDF file size while maintaining quality</p>
+                <a href="/compress" class="btn-primary">
+                    <i class="fas fa-play"></i> Use Tool
+                </a>
+            </div>
+            
+            <!-- PDF to Image -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-file-image"></i>
+                </div>
+                <h3>PDF to Image</h3>
+                <p class="tool-desc">Convert PDF pages to JPG or PNG images</p>
+                <a href="/pdf-to-image" class="btn-primary">
+                    <i class="fas fa-play"></i> Use Tool
+                </a>
+            </div>
+            
+            <!-- Images to PDF -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-images"></i>
+                </div>
+                <h3>Images to PDF</h3>
+                <p class="tool-desc">Convert JPG, PNG images to PDF document</p>
+                <a href="/images-to-pdf" class="btn-primary">
+                    <i class="fas fa-play"></i> Use Tool
+                </a>
+            </div>
+
+            <!-- Image Editor -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <h3>Image Editor</h3>
+                <p class="tool-desc">Edit, resize, crop, and apply filters to images</p>
+                <a href="/image-editor" class="btn-primary">
+                    <i class="fas fa-play"></i> Use Tool
+                </a>
+            </div>
+
+            <!-- Logo Maker -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <h3>Logo Maker</h3>
+                <p class="tool-desc">Create professional logos with drag & drop editor, templates, and premium features</p>
+                <a href="/logo-maker" class="btn-primary">
+                    <i class="fas fa-play"></i> Use Tool
+                </a>
+            </div>
+
+            <!-- Photo Collage Maker -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-th-large"></i>
+                </div>
+                <h3>Photo Collage Maker</h3>
+                <p class="tool-desc">Upload multiple photos, arrange them into grid layouts, and download as one image</p>
+                <a href="/collage-maker" class="btn-primary">
+                    <i class="fas fa-play"></i> Use Tool
+                </a>
+            </div>
+
+            <!-- Audio/Video Extractor -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-file-video"></i>
+                </div>
+                <h3>Media Extractor</h3>
+                <p class="tool-desc">Extract audio tracks or capture high-res snapshots from video files instantly and privately in your browser.</p>
+                <a href="/audio-video-extractor" class="btn-primary">
+                    <i class="fas fa-play"></i> Use Tool
+                </a>
+            </div>
+
+            
+            <!-- More Tools -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-file-word"></i>
+                </div>
+                <h3>PDF to Word</h3>
+                <p class="tool-desc">Convert PDF documents to editable Word files.</p>
+                <a href="/pdf-to-word" class="btn-secondary">
+                    <i class="fas fa-play"></i> Use Tool
+                </a>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-file-excel"></i>
+                </div>
+                <h3>PDF to Excel</h3>
+                <p class="tool-desc">Extract tables from PDFs to Excel spreadsheets.</p>
+                <a href="/pdf-to-excel" class="btn-secondary">
+                    <i class="fas fa-play"></i> Use Tool
+                </a>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-file-powerpoint"></i>
+                </div>
+                <h3>PDF to PowerPoint</h3>
+                <p class="tool-desc">Convert PDF presentations to PowerPoint slides.</p>
+                <a href="/pdf-to-powerpoint" class="btn-secondary">
+                    <i class="fas fa-play"></i> Use Tool
+                </a>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3>PDF to Text</h3>
+                <p class="tool-desc">Extract text content from PDF files.</p>
+                <a href="/pdf-to-text" class="btn-secondary">
+                    <i class="fas fa-play"></i> Use Tool
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works & Security -->
+    <div class="section-header" style="margin-top: 60px;">
+        <h2>Why Choose Join-PDFs?</h2>
+        <p style="color: var(--text-secondary);">Professional tools with user-friendly design</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-top: 30px; margin-bottom: 60px;">
+        
+        <!-- How It Works Card (Fixed Dark Mode Theme Alignment) -->
+        <div class="info-card" style="background: var(--bg-primary); border: 1px solid var(--border-color); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); color: var(--text-primary);">
+            <div style="background: linear-gradient(135deg, #4a6cf7, #3a5ce5); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; font-size: 24px;">
+                <i class="fas fa-play-circle"></i>
+            </div>
+            <h3 style="margin-bottom: 20px; color: var(--text-primary);">How It Works</h3>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 20px;">
+                <span style="background: #4a6cf7; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; margin-right: 15px; flex-shrink: 0; font-weight: bold;">1</span>
+                <div>
+                    <strong style="display: block; margin-bottom: 5px; color: var(--text-primary);">Upload</strong>
+                    <p style="margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-secondary);">Drag & drop your files or click to browse</p>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 20px;">
+                <span style="background: #4a6cf7; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; margin-right: 15px; flex-shrink: 0; font-weight: bold;">2</span>
+                <div>
+                    <strong style="display: block; margin-bottom: 5px; color: var(--text-primary);">Process</strong>
+                    <p style="margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-secondary);">Our tools handle everything automatically</p>
+                </div>
+            </div>
+        
+            <div style="display: flex; align-items: flex-start;">
+                <span style="background: #4a6cf7; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; margin-right: 15px; flex-shrink: 0; font-weight: bold;">3</span>
+                <div>
+                    <strong style="display: block; margin-bottom: 5px; color: var(--text-primary);">Download</strong>
+                    <p style="margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-secondary);">Get your processed file instantly</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security & Privacy Card (Synchronized Layout Framework) -->
+        <div class="info-card" style="background: var(--bg-primary); border: 1px solid var(--border-color); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); color: var(--text-primary);">
+            <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; font-size: 24px;">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3 style="margin-bottom: 20px; color: var(--text-primary);">Security & Privacy</h3>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 20px;">
+                <div style="color: #10b981; font-size: 20px; margin-right: 15px; flex-shrink: 0; width: 28px; text-align: center;">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div>
+                    <strong style="display: block; margin-bottom: 5px; color: var(--text-primary);">Privacy First</strong>
+                    <p style="margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-secondary);">We never store or share your documents</p>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 20px;">
+                <div style="color: #10b981; font-size: 20px; margin-right: 15px; flex-shrink: 0; width: 28px; text-align: center;">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div>
+                    <strong style="display: block; margin-bottom: 5px; color: var(--text-primary);">Secure Processing</strong>
+                    <p style="margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-secondary);">Encrypted transfers and processing</p>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start;">
+                <div style="color: #10b981; font-size: 20px; margin-right: 15px; flex-shrink: 0; width: 28px; text-align: center;">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div>
+                    <strong style="display: block; margin-bottom: 5px; color: var(--text-primary);">Auto Deletion</strong>
+                    <p style="margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-secondary);">Files automatically deleted after processing</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</Layout>
+
+<script is:inline src="/js/animations.js"></script>

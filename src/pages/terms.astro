@@ -1,0 +1,290 @@
+---
+// src/pages/terms.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Terms of Service - Join-PDFs" 
+    description="Terms of Service for Join-PDFs. Understand the terms governing your use of our free online PDF tools for merging, compressing, and splitting PDF files."
+>
+    <!-- Inject terms-page-specific inline styles directly into the Layout's head slot -->
+    <style slot="extra-head" is:global>
+        .terms-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .terms-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .terms-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: var(--font-size-3xl);
+        }
+        
+        .terms-header p {
+            color: var(--text-secondary);
+            font-size: var(--font-size-lg);
+        }
+        
+        .terms-section {
+            margin: 35px 0;
+            text-align: left;
+        }
+        
+        .terms-section h2 {
+            color: var(--text-primary);
+            border-left: 4px solid var(--primary-color);
+            padding-left: 15px;
+            margin-bottom: 15px;
+            font-size: var(--font-size-2xl);
+            font-weight: bold;
+        }
+        
+        .terms-section p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .terms-section ul {
+            padding-left: 25px;
+            margin: 15px 0;
+        }
+        
+        .terms-section li {
+            color: var(--text-secondary);
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+        
+        .highlight-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--warning-color, #ff9800);
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+            text-align: left;
+        }
+        
+        .highlight-box h3 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: var(--font-size-xl);
+            font-weight: bold;
+        }
+        
+        .highlight-box h3 i {
+            color: var(--warning-color, #ff9800);
+        }
+        
+        .highlight-box p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .highlight-box strong {
+            color: var(--text-primary);
+        }
+        
+        .warning-box {
+            background: var(--bg-secondary);
+            border: 2px solid var(--warning-color, #ff9800);
+            padding: 25px;
+            border-radius: var(--border-radius-sm);
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .warning-box h2 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: var(--font-size-2xl);
+            font-weight: bold;
+        }
+        
+        .warning-box h2 i {
+            color: var(--warning-color, #ff9800);
+        }
+        
+        .warning-box p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .warning-box ul {
+            padding-left: 25px;
+            margin: 15px 0;
+        }
+        
+        .warning-box li {
+            color: var(--text-secondary);
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+        
+        .last-updated {
+            color: var(--text-muted);
+            font-style: italic;
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .last-updated p {
+            margin: 10px 0;
+            font-size: var(--font-size-sm);
+        }
+        
+        /* Links handles styling rules */
+        .terms-container a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .terms-container a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive overrides matching standard device criteria */
+        @media (max-width: 768px) {
+            .terms-container {
+                margin: 20px auto;
+                padding: 20px;
+            }
+            
+            .terms-header h1 {
+                font-size: var(--font-size-2xl);
+            }
+            
+            .highlight-box, .warning-box {
+                padding: 20px;
+                margin: 20px 0;
+            }
+        }
+    </style>
+
+    <div class="terms-container">
+        <div class="terms-header">
+            <h1><i class="fas fa-gavel"></i> Terms of Service</h1>
+            <p>Please read these terms carefully before using our services</p>
+        </div>
+
+        <div class="highlight-box">
+            <h3><i class="fas fa-exclamation-triangle"></i> TL;DR - Quick Summary</h3>
+            <p><strong>By using our tools, you agree to these terms.</strong> Our service runs entirely locally on your device for unmatched speed and privacy. Do not attempt to process malicious script vectors or overload infrastructure channels. We carry zero liability for localized document array variations.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2>1. Acceptance of Terms</h2>
+            <p>By accessing and using Join-PDFs ("the Service"), you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use our services.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2>2. Description of Service</h2>
+            <p>Join-PDFs provides online PDF processing services including but not limited to:</p>
+            <ul>
+                <li>PDF merging and layout combining</li>
+                <li>PDF splitting and segment page extraction</li>
+                <li>PDF compression and file size optimization</li>
+                <li>Other client-side PDF-related utilities</li>
+            </ul>
+            <p>The Service is provided "as is" and we reserve the right to modify or discontinue any feature at any time.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2>3. User Responsibilities</h2>
+            <p>You agree not to use the Service to:</p>
+            <ul>
+                <li>Process or distribute illegal content frameworks.</li>
+                <li>Violate third-party intellectual property or copyright credentials.</li>
+                <li>Import malicious runtime binary vectors (viruses, malware scripts, etc.).</li>
+                <li>Disrupt or overload our serverless endpoint API gateways.</li>
+                <li>Use automated bot scripts or scrapers to excessively hammer transaction nodes.</li>
+            </ul>
+        </div>
+
+        <div class="terms-section">
+            <h2>4. File Handling & Privacy</h2>
+            <p>Your privacy is absolute and your files are handled exactly as described in our official <a href="/privacy">Privacy Policy</a>:</p>
+            <ul>
+                <li>Processing runs fully client-side in volatile memory space.</li>
+                <li>We do not store your PDFs on remote hard drives or cloud backends.</li>
+                <li>We have zero engineering visibility into your file contents.</li>
+                <li>All background chat and checkout pathways utilize SSL/TLS encryption.</li>
+            </ul>
+        </div>
+
+        <div class="terms-section">
+            <h2>5. Limitation of Liability</h2>
+            <p>To the fullest extent permitted by law, Join-PDFs shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from:</p>
+            <ul>
+                <li>Your use or inability to leverage the browser utilities.</li>
+                <li>Any unauthorized interception of diagnostic Analytical connection metrics.</li>
+                <li>Any interruption or cessation of endpoint background worker pathways.</li>
+                <li>Document layout variations arising from faulty system configurations.</li>
+            </ul>
+        </div>
+
+        <div class="terms-section">
+            <h2>6. Service Modifications</h2>
+            <p>We reserve the right to:</p>
+            <ul>
+                <li>Modify or discontinue tool views at any moment.</li>
+                <li>Adjust or update Premium subscription bundle package structures.</li>
+                <li>Limit request usage thresholds if necessary to preserve endpoint stability.</li>
+                <li>Terminate license keys for users violating system policies.</li>
+            </ul>
+        </div>
+
+        <div class="terms-section">
+            <h2>7. Intellectual Property</h2>
+            <p>The Service and its original content, features, layout styling, and functionality are owned by Join-PDFs and are protected by international copyright, trademark, and other intellectual property laws.</p>
+            <p>You retain absolute ownership and rights over the documents you process. By loading local file buffers, you grant us an instantaneous, localized in-memory execution license to process them as requested.</p>
+        </div>
+
+        <!-- Compliance Disclaimer Notice Module -->
+        <div class="warning-box">
+            <h2><i class="fas fa-exclamation-circle"></i> Important Disclaimer</h2>
+            <p><strong>Join-PDFs is not responsible for:</strong></p>
+            <ul>
+                <li>The content layout inside files you process or optimize.</li>
+                <li>Loss of data due to localized browser script execution exceptions (always retain backups of important source files before running conversions).</li>
+                <li>Legal compliance or auditing rules governing your document contents.</li>
+                <li>Parsing drops arising from encrypted or corrupted PDF sources.</li>
+            </ul>
+            <p class="m-0 mt-3 fw-bold text-dark">Always keep copies of critical documents on your local hard drive before utilizing processing scripts.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2>8. Changes to Terms</h2>
+            <p>We may update these Terms of Service from time to time. We will notify users by updating the "Last Updated" date on this page. Continued use of the Service after any changes constitutes acceptance of the modified terms.</p>
+        </div>
+
+        <!-- Footer Policy Last-Updated Meta Node -->
+        <div class="last-updated">
+            <p><i class="far fa-calendar-alt"></i> Last Updated: December 21, 2025</p>
+            <p class="mt-2"><i class="fas fa-link"></i> Related Resources: <a href="/privacy">Privacy Policy</a> | <a href="/contact">Contact Us</a></p>
+        </div>
+    </div>
+</Layout>

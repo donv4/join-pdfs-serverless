@@ -1,0 +1,53 @@
+---
+// src/pages/refund-policy.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Refund Policy - Join-PDFs" 
+    description="Review the 14-day refund eligibility guidelines, Paddle support procedures, and buyer terms for premium access transactions on Join-PDFs."
+>
+    <!-- Load custom Bootstrap utilities to preserve grid alignment and card shadows -->
+    <link href="https://jsdelivr.net" rel="stylesheet" slot="extra-head" />
+
+    <div class="container py-5 text-start" style="background: rgba(255, 255, 255, 0.95); border-radius: 12px; margin-top: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); max-width: 800px;">
+        <h1 class="mb-4 text-primary fw-bold"><i class="fas fa-undo-alt"></i> Refund Policy</h1>
+        
+        <p class="lead text-muted mb-4">We offer a 14-day, no-questions-asked refund policy on all premium purchases made through our primary merchant partner Paddle.</p>
+        
+        <!-- Eligibility Card -->
+        <div class="card shadow-sm border-0 mb-4 bg-light">
+            <div class="card-body p-4">
+                <h5 class="card-title fw-bold text-dark mb-3"><i class="fas fa-check-circle text-success me-2"></i> Refund Eligibility</h5>
+                <ul class="text-muted m-0 ps-3" style="line-height: 1.6;">
+                    <li class="mb-2">Refunds are available within <strong>14 days</strong> of initial checkout purchase.</li>
+                    <li class="mb-2">No questions asked—simply request a refund through Paddle and it will be processed promptly.</li>
+                    <li>Refund parameters are always returned directly back to the original payment source method.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Procedures Card -->
+        <div class="card shadow-sm border-0 mb-4 bg-light">
+            <div class="card-body p-4">
+                <h5 class="card-title fw-bold text-dark mb-3"><i class="fas fa-info-circle text-primary me-2"></i> How to Request a Refund</h5>
+                <p class="text-muted small">To process an automated reverse transaction:</p>
+                <ol class="text-muted m-0 ps-3" style="line-height: 1.6;">
+                    <li class="mb-2">Contact Paddle support directly at <a href="https://www.paddle.com/support" target="_blank" class="fw-semibold text-primary">https://www.paddle.com/support</a>.</li>
+                    <li class="mb-2">Provide your official digital order invoice receipt or standard transaction ID string.</li>
+                    <li>Refund items typically credit back onto your processing balance within 5–10 standard business days.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Contact Card -->
+        <div class="card shadow-sm border-0 mb-4 bg-light">
+            <div class="card-body p-4">
+                <h5 class="card-title fw-bold text-dark mb-3"><i class="fas fa-envelope text-secondary me-2"></i> Contact Us</h5>
+                <p class="text-muted m-0">If you run into issues or have edge-case questions regarding this refund structure, please loop our desk directly at:</p>
+                <p class="mt-3 mb-0"><strong>Operations Email:</strong> <a href="mailto:support@join-pdfs.com" class="fw-semibold text-primary">support@join-pdfs.com</a></p>
+            </div>
+        </div>
+
+        <p class="mt-4 text-muted border-top pt-3 small mb-0"><i class="fas fa-balance-scale"></i> This policy is fully mapped and aligned with the official <a href="https://www.paddle.com/legal/buyers/" target="_blank" class="text-decoration-underline text-secondary">Paddle Buyer Protection Guidelines</a>.</p>
+    </div>
+</Layout>

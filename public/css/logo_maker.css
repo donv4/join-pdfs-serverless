@@ -1,0 +1,307 @@
+/* Logo Maker CSS */
+
+/* Main content area */
+.main-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.main-content h1 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 40px;
+    font-size: 18px;
+}
+
+/* Tool panels */
+.tool-panel h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tool-panel h3 i {
+    color: #4a6cf7;
+}
+
+/* Canvas area */
+.canvas-container h3 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.canvas-placeholder h3 {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.canvas-placeholder p {
+    color: #999;
+    margin-bottom: 5px;
+}
+
+.canvas-placeholder .small-text {
+    font-size: 14px;
+    color: #aaa;
+}
+
+/* Shape grid enhancements */
+.shape-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.shape-btn {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all 0.2s ease;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.shape-btn:hover {
+    border-color: #4a6cf7;
+    background: #f0f4ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 108, 247, 0.2);
+}
+
+.shape-btn.premium-shape {
+    background: linear-gradient(135deg, #fff8e1, #fff3cd);
+    border-color: #ffd700;
+    color: #856404;
+}
+
+.shape-btn.premium-shape:hover {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border-color: #ffc107;
+}
+
+/* Premium features */
+.premium-feature {
+    position: relative;
+    opacity: 0.9;
+}
+
+.premium-feature::after {
+    content: '🔒';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 12px;
+}
+
+/* Layer items */
+.layer-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: #f8f9fa;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border-left: 4px solid #4a6cf7;
+    transition: all 0.2s;
+}
+
+.layer-item:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+}
+
+.layer-btn {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    margin-left: 5px;
+}
+
+.layer-btn:hover {
+    background: #e9ecef;
+    color: #4a6cf7;
+}
+
+/* Template previews */
+.template-preview {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.template-preview:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.template-preview.premium {
+    border: 2px solid #ffd700;
+}
+
+/* Premium notice */
+.premium-notice {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+    .logo-maker-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .tool-panel {
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .shape-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+    
+    .template-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .tool-row {
+        flex-wrap: wrap;
+    }
+}
+
+/* Button states */
+.btn-small:disabled,
+.btn-primary:disabled,
+.btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Loading state */
+.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #4a6cf7;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Color picker styling */
+input[type="color"] {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: 2px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Range slider styling */
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #e0e0e0;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #4a6cf7;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Select dropdown styling */
+select {
+    background: white url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+    background-size: 16px;
+    padding-right: 35px;
+    appearance: none;
+}
+
+/* Tooltip styling */
+[title] {
+    position: relative;
+}
+
+[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    margin-bottom: 5px;
+}
+
+[title]:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #333;
+    margin-bottom: -5px;
+    z-index: 1000;
+}

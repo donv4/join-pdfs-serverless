@@ -1,0 +1,228 @@
+---
+// src/pages/contact.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Contact Us - Join-PDFs" 
+    description="Contact Join-PDFs support team. Get help with privacy questions, data deletion requests, or general inquiries about our PDF tools."
+>
+    <!-- Inject page-specific styles directly into the Layout's head slot -->
+    <style slot="extra-head" is:global>
+        .contact-container {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 30px;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .contact-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .contact-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: var(--font-size-3xl);
+        }
+        
+        .contact-header p {
+            color: var(--text-secondary);
+            font-size: var(--font-size-lg);
+        }
+        
+        .contact-methods {
+            display: grid;
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .contact-card {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: var(--border-radius-sm);
+            border-left: 4px solid var(--primary-color);
+            transition: all var(--transition-normal);
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .contact-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: var(--font-size-xl);
+        }
+        
+        .contact-card h3 i {
+            color: var(--primary-color);
+        }
+        
+        .contact-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .contact-card strong {
+            color: var(--text-primary);
+        }
+        
+        .contact-card a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: var(--font-weight-semibold);
+        }
+        
+        .contact-card a:hover {
+            text-decoration: underline;
+            color: var(--primary-dark);
+        }
+        
+        .contact-note {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: var(--border-radius-sm);
+            margin-top: 30px;
+        }
+        
+        .contact-note h3 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: var(--font-size-xl);
+        }
+        
+        .contact-note h3 i {
+            color: var(--primary-color);
+        }
+        
+        .contact-note p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .contact-note strong {
+            color: var(--text-primary);
+        }
+        
+        .contact-note ul {
+            margin: 15px 0 15px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .contact-note li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .contact-note li a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .contact-note li a:hover {
+            text-decoration: underline;
+            color: var(--primary-dark);
+        }
+        
+        .social-coming {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius-sm);
+            font-style: italic;
+            border: 1px dashed var(--border-color);
+            color: var(--text-secondary);
+        }
+        
+        .social-coming p {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0;
+        }
+        
+        .social-coming i {
+            color: var(--primary-color);
+            font-size: var(--font-size-lg);
+        }
+        
+        .social-coming strong {
+            color: var(--text-primary);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .contact-container {
+                margin: 20px auto;
+                padding: 20px;
+            }
+            
+            .contact-header h1 {
+                font-size: var(--font-size-2xl);
+            }
+            
+            .contact-card, .contact-note {
+                padding: 20px;
+            }
+        }
+    </style>
+
+    <div class="contact-container">
+        <div class="contact-header">
+            <h1><i class="fas fa-envelope"></i> Contact Us</h1>
+            <p>Get in touch with our team</p>
+        </div>
+
+        <div class="contact-methods">
+            <div class="contact-card">
+                <h3><i class="fas fa-envelope"></i> Email Support</h3>
+                <p>For privacy concerns, data deletion requests, or general inquiries:</p>
+                <p>
+                    <strong>Email:</strong><br />
+                    <a href="mailto:join.pdfs2025@gmail.com">join.pdfs2025@gmail.com</a>
+                </p>
+                <p><small><i class="fas fa-clock"></i> Response within 24-48 hours</small></p>
+            </div>
+        </div>
+
+        <div class="contact-note">
+            <h3><i class="fas fa-clock"></i> What to Expect</h3>
+            <p><strong>Response Time:</strong> We typically respond within 24-48 hours on business days.</p>
+            <p><strong>Best for:</strong> Privacy questions, data deletion requests, bug reports, and partnership inquiries.</p>
+            <p><strong>Note:</strong> We don't provide technical support for PDF editing via email. For tool-specific issues, please check our tool documentation.</p>
+        </div>
+
+        <div class="social-coming">
+            <p><i class="fas fa-bullhorn"></i> <strong>Social Media:</strong> Coming soon! Follow us for updates and tips.</p>
+        </div>
+
+        <div class="contact-note">
+            <h3><i class="fas fa-info-circle"></i> Before Contacting</h3>
+            <p>You might find answers in our:</p>
+            <ul>
+                <li><a href="/privacy">Privacy Policy</a> - How we handle your data</li>
+                <li><a href="/faq">FAQ Page</a> - Frequently asked questions</li>
+                <li><a href="/about">About Page</a> - Information about our service</li>
+            </ul>
+        </div>
+    </div>
+</Layout>

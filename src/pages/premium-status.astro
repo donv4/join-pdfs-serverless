@@ -1,0 +1,133 @@
+---
+// src/pages/premium-status.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Premium Key Status Check - Join-PDFs" 
+    description="Enter your premium key to check its active status, validation thresholds, usage, and expiry date metrics."
+>
+    <!-- Load structural Bootstrap layout framework configurations -->
+    <link href="https://jsdelivr.net" rel="stylesheet" slot="extra-head" />
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <!-- Status Check Panel -->
+                <div class="card border-0 shadow-sm mb-4" style="background: rgba(255, 255, 255, 0.95); border-radius: 12px;">
+                    <div class="card-header bg-primary text-white py-3" style="border-radius: 12px 12px 0 0;">
+                        <h4 class="m-0 fw-bold"><i class="fas fa-key"></i> Premium Key Status Check</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <p class="text-muted small mb-4">Enter your premium key to check its active network status, expiry thresholds, and usage limits.</p>
+                        
+                        <form id="statusForm">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary">Premium Key</label>
+                                <input type="text" id="statusKeyInput" class="form-control form-control-lg" name="premium_key" placeholder="e.g., KEY-ABC123DE" required style="text-transform: uppercase;" />
+                                <small class="text-muted mt-1 d-block">Enter the unique key string delivered after checkout confirmation.</small>
+                            </div>
+                            
+                            <button type="submit" id="statusSubmitBtn" class="btn btn-primary btn-lg w-100 fw-bold">
+                                🔍 Check Status
+                            </button>
+                        </form>
+                        
+                        <!-- Dynamic Result Container Module -->
+                        <div id="result" class="mt-4"></div>
+                    </div>
+                </div>
+                
+                <!-- Help Panel -->
+                <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                    <div class="card-header bg-info text-white py-3" style="border-radius: 12px 12px 0 0;">
+                        <h5 class="m-0 fw-bold"><i class="fas fa-lightbulb"></i> Need Help?</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <p class="text-muted small">If your premium verification parameters are failing or throwing exception events:</p>
+                        <ul class="text-muted small ps-3 mb-0" style="line-height: 1.6;">
+                            <li class="mb-2">Verify character casings match your transaction string perfectly.</li>
+                            <li class="mb-2">Subscription credentials drop off immediately after service terms pass.</li>
+                            <li>Reach out to our operations room to reset keys: <a href="mailto:join.pdfs2025@gmail.com" class="fw-semibold text-primary">join.pdfs2025@gmail.com</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<!-- Client side validation event handler scripts -->
+<script is:inline>
+document.addEventListener('DOMContentLoaded', () => {
+    // Proactively pull local storage token cache to autofill the form block
+    const cachedKey = localStorage.getItem('premium_key');
+    const inputContainer = document.getElementById('statusKeyInput');
+    if (cachedKey && inputContainer) {
+        inputContainer.value = cachedKey;
+    }
+
+    const form = document.getElementById('statusForm');
+    const resultDiv = document.getElementById('result');
+    const submitBtn = document.getElementById('statusSubmitBtn');
+
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const keyString = inputContainer.value.trim().toUpperCase();
+            
+            resultDiv.innerHTML = `
+                <div class="alert alert-info border-0 shadow-sm d-flex align-items-center gap-2">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                    <span>Querying global database blocks...</span>
+                </div>
+            `;
+            submitBtn.disabled = true;
+            
+            try {
+                // 🔒 Calls your central verification API endpoint worker loop
+                const response = await fetch('/api/verify-key', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key: keyString })
+                });
+                
+                const data = await response.json();
+                
+                if (data.valid) {
+                    // Update key in cache if validated successfully
+                    localStorage.setItem('premium_key', keyString);
+
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success border-0 shadow-sm text-start p-4">
+                            <h5 class="fw-bold text-success mb-3"><i class="fas fa-check-circle"></i> Premium Key Active</h5>
+                            <hr class="text-success opacity-25">
+                            <div class="small text-muted d-flex flex-column gap-2 mt-2">
+                                <div><strong>Key Node:</strong> <code class="bg-light px-2 py-1 rounded text-dark">${keyString}</code></div>
+                                <div><strong>Active Tier:</strong> <span class="badge bg-primary text-capitalize">${data.plan || 'monthly'} Plan</span></div>
+                                <div><strong>Validation Status:</strong> <span class="text-success fw-bold">Verified (Cloud Active)</span></div>
+                                <div><strong>batch capacity limits:</strong> ${data.plan === 'yearly' ? '50 files simultaneously' : '15 files simultaneously'}</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger border-0 shadow-sm text-start p-4">
+                            <h5 class="fw-bold text-danger mb-2"><i class="fas fa-times-circle"></i> Verification Failed</h5>
+                            <p class="small text-muted m-0">The premium license code string provided does not map to any active matrix elements inside our databases or has passed expiration thresholds.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger border-0 shadow-sm text-start p-4">
+                        <h5 class="fw-bold text-danger mb-2"><i class="fas fa-exclamation-triangle"></i> Network Exception Error</h5>
+                        <p class="small text-muted m-0">${error.message || 'System syncing timeout error occurred during database validations.'}</p>
+                    </div>
+                `;
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    }
+});
+</script>

@@ -1,0 +1,194 @@
+---
+// src/pages/pdf-to-image.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="PDF to Image Converter - Join-PDFs" 
+    description="Convert PDF files to high-quality JPG/PNG images online for free. Extract pages as images with automatic ZIP download for multiple pages."
+>
+    <!-- Inject page-specific stylesheet from your public folder assets -->
+    <link rel="stylesheet" href="/css/pdf_to_image.css" slot="extra-head" />
+
+    <div class="tool-container">
+        <div class="tool-header">
+            <h1><i class="fas fa-file-image"></i> PDF to Image Converter</h1>
+            <p class="tool-subtitle">Convert PDF pages to high-quality JPG images instantly</p>
+        </div>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">
+                <i class="fas fa-file-pdf"></i>
+                <i class="fas fa-arrow-right"></i>
+                <i class="fas fa-file-image"></i>
+            </div>
+            
+            <h3>Convert PDF to Images</h3>
+            <p>Upload a PDF file to convert each page to a JPG image</p>
+            
+            <form id="uploadForm">
+                <div class="file-input-container">
+                    <input type="file" id="fileInput" name="file" accept=".pdf" required />
+                    <label for="fileInput" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Choose PDF File</span>
+                    </label>
+                    <div class="file-name" id="fileName">No file chosen</div>
+                </div>
+                
+                <div class="conversion-options">
+                    <div class="option">
+                        <label><i class="fas fa-image"></i> Output Format</label>
+                        <div class="format-buttons">
+                            <button type="button" class="format-btn active" data-format="jpg">JPG</button>
+                            <button type="button" class="format-btn" data-format="png">PNG</button>
+                        </div>
+                        <input type="hidden" id="formatInput" name="format" value="jpg" />
+                    </div>
+                    
+                    <div class="option">
+                        <label><i class="fas fa-tachometer-alt"></i> Quality</label>
+                        <div class="quality-slider">
+                            <input type="range" min="1" max="10" value="8" id="qualitySlider" name="quality" />
+                            <div class="quality-labels">
+                                <span>Smaller File</span>
+                                <span>Better Quality</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="convert-btn" id="convertBtn">
+                        <i class="fas fa-sync-alt"></i> Convert to Images
+                    </button>
+                </div>
+            </form>
+            
+            <!-- JavaScript Client-Side Success Message Container (Initially Hidden) -->
+            <div class="success-message" id="successMessage" style="display: none; margin-top: 25px;">
+                <div class="success-header">
+                    <i class="fas fa-check-circle" style="color: #2ecc71; font-size: 24px;"></i>
+                    <h3>Conversion Successful!</h3>
+                </div>
+                <p id="successStatsText">Converted pages to images</p>
+                
+                <div class="download-section">
+                    <a href="#" class="download-btn" id="downloadBtn" download>
+                        <i class="fas fa-file-archive"></i> Download Your Images
+                    </a>
+                    <p class="download-note" id="downloadNoteText">Your file is ready for download</p>
+                </div>
+                
+                <div class="action-buttons" style="margin-top: 20px;">
+                    <button type="button" class="action-btn" onclick="window.location.reload()">
+                        <i class="fas fa-redo"></i> Convert Another PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Client-Side Runtime Error UI Container -->
+            <div class="error-message" id="errorContainer" style="display: none; margin-top: 20px;">
+                <i class="fas fa-exclamation-circle"></i> <span id="errorText">An error occurred during processing.</span>
+            </div>
+        </div>
+
+        <div class="features-section">
+            <h2><i class="fas fa-star"></i> Why Use Our PDF to Image Converter?</h2>
+            <div class="features-grid">
+                <div class="feature">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Fast Conversion</h3>
+                    <p>Convert PDF to images in seconds with our optimized processing</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Secure & Private</h3>
+                    <p>Files run entirely in your local browser. Complete privacy.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-images"></i>
+                    <h3>High Quality</h3>
+                    <p>Adjustable quality renders for perfect canvas resolution outputs</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Mobile Friendly</h3>
+                    <p>Works perfectly on all devices - phones, tablets, and computers</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3><i class="fas fa-question-circle"></i> How to Convert PDF to Images</h3>
+            <ol class="steps-list">
+                <li><strong>Upload PDF</strong> - Drag & drop or click to select your PDF file</li>
+                <li><strong>Choose Settings</strong> - Select image format and quality (optional)</li>
+                <li><strong>Convert</strong> - Click "Convert to Images" to process your PDF</li>
+                <li><strong>Download</strong> - Get single image or a ZIP archive containing all pages</li>
+            </ol>
+            
+            <div class="use-cases">
+                <h4>Common Use Cases:</h4>
+                <ul>
+                    <li>Extract images from PDF documents</li>
+                    <li>Convert PDF slides to presentation images</li>
+                    <li>Create thumbnails from PDF pages</li>
+                    <li>Share PDF content as social media images</li>
+                    <li>Convert scanned documents to editable images</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade CTA Section -->
+    <div class="upgrade-cta" style="margin: 40px 0; padding: 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
+        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 280px;">
+                <h3 style="color: white; margin: 0 0 10px 0;">Need More Than Conversion?</h3>
+                <p style="margin: 0; opacity: 0.9;">Our free tool converts PDF to images securely, but what if you need to:</p>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                    <li>Edit text directly in PDFs?</li>
+                    <li>Add e-signatures or annotations?</li>
+                    <li>Convert scanned documents with OCR?</li>
+                    <li>Process 100+ files at once?</li>
+                </ul>
+            </div>
+            <div style="text-align: center; min-width: 200px; margin-top: 10px;">
+                <a href="/pdf-comparison" style="display: inline-block; background: white; color: #667eea; padding: 12px 30px; border-radius: 30px; text-decoration: none; font-weight: bold; transition: all 0.3s;">
+                    Compare Premium Solutions →
+                </a>
+                <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.8;">Find the right tool for advanced needs</p>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<!-- Core browser-side functionality scripts from public folder -->
+<script is:inline src="/js/pdf_to_image.js"></script>
+
+<!-- Astro layout integration script for input monitoring and format toggles -->
+<script is:inline>
+document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.getElementById('fileInput');
+    const fileNameDisplay = document.getElementById('fileName');
+    const formatButtons = document.querySelectorAll('.format-btn');
+    const formatInput = document.getElementById('formatInput');
+
+    if (fileInput && fileNameDisplay) {
+        fileInput.addEventListener('change', (e) => {
+            const name = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+            fileNameDisplay.textContent = name;
+        });
+    }
+
+    formatButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            formatButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            if (formatInput) {
+                formatInput.value = this.getAttribute('data-format');
+            }
+        });
+    });
+});
+</script>

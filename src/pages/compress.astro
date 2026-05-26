@@ -1,0 +1,321 @@
+---
+// src/pages/compress.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Join-PDFs | Compress PDF Files - Reduce Size Online" 
+    description="Reduce PDF file size while maintaining quality. Compress PDF documents for email, storage, or sharing. Free online PDF compression tool."
+>
+    <!-- Inject page-specific stylesheet from your public folder assets -->
+    <link rel="stylesheet" href="/css/compress.css" slot="extra-head" />
+
+    <!-- Header -->
+    <div class="page-header">
+        <h2><i class="fas fa-compress"></i> Compress PDF Files</h2>
+        <p class="subtitle">Reduce PDF file size while preserving quality</p>
+    </div>
+
+    <!-- Info Grid -->
+    <div class="info-grid">
+        <div class="info-box">
+            <i class="fas fa-weight-hanging"></i>
+            <p>Reduce Size</p>
+            <p class="small">Up to 90% smaller</p>
+        </div>
+        <div class="info-box">
+            <i class="fas fa-bolt"></i>
+            <p>Fast Processing</p>
+            <p class="small">Compress in seconds</p>
+        </div>
+        <div class="info-box">
+            <i class="fas fa-shield-alt"></i>
+            <p>Secure</p>
+            <p class="small">Processed completely locally in browser</p>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar" id="statsBar" style="display: none;">
+        <div class="stat">
+            <span class="stat-label">Original Size</span>
+            <span class="stat-value" id="originalSize">0 KB</span>
+        </div>
+        <div class="stat">
+            <span class="stat-label">Compressed</span>
+            <span class="stat-value" id="compressedSize">0 KB</span>
+        </div>
+        <div class="stat">
+            <span class="stat-label">Reduction</span>
+            <span class="stat-value" id="reductionPercent">0%</span>
+        </div>
+    </div>
+
+    <!-- Compression Settings -->
+    <div class="compression-section">
+        <div class="section-header">
+            <h3><i class="fas fa-sliders-h"></i> Compression Settings</h3>
+        </div>
+
+        <div class="compression-grid">
+            <div class="compression-card">
+                <div class="compression-header">
+                    <i class="fas fa-chart-line"></i>
+                    <h4>Compression Level</h4>
+                </div>
+                <div class="compression-options">
+                    <div class="compression-option active" data-level="recommended">
+                        <div class="option-header">
+                            <i class="fas fa-star"></i>
+                            <h5>Recommended</h5>
+                        </div>
+                        <p class="option-desc">Balanced quality and size reduction</p>
+                        <div class="option-stats">
+                            <span class="stat-label">Reduction:</span>
+                            <span class="stat-value">~60%</span>
+                        </div>
+                    </div>
+                    <div class="compression-option" data-level="extreme">
+                        <div class="option-header">
+                            <i class="fas fa-rocket"></i>
+                            <h5>Maximum</h5>
+                        </div>
+                        <p class="option-desc">Smallest file size possible</p>
+                        <div class="option-stats">
+                            <span class="stat-label">Reduction:</span>
+                            <span class="stat-value">~80%</span>
+                        </div>
+                    </div>
+                    <div class="compression-option" data-level="light">
+                        <div class="option-header">
+                            <i class="fas fa-feather"></i>
+                            <h5>Light</h5>
+                        </div>
+                        <p class="option-desc">Minimal compression, best quality</p>
+                        <div class="option-stats">
+                            <span class="stat-label">Reduction:</span>
+                            <span class="stat-value">~30%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="compression-card">
+                <div class="compression-header">
+                    <i class="fas fa-cog"></i>
+                    <h4>Advanced Options</h4>
+                </div>
+                <div class="advanced-options">
+                    <div class="option-toggle">
+                        <div class="toggle-label">
+                            <i class="fas fa-image"></i>
+                            <span>Compress Images</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="compressImages" checked />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="option-toggle">
+                        <div class="toggle-label">
+                            <i class="fas fa-tags"></i>
+                            <span>Remove Metadata</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="removeMetadata" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="option-toggle">
+                        <div class="toggle-label">
+                            <i class="fas fa-layer-group"></i>
+                            <span>Downsample Images</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="downsampleImages" checked />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="option-slider">
+                        <div class="slider-header">
+                            <i class="fas fa-bullseye"></i>
+                            <span>Image Quality: <span id="qualityValue">75</span>%</span>
+                        </div>
+                        <input type="range" id="imageQuality" min="10" max="100" value="75" class="quality-slider" />
+                        <div class="slider-labels">
+                            <span>Smaller</span>
+                            <span>Balanced</span>
+                            <span>Better</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Zone -->
+    <div class="upload-zone" id="uploadZone">
+        <div class="upload-icon">
+            <i class="fas fa-file-upload"></i>
+        </div>
+        <h3>Drag & Drop Your PDF Here</h3>
+        <p>Select a PDF file to compress and reduce its size</p>
+        <input type="file" id="fileInput" accept=".pdf" style="display: none;" />
+        <button class="btn-primary" id="browseBtn">
+            <i class="fas fa-folder-open"></i> Select PDF File
+        </button>
+    </div>
+
+    <!-- File Info -->
+    <div class="file-info-section" id="fileInfoSection" style="display: none;">
+        <div class="section-header">
+            <h3><i class="fas fa-file-pdf"></i> Selected File</h3>
+            <div class="badge" id="fileCount">1 file</div>
+        </div>
+
+        <div class="file-details">
+            <div class="file-preview-info">
+                <div class="file-icon-large">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <div class="file-meta">
+                    <h4 id="fileName">No file selected</h4>
+                    <div class="file-stats">
+                        <div class="file-stat">
+                            <i class="fas fa-weight-hanging"></i>
+                            <span id="fileSize">0 KB</span>
+                        </div>
+                        <div class="file-stat">
+                            <i class="fas fa-copy"></i>
+                            <span id="pageCount">0 pages</span>
+                        </div>
+                        <div class="file-stat">
+                            <i class="fas fa-clock"></i>
+                            <span id="fileAdded">Just now</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="compression-preview">
+                <div class="preview-card">
+                    <div class="preview-header">
+                        <i class="fas fa-compress"></i>
+                        <h5>Estimated Results</h5>
+                    </div>
+                    <div class="preview-stats">
+                        <div class="preview-stat">
+                            <span class="preview-label">Original</span>
+                            <span class="preview-value" id="previewOriginal">0 KB</span>
+                        </div>
+                        <div class="preview-stat">
+                            <span class="preview-label">Compressed</span>
+                            <span class="preview-value success" id="previewCompressed">0 KB</span>
+                        </div>
+                        <div class="preview-stat">
+                            <span class="preview-label">Reduction</span>
+                            <span class="preview-value success" id="previewReduction">0%</span>
+                        </div>
+                        <div class="preview-stat">
+                            <span class="preview-label">Savings</span>
+                            <span class="preview-value success" id="previewSavings">0 KB</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button class="btn-primary" id="compressBtn" disabled>
+            <i class="fas fa-compress"></i> Compress PDF
+        </button>
+        <button class="btn-secondary" id="clearBtn" disabled>
+            <i class="fas fa-trash"></i> Remove File
+        </button>
+    </div>
+
+
+    <!-- Progress Overlay -->
+    <div class="progress-overlay" id="progressOverlay">
+        <div class="progress-content">
+            <div class="spinner">
+                <div class="spinner-circle"></div>
+            </div>
+            <h3 id="progressText">Compressing PDF...</h3>
+            <p>Please wait while we optimize your file</p>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text">
+                <span id="progressPercent">0%</span>
+                <span id="progressFile">Preparing...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Compression Complete!</h3>
+            <p>Your PDF has been successfully compressed</p>
+
+            <div class="success-stats">
+                <div class="stat-item">
+                    <i class="fas fa-weight-hanging"></i>
+                    <span>Size Reduction</span>
+                    <strong id="successReduction">0%</strong>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-download"></i>
+                    <span>File Saved</span>
+                    <strong id="successSaved">0 KB</strong>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-bolt"></i>
+                    <span>Processing Time</span>
+                    <strong id="successTime">0s</strong>
+                </div>
+            </div>
+
+            <div class="success-buttons">
+                <a href="#" class="btn-download" id="downloadBtn">
+                    <i class="fas fa-download"></i> Download Compressed PDF
+                </a>
+                <button class="btn-secondary" id="newCompressBtn">
+                    <i class="fas fa-redo"></i> Compress Another
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade CTA Section -->
+    <div class="upgrade-cta" style="margin: 40px 0; padding: 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
+        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 280px;">
+                <h3 style="color: white; margin: 0 0 10px 0;">Need More Than Conversion?</h3>
+                <p style="margin: 0; opacity: 0.9;">Our free tool processes PDFs securely, but what if you need to:</p>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                    <li>Edit text directly in PDFs?</li>
+                    <li>Add e-signatures or annotations?</li>
+                    <li>Convert scanned documents with OCR?</li>
+                    <li>Process 100+ files at once?</li>
+                </ul>
+            </div>
+            <div style="text-align: center; min-width: 200px; margin-top: 10px;">
+                <a href="/pdf-comparison" style="display: inline-block; background: white; color: #667eea; padding: 12px 30px; border-radius: 30px; text-decoration: none; font-weight: bold; transition: all 0.3s;">
+                    Compare Premium Solutions →
+                </a>
+                <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.8;">Find the right tool for advanced needs</p>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<!-- Core browser-side functionality module scripts from public folder -->
+<script is:inline src="/js/compress.js"></script>
+

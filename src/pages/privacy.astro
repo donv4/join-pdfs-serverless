@@ -1,0 +1,315 @@
+---
+// src/pages/privacy.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Privacy Policy - Join-PDFs" 
+    description="Privacy Policy for Join-PDFs. Learn how we protect your data, handle local file arrays, and ensure total security when using our free browser tools."
+>
+    <!-- Inject page-specific inline styles directly into the Layout's head slot -->
+    <style slot="extra-head" is:global>
+        .privacy-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .privacy-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .privacy-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: var(--font-size-3xl);
+        }
+        
+        .privacy-header p {
+            color: var(--text-secondary);
+            font-size: var(--font-size-lg);
+        }
+        
+        .privacy-section {
+            margin: 35px 0;
+            text-align: left;
+        }
+        
+        .privacy-section h2 {
+            color: var(--text-primary);
+            border-left: 4px solid var(--primary-color);
+            padding-left: 15px;
+            margin-bottom: 15px;
+            font-size: var(--font-size-2xl);
+            font-weight: bold;
+        }
+        
+        .privacy-section h3 {
+            color: var(--text-primary);
+            margin: 20px 0 10px 0;
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+        }
+        
+        .privacy-section p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .privacy-section ul {
+            padding-left: 25px;
+            margin: 15px 0;
+        }
+        
+        .privacy-section li {
+            color: var(--text-secondary);
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+        
+        .privacy-section strong {
+            color: var(--text-primary);
+        }
+        
+        .highlight-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--success-color, #2ecc71);
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+            text-align: left;
+        }
+        
+        .highlight-box h3 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: var(--font-size-xl);
+            font-weight: bold;
+        }
+        
+        .highlight-box h3 i {
+            color: var(--success-color, #2ecc71);
+        }
+        
+        .highlight-box p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .highlight-box strong {
+            color: var(--text-primary);
+        }
+        
+        .contact-info {
+            background: var(--bg-secondary);
+            border: 2px solid var(--primary-color);
+            padding: 25px;
+            border-radius: var(--border-radius-sm);
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .contact-info h2 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: var(--font-size-2xl);
+            font-weight: bold;
+        }
+        
+        .contact-info h2 i {
+            color: var(--primary-color);
+        }
+        
+        .contact-info p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .contact-info ul {
+            padding-left: 25px;
+            margin: 15px 0;
+        }
+        
+        .contact-info li {
+            color: var(--text-secondary);
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+        
+        .contact-info strong {
+            color: var(--text-primary);
+        }
+        
+        .contact-info a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .contact-info a:hover {
+            text-decoration: underline;
+            color: var(--primary-dark);
+        }
+        
+        .last-updated {
+            color: var(--text-muted);
+            font-style: italic;
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .last-updated p {
+            margin: 10px 0;
+            font-size: var(--font-size-sm);
+        }
+        
+        /* Links */
+        .privacy-container a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .privacy-container a:hover {
+            text-decoration: underline;
+            color: var(--primary-dark);
+        }
+
+        /* Responsive design mapping overrides */
+        @media (max-width: 768px) {
+            .privacy-container {
+                margin: 20px auto;
+                padding: 20px;
+            }
+            
+            .privacy-header h1 {
+                font-size: var(--font-size-2xl);
+            }
+            
+            .highlight-box, .contact-info {
+                padding: 20px;
+                margin: 20px 0;
+            }
+        }
+    </style>
+
+    <div class="privacy-container">
+        <div class="privacy-header">
+            <h1><i class="fas fa-shield-alt"></i> Privacy Policy</h1>
+            <p>Your privacy is important to us</p>
+        </div>
+
+        <div class="highlight-box">
+            <h3><i class="fas fa-info-circle"></i> TL;DR - Quick Summary</h3>
+            <p><strong>We do not collect or store your PDF files.</strong> Standard processing executes entirely inside your local browser memory space. Your documents are never uploaded across the web to a remote server. We do not sell your personal statistics, no tracking records are held, and no registration is needed.</p>
+        </div>
+
+        <div class="privacy-section">
+            <h2>1. Information We Process</h2>
+            <h3>Documents & Files:</h3>
+            <ul>
+                <li><strong>PDF and Image files</strong> you import into our utility layout interfaces for configuration.</li>
+                <li>Files are handled <strong>entirely inside local client RAM memory</strong> during tool execution loops.</li>
+                <li>Because processing is local, files are <strong>instantly released</strong> the moment your browser page window is cleared or closed.</li>
+                <li>We have zero technical capability to inspect, access, read, or back up the content layers of your imported documents.</li>
+            </ul>
+
+            <h3>Anonymized Analytical Metrics:</h3>
+            <ul>
+                <li><strong>Anonymized connection metrics</strong> to ensure application balance.</li>
+                <li><strong>Browser type</strong> and core device layouts (desktop vs mobile screens).</li>
+                <li><strong>Usage data thresholds</strong> (overall count of tool runs, execution speed processing benchmarks).</li>
+            </ul>
+        </div>
+
+        <div class="privacy-section">
+            <h2>2. How We Use This Data</h2>
+            <ul>
+                <li><strong>Execute local tool operations</strong> - Compile, slice, compress, or edit media assets as explicitly requested by your local click inputs.</li>
+                <li><strong>Optimize software engineering layout structures</strong> - Review anonymous metric clusters to squash application bugs and speed up processing speeds.</li>
+                <li><strong>Maintain operational stability</strong> - Monitor background request counts to protect endpoints from malicious automation loops.</li>
+            </ul>
+        </div>
+
+        <div class="privacy-section">
+            <h2>3. Absolute Security Protocol</h2>
+            <ul>
+                <li><strong>No Network File Transmissions:</strong> Standard utility calculations execute directly on your local device CPU matrix.</li>
+                <li><strong>Encryption:</strong> Encrypted HTTPS/SSL transfer connections shield all background chat assistant and transaction communication pathways.</li>
+                <li><strong>Zero Retention Risk:</strong> No documents ever hit persistent storage hard drives, completely eliminating cloud data breach vulnerabilities.</li>
+            </ul>
+        </div>
+
+        <div class="privacy-section">
+            <h2>4. Cookies & State Tracking</h2>
+            <p>We leverage minimal browser cookies and key-value properties strictly for essential utility behaviors:</p>
+            <ul>
+                <li><strong>Local Storage Memory Buffers</strong> - Holds your session premium keys locally so you do not have to type them every time you click between tool pages.</li>
+                <li><strong>Preference state anchors</strong> - Caches your preferred color theme rules (Light vs Dark toggles) so layouts render comfortably.</li>
+                <li><strong>No Aggressive Third-Party Ad-Trackers:</strong> We favor self-hosted, private analytical instrumentation setups.</li>
+            </ul>
+        </div>
+        
+        <div class="privacy-section">
+            <h2>5. Third-Party Services</h2>
+            <p>We use a few trusted third-party services:</p>
+            <ul>
+                <li><strong>Hosting infrastructure</strong> - Edge server routing systems</li>
+                <li><strong>CDN networks</strong> - Fast local content caching and file delivery (Cloudflare)</li>
+                <li><strong>Asset providers</strong> - Font Awesome for universal header and menu icons</li>
+                <li><strong>No data monetisation</strong> - We don't sell, share, or rent any of your user data metrics to third-party tracking conglomerates</li>
+            </ul>
+        </div>
+
+        <div class="privacy-section">
+            <h2>6. Your Regulatory Rights</h2>
+            <ul>
+                <li><strong>Right to access:</strong> You can request a copy of any analytical logs linked to your device.</li>
+                <li><strong>Right to deletion:</strong> Request absolute deletion of any diagnostic event logging profiles.</li>
+                <li><strong>Right to opt-out:</strong> Block non-essential preference cookie caches inside your browser adjustments.</li>
+                <li><strong>Right to request audits:</strong> Reach out directly to our room with any compliance or privacy concerns.</li>
+            </ul>
+        </div>
+
+        <div class="privacy-section">
+            <h2>7. Children's Privacy</h2>
+            <p>Our tools are universal and completely secure. We do not knowingly harvest, collect, or ask for personal identifying metrics from children under the age of 13. If you believe a minor has logged communication variables with us, we will immediately delete them upon notice.</p>
+        </div>
+
+        <div class="privacy-section">
+            <h2>8. Policy Updates</h2>
+            <p>We may refresh this privacy documentation occasionally to align with newly introduced client-side tool implementations. Any modifications will go live immediately upon updating the "Last Updated" marker at the base of this layout panel.</p>
+        </div>
+
+        <!-- Direct Support Connection Frame Module -->
+        <div class="contact-info">
+            <h2><i class="fas fa-envelope"></i> Contact Us</h2>
+            <p>If you have any questions or require data transparency reports regarding this privacy structure, contact our operations deck:</p>
+            <ul>
+                <li><strong>Email:</strong> <a href="mailto:join.pdfs2025@gmail.com">join.pdfs2025@gmail.com</a></li>
+                <li><strong>Contact Page:</strong> <a href="/contact">/contact</a></li>
+            </ul>
+        </div>
+
+        <div class="last-updated">
+            <p><i class="far fa-calendar-alt"></i> Last Updated: January 3, 2026</p>
+        </div>
+    </div>
+</Layout>
+

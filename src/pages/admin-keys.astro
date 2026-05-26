@@ -1,0 +1,169 @@
+---
+// src/pages/admin-keys.astro
+import Layout from '../layouts/Layout.astro';
+
+// 🔑 SERVER-SIDE SECURE PROTECTION LAYER
+// Basic Auth check against Cloudflare environment variables
+const authHeader = Astro.request.headers.get('Authorization');
+if (!authHeader) {
+  return new Response('Unauthorized Access', {
+    status: 401,
+    headers: { 'WWW-Authenticate': 'Basic realm="Admin Protected Dashboard"' }
+  });
+}
+
+const [type, credentials] = authHeader.split(' ');
+const [username, password] = atob(credentials).split(':');
+
+// Pull credentials from Cloudflare runtime configurations
+const ADMIN_USER = import.meta.env.ADMIN_USER || 'admin';
+const ADMIN_PASS = import.meta.env.ADMIN_PASS || 'password'; 
+
+if (username !== ADMIN_USER || password !== ADMIN_PASS) {
+  return new Response('Invalid Admin Credentials', { status: 403 });
+}
+
+// 💾 CLOUDFLARE KV DATABASE QUERIES
+// Fetch key objects straight from memory (Wrangler bindings initialized next)
+const store = Astro.locals.runtime?.env?.JOIN_PDFS_STORE;
+
+let activeKeys: Record<string, any> = {};
+let pendingPurchases: Record<string, any> = {};
+
+if (store) {
+  activeKeys = (await store.get('premium_keys', 'json')) || {};
+  pendingPurchases = (await store.get('pending_purchases', 'json')) || {};
+}
+
+const activeKeysCount = Object.keys(activeKeys).length;
+const pendingCount = Object.keys(pendingPurchases).length;
+---
+
+<Layout title="Premium Keys Admin | Join-PDFs">
+    <!-- Load universal Bootstrap CSS layout framework -->
+    <link href="https://jsdelivr.net" rel="stylesheet" slot="extra-head" />
+
+    <div class="container py-5" style="background: rgba(255,255,255,0.9); border-radius: 12px; margin-top: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <h1 class="mb-4 text-primary"><i class="fas fa-user-shield"></i> Premium Keys Admin</h1>
+        <p class="lead text-muted">View and manage active premium keys dynamically via Cloudflare KV database blocks.</p>
+        
+        <!-- Active Keys Section -->
+        <div class="card shadow-sm border-0 mb-5">
+            <div class="card-body">
+                <h5 class="card-title mb-3 fw-bold text-secondary">
+                    <i class="fas fa-key"></i> Active Keys ({activeKeysCount})
+                </h5>
+                
+                {activeKeysCount > 0 ? (
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Key</th>
+                                <th>Plan</th>
+                                <th>Email</th>
+                                <th>Created</th>
+                                <th>Expiry</th>
+                                <th>Used</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {Object.entries(activeKeys).map(([key, info]: [string, any]) => (
+                            <tr>
+                                <td><code>{key}</code></td>
+                                <td><span class="badge bg-primary text-capitalize">{info.plan}</span></td>
+                                <td>{info.customer_email || 'N/A'}</td>
+                                <td>{info.created ? info.created.substring(0, 10) : 'N/A'}</td>
+                                <td>{info.expiry ? info.expiry.substring(0, 10) : 'N/A'}</td>
+                                <td>{info.used} / {info.max_files}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger" onclick={`revokeKey('${key}')`}>Revoke</button>
+                                </td>
+                            </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                ) : (
+                <div class="alert alert-warning m-0"><i class="fas fa-exclamation-triangle"></i> No active premium keys found in global cloud variables.</div>
+                )}
+            </div>
+        </div>
+
+        <!-- Pending Purchases Section -->
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="card-title mb-3 fw-bold text-secondary">
+                    <i class="fas fa-hourglass-half"></i> Pending Purchases ({pendingCount})
+                </h5>
+
+                {pendingCount > 0 ? (
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Email</th>
+                                <th>Plan</th>
+                                <th>Price</th>
+                                <th>Created</th>
+                                <th>Message</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {Object.entries(pendingPurchases).map(([req_id, info]: [string, any]) => (
+                            <tr>
+                                <td><code>{req_id}</code></td>
+                                <td>{info.email}</td>
+                                <td><span class="badge bg-warning text-dark text-capitalize">{info.plan}</span></td>
+                                <td>${info.price} USD</td>
+                                <td>{info.created ? info.created.substring(0, 10) : 'N/A'}</td>
+                                <td><small title={info.customer_message}>{info.customer_message ? (info.customer_message.substring(0, 50) + (info.customer_message.length > 50 ? '...' : '')) : 'None'}</small></td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-success" onclick={`processAction('mark-paid', '${req_id}')`}>Mark Paid</button>
+                                        <button class="btn btn-sm btn-outline-secondary" onclick={`processAction('cancel-pending', '${req_id}')`}>Cancel</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                ) : (
+                <div class="alert alert-info m-0"><i class="fas fa-check-circle"></i> No manual checkout tracking requests pending.</div>
+                )}
+            </div>
+        </div>
+        
+        <div class="mt-4 text-muted border-top pt-3">
+            <small><i class="fas fa-database"></i> Keys are stored globally in Cloudflare distributed memory. Modification functionality maps directly to serverless route callbacks.</small>
+        </div>
+    </div>
+</Layout>
+
+<!-- Client-side interaction script routing admin button clicks to your back-end API -->
+<script is:inline>
+    async function processAction(action, id) {
+        if (!confirm(`Are you sure you want to perform this action (${action}) on Request ID: ${id}?`)) return;
+        
+        const response = await fetch(`/api/admin-actions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action, id })
+        });
+        
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            alert('Failed to execute database administrative transaction command loop.');
+        }
+    }
+
+    async function revokeKey(key) {
+        if (!confirm(`Are you completely sure you want to revoke key: ${key}? This action cannot be undone.`)) return;
+        await processAction('revoke-key', key);
+    }
+</script>

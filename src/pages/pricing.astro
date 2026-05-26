@@ -1,0 +1,211 @@
+---
+// src/pages/pricing.astro
+import Layout from '../layouts/Layout.astro';
+
+// Securely read Paddle configuration constants from environment keys (or fallback to blanks during testing)
+const PADDLE_CLIENT_TOKEN = import.meta.env.PUBLIC_PADDLE_CLIENT_TOKEN || "test_token_placeholder";
+const PADDLE_MONTHLY_PRODUCT_ID = import.meta.env.PUBLIC_PADDLE_MONTHLY_ID || "pri_monthly_placeholder";
+const PADDLE_YEARLY_PRODUCT_ID = import.meta.env.PUBLIC_PADDLE_YEARLY_ID || "pri_yearly_placeholder";
+---
+<Layout 
+    title="PDF Tools Premium - Pricing | Join-PDFs" 
+    description="Unlock unlimited PDF merges, high-capacity batch processing, and privacy-first audio/video demuxing features with our affordable premium plans."
+>
+    <!-- Load custom Bootstrap styles for structural grid alignment -->
+    <link href="https://jsdelivr.net" rel="stylesheet" slot="extra-head" />
+
+    <!-- Inject page-specific inline styles directly into the Layout's head slot -->
+    <style slot="extra-head" is:global>
+        .pricing-container {
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+        .pricing-card {
+            border-radius: 12px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
+        }
+        .price {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary-color, #2563eb);
+        }
+        .period {
+            color: #64748b;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .features {
+            text-align: left;
+            margin: 30px 0;
+            padding-left: 0;
+            list-style: none;
+        }
+        .features li {
+            margin: 12px 0;
+            padding-left: 30px;
+            position: relative;
+            font-size: 15px;
+            color: #334155;
+        }
+        /* Custom styled vector check/cross bullets */
+        .features li:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 4px;
+            width: 18px;
+            height: 18px;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        .features li.check:before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310b981'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+        }
+        .features li.cross:before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ef4444'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3C/svg%3E");
+        }
+    </style>
+
+    <div class="container py-5">
+        <div class="pricing-container">
+            <h1 class="text-center mb-2 fw-bold text-dark">Upgrade to Premium</h1>
+            <p class="lead text-center text-muted mb-5">Unlock unlimited PDF merges, priority processing, and more.</p>
+
+            <div class="row g-4 justify-content-center">
+                <!-- Free Tier -->
+                <div class="col-md-4">
+                    <div class="pricing-card card shadow-sm h-100 p-3">
+                        <div class="card-body text-center d-flex flex-column justify-content-between">
+                            <div>
+                                <h3 class="card-title fw-bold text-secondary">Free</h3>
+                                <div class="price">$0</div>
+                                <div class="period">forever</div>
+                                <ul class="features">
+                                    <li class="check">5 merges per day</li>
+                                    <li class="check">Basic support</li>
+                                    <li class="check">No watermarks</li>
+                                    <li class="cross">No priority processing</li>
+                                    <li class="cross">No batch processing</li>
+                                </ul>
+                            </div>
+                            <button class="btn btn-secondary btn-lg w-100 disabled" style="cursor: not-allowed;">Current Plan</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Premium Monthly -->
+                <div class="col-md-4">
+                    <div class="pricing-card card shadow-sm h-100 p-3 border-primary" style="border-width: 2px;">
+                        <div class="card-body text-center d-flex flex-column justify-content-between">
+                            <div>
+                                <h3 class="card-title fw-bold text-primary">Premium Monthly</h3>
+                                <div class="price">$4.99</div>
+                                <div class="period">per month</div>
+                                <ul class="features">
+                                    <li class="check">Unlimited merges</li>
+                                    <li class="check">Priority processing</li>
+                                    <li class="check">Batch processing (50 files)</li>
+                                    <li class="check">Premium support</li>
+                                    <li class="check">All tools included</li>
+                                    <li class="check">Media Extractor engine</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <!-- Manual Email Checkout Method -->
+                                <a href="/manual-payment?type=premium_monthly" class="btn btn-outline-primary btn-lg w-100 fw-bold mb-2" style="font-size: 15px;">
+                                    📧 Get via Email Invoice
+                                </a>
+                                
+                                <!-- Integrated Paddle V2 Action Button -->
+                                <button class="btn btn-success btn-lg w-100 fw-bold paddle-button" data-product={PADDLE_MONTHLY_PRODUCT_ID} style="font-size: 15px;">
+                                    💳 Pay with Paddle ($4.99)
+                                </button>
+                                <p class="text-muted text-center mt-2 mb-0" style="font-size: 11px;"><i class="fas fa-history"></i> Manual payments credited within 24 hours</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Premium Yearly -->
+                <div class="col-md-4">
+                    <div class="pricing-card card shadow-sm h-100 p-3">
+                        <div class="card-body text-center d-flex flex-column justify-content-between">
+                            <div>
+                                <h3 class="card-title fw-bold text-dark">Premium Yearly</h3>
+                                <div class="price">$47.99</div>
+                                <div class="period">per year <span class="badge bg-success ms-1">Save 20%</span></div>
+                                <ul class="features">
+                                    <li class="check">Everything in Monthly</li>
+                                    <li class="check">12 months for the price of 10</li>
+                                    <li class="check">Priority email support channels</li>
+                                    <li class="check">Early access to new components</li>
+                                    <li class="check">No recurring monthly renewals</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <!-- Manual Email Checkout Method -->
+                                <a href="/manual-payment?type=premium_yearly" class="btn btn-outline-primary btn-lg w-100 fw-bold mb-2" style="font-size: 15px;">
+                                    📧 Get via Email Invoice
+                                </a>
+                                
+                                <!-- Integrated Paddle V2 Action Button -->
+                                <button class="btn btn-success btn-lg w-100 fw-bold paddle-button" data-product={PADDLE_YEARLY_PRODUCT_ID} style="font-size: 15px;">
+                                    💳 Pay with Paddle ($47.99)
+                                </button>
+                                <p class="text-muted text-center mt-2 mb-0" style="font-size: 11px;"><i class="fas fa-history"></i> Manual payments credited within 24 hours</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Merchant Compliance Notice Banner -->
+            <div class="alert alert-light border border-info text-center mt-5 p-3" style="border-radius: 8px;">
+                <p class="mb-0 text-secondary small"><i class="fas fa-info-circle text-info me-1"></i> <strong>Payment Gateway Notice:</strong> We are currently prioritizing manual invoices via email while completing our strict Paddle validation audit parameters. All premium keys delivered securely.</p>
+            </div>
+
+            <p class="text-muted text-center mt-3 small">All prices in USD. Cancel anytime. 30-day money-back satisfaction guarantee.</p>
+        </div>
+    </div>
+</Layout>
+
+<!-- Load official Paddle v2 production overlay scripts with is:inline -->
+<script is:inline src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+
+<!-- Initialize frontend checkout mappings with injected runtime environmental attributes -->
+<script is:inline define:vars={{ PADDLE_CLIENT_TOKEN }}>
+    if (typeof Paddle !== 'undefined' && PADDLE_CLIENT_TOKEN !== "test_token_placeholder") {
+        Paddle.Initialize({
+            token: PADDLE_CLIENT_TOKEN
+        });
+    }
+
+    document.querySelectorAll('.paddle-button').forEach(function(button) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const priceId = this.getAttribute('data-product');
+            
+            if (priceId.includes('placeholder')) {
+                alert('💳 Paddle sandbox mode: Real checkout frames activate once configuration environment keys are added to your .env file.');
+                return;
+            }
+
+            if (typeof Paddle !== 'undefined') {
+                Paddle.Checkout.open({
+                    items: [{ priceId: priceId, quantity: 1 }],
+                    settings: {
+                        displayMode: "overlay",
+                        theme: "light",
+                        successUrl: "https://join-pdfs.com"
+                    }
+                });
+            }
+        });
+    });
+</script>

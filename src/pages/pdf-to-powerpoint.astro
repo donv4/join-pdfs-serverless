@@ -1,0 +1,167 @@
+---
+// src/pages/pdf-to-powerpoint.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="PDF to PowerPoint Converter - Convert PDF to PPTX Presentation Online" 
+    description="Convert PDF files to PowerPoint presentations (.pptx) with each page as a slide. Free online conversion tool."
+>
+    <!-- Inject page-specific stylesheet from your public assets folder -->
+    <link rel="stylesheet" href="/css/pdf_to_powerpoint.css" slot="extra-head" />
+
+    <div class="upload-container">
+        <div class="upload-header">
+            <h1>PDF to PowerPoint Converter</h1>
+            <p class="subtitle">Convert PDF files to PowerPoint presentations (.pptx) with each page as a slide.</p>
+        </div>
+
+        <!-- Clickable Drag and Drop Area -->
+        <div class="upload-area" id="uploadArea" style="cursor: pointer;">
+            <i class="fas fa-file-powerpoint upload-icon"></i>
+            <h3>Drop your PDF file here</h3>
+            <p class="upload-hint">or click to browse your computer</p>
+            <input type="file" id="pdfFile" accept=".pdf" style="display: none;" />
+            <button class="browse-btn" id="browseBtn">
+                <i class="fas fa-folder-open"></i> Choose PDF File
+            </button>
+            <p class="file-info">Maximum file size: 50MB • Converts to .pptx format</p>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-primary" id="convertBtn">
+                <i class="fas fa-sync-alt"></i> Convert to PowerPoint
+            </button>
+        </div>
+
+        <!-- Progress Overlay (Initially Hidden) -->
+        <div class="progress-overlay" id="progressOverlay" style="display: none;">
+            <div class="progress-content">
+                <div class="progress-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <h3>Creating Presentation</h3>
+                <p id="progressText">Converting PDF pages to PowerPoint slides...</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Overlay (Initially Hidden) -->
+        <div class="success-overlay" id="successOverlay" style="display: none;">
+            <div class="success-content">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>Conversion Successful!</h3>
+                <p>Your PDF has been converted to a PowerPoint presentation.</p>
+                <div class="success-stats" id="successStats">
+                    <!-- Stats will be inserted here dynamically -->
+                </div>
+                <a href="#" class="btn-download" id="downloadBtn">
+                    <i class="fas fa-download"></i> Download PowerPoint
+                </a>
+                <button class="btn-secondary" id="convertAnotherBtn">
+                    <i class="fas fa-redo"></i> Convert Another PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-section">
+            <h3>Why Use Our PDF to PowerPoint Converter?</h3>
+            <div class="features-grid">
+                <div class="feature">
+                    <i class="fas fa-sliders-h"></i>
+                    <h4>Page to Slide</h4>
+                    <p>Each PDF page becomes a separate PowerPoint slide automatically.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-file-powerpoint"></i>
+                    <h4>PPTX Format</h4>
+                    <p>Creates standard PowerPoint files compatible with all versions.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-image"></i>
+                    <h4>High Quality</h4>
+                    <p>Preserves image quality and formatting from your original PDF layout.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-shield-alt"></i>
+                    <h4>Secure Processing</h4>
+                    <p>Your files process locally inside memory buffers and are never saved to a server.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works Flow Module -->
+        <div class="how-it-works" style="margin-top: 40px; text-align: center;">
+            <h3>How to Convert PDF to PowerPoint</h3>
+            <div class="steps" style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+                <div class="step" style="flex: 1; min-width: 200px; max-width: 280px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                    <div class="step-number" style="background: #4a6cf7; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-weight: bold;">1</div>
+                    <i class="fas fa-upload" style="font-size: 24px; color: #4a6cf7; margin-bottom: 10px;"></i>
+                    <h4 class="fw-bold">Upload PDF</h4>
+                    <p class="text-muted small">Select or drag & drop your PDF file with multiple pages.</p>
+                </div>
+                <div class="step" style="flex: 1; min-width: 200px; max-width: 280px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                    <div class="step-number" style="background: #4a6cf7; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-weight: bold;">2</div>
+                    <i class="fas fa-cogs" style="font-size: 24px; color: #4a6cf7; margin-bottom: 10px;"></i>
+                    <h4 class="fw-bold">Convert Pages</h4>
+                    <p class="text-muted small">Each PDF page is converted to a high-quality slide element.</p>
+                </div>
+                <div class="step" style="flex: 1; min-width: 200px; max-width: 280px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                    <div class="step-number" style="background: #4a6cf7; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-weight: bold;">3</div>
+                    <i class="fas fa-download" style="font-size: 24px; color: #4a6cf7; margin-bottom: 10px;"></i>
+                    <h4 class="fw-bold">Download PPTX</h4>
+                    <p class="text-muted small">Download your PowerPoint presentation ready for editing.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade Affiliate Marketing CTA Section -->
+    <div class="upgrade-cta" style="margin: 40px auto; max-width: 1000px; padding: 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white; text-align: left;">
+        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 280px;">
+                <h3 style="color: white; margin: 0 0 10px 0;">Need More Than Conversion?</h3>
+                <p style="margin: 0; opacity: 0.9;">Our free tool converts your presentation slides securely, but what if you need to:</p>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                    <li>Edit text directly in cell layers?</li>
+                    <li>Add corporate signatures or annotations?</li>
+                    <li>Convert scanned documents with deep OCR software?</li>
+                    <li>Process 100+ files at once?</li>
+                </ul>
+            </div>
+            <div style="text-align: center; min-width: 200px; margin-top: 10px;">
+                <a href="/pdf-comparison" style="display: inline-block; background: white; color: #667eea; padding: 12px 30px; border-radius: 30px; text-decoration: none; font-weight: bold; transition: all 0.3s;">
+                    Compare Premium Solutions →
+                </a>
+                <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.8;">Find the right tool for advanced needs</p>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<!-- Core browser-side functionality execution scripts from public folder -->
+<script is:inline src="/js/pdf_to_powerpoint.js"></script>
+
+<!-- Inline script handler mapping target clicks for browse selectors -->
+<script is:inline>
+document.addEventListener('DOMContentLoaded', () => {
+    const uploadArea = document.getElementById('uploadArea');
+    const pdfFile = document.getElementById('pdfFile');
+    const browseBtn = document.getElementById('browseBtn');
+
+    if (uploadArea && pdfFile) {
+        uploadArea.addEventListener('click', (e) => {
+            if (e.target !== browseBtn && !browseBtn.contains(e.target)) {
+                pdfFile.click();
+            }
+        });
+    }
+    if (browseBtn && pdfFile) {
+        browseBtn.addEventListener('click', () => pdfFile.click());
+    }
+});
+</script>

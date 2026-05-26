@@ -1,0 +1,136 @@
+---
+// src/pages/sitemap.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Sitemap - Join-PDFs" 
+    description="Complete layout matrix index mapping all tool pages, dashboard routes, legal policies, and search configurations across Join-PDFs."
+>
+    <!-- Inject shared privacy view structural style properties straight into the Layout's head slot -->
+    <style slot="extra-head" is:global>
+        .privacy-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: var(--bg-primary, white);
+            border-radius: var(--border-radius, 12px);
+            box-shadow: var(--shadow-lg, 0 10px 25px rgba(0,0,0,0.05));
+            color: var(--text-primary, #333);
+            border: 1px solid var(--border-color, #e2e8f0);
+        }
+        
+        .privacy-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color, #e2e8f0);
+        }
+        
+        .privacy-header h1 {
+            color: var(--primary-color, #2563eb);
+            margin-bottom: 10px;
+            font-size: var(--font-size-3xl, 28px);
+            font-weight: bold;
+        }
+        
+        .privacy-header p {
+            color: var(--text-secondary, #64748b);
+            font-size: var(--font-size-lg, 16px);
+        }
+        
+        .privacy-section {
+            margin: 35px 0;
+            text-align: left;
+        }
+        
+        .privacy-section h2 {
+            color: var(--text-primary, #1e293b);
+            border-left: 4px solid var(--primary-color, #2563eb);
+            padding-left: 15px;
+            margin-bottom: 15px;
+            font-size: var(--font-size-xl, 20px);
+            font-weight: bold;
+        }
+        
+        .privacy-section ul {
+            padding-left: 25px;
+            margin: 15px 0;
+            list-style: square;
+        }
+        
+        .privacy-section li {
+            color: var(--text-secondary, #475569);
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .privacy-container a {
+            color: var(--primary-color, #2563eb);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .privacy-container a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .privacy-container {
+                margin: 20px auto;
+                padding: 20px;
+            }
+        }
+    </style>
+
+    <div class="privacy-container">
+        <div class="privacy-header">
+            <h1><i class="fas fa-sitemap"></i> Sitemap</h1>
+            <p>Complete list of all pages on our website</p>
+        </div>
+
+        <!-- Section 1 -->
+        <div class="privacy-section">
+            <h2><i class="fas fa-home"></i> Main Pages</h2>
+            <ul>
+                <li><a href="/">Home Page</a> - Free core PDF tools dashboard loop hub.</li>
+                <li><a href="/about">About Us</a> - Learn about the transparency mission fueling Join-PDFs.</li>
+                <li><a href="/contact">Contact Support</a> - Reach out to our operational team desk coordinates.</li>
+                <li><a href="/premium-status">Check Premium Key</a> - Review your subscription validation variables.</li>
+            </ul>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="privacy-section">
+            <h2><i class="fas fa-tools"></i> Core Processing Utilities</h2>
+            <ul>
+                <li><a href="/">Merge PDFs</a> - Combine multiple PDF files into one clean document natively.</li>
+                <li><a href="/split">Split PDF</a> - Sift and segment a PDF into individual files securely.</li>
+                <li><a href="/compress">Compress PDF</a> - Reduce file weight directly inside local RAM memory.</li>
+                <li><a href="/batch-process">Batch Processing Suite</a> - Process up to 50 document archives concurrently.</li>
+                <li><a href="/audio-video-extractor">Media Extractor Engine</a> - Isolate audio track layers from massive files.</li>
+                <li><a href="/collage-maker">Photo Collage Grid Creator</a> - Assemble graphics using custom canvas bounds.</li>
+                <li><a href="/logo-maker">Vector Logo Canvas Workspace</a> - Build custom graphic vector nodes easily.</li>
+            </ul>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="privacy-section">
+            <h2><i class="fas fa-gavel"></i> Compliance & Legal Policy Hub</h2>
+            <ul>
+                <li><a href="/privacy">Privacy Protocol Statement</a> - Detailed look at how we protect your document safety.</li>
+                <li><a href="/terms">Terms of Service Agreement</a> - User guidelines regulating app interaction mechanics.</li>
+                <li><a href="/refund-policy">Refund & Cancellation Rules</a> - 14-day validation details for Premium purchasers.</li>
+                <li><a href="/feedback">Customer Feedback Loop</a> - Log Suggestions or check checkout requests.</li>
+            </ul>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="privacy-section">
+            <h2><i class="fas fa-external-link-alt"></i> Crawling and Bot Map Assets</h2>
+            <ul>
+                <li><a href="/sitemap.xml" target="_blank">XML Site Schema Map</a> - Search engine visibility data block.</li>
+                <li><a href="/robots.txt" target="_blank">Robots Guidelines File</a> - Automated crawler filtering directives.</li>
+            </ul>
+        </div>
+    </div>
+</Layout>

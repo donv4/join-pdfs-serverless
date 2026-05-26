@@ -1,0 +1,245 @@
+---
+// src/pages/feedback.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Feedback - Join-PDFs" 
+    description="Share your feedback about Join-PDFs. Help us improve our free PDF tools."
+>
+    <!-- Inject page-specific styles directly into the Layout's head slot -->
+    <style slot="extra-head" is:global>
+        .feedback-form {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            background: white;
+            color: #333;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .rating-stars {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .star {
+            font-size: 24px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .star:hover,
+        .star.active {
+            color: #f1c40f;
+        }
+        .feedback-type {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .feedback-type label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            color: #4b5563;
+        }
+    </style>
+
+    <div class="container feedback-form">
+        <h1 style="text-align: center; margin-bottom: 10px;"><i class="fas fa-comments text-primary"></i> Your Feedback Matters</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+            Help us improve Join-PDFs. Share your thoughts - it takes less than 2 minutes!
+        </p>
+
+        <!-- Dynamic Feedback Form Router -->
+        <form id="feedbackForm">
+            <div class="form-group">
+                <label class="form-label">How would you rate your experience?</label>
+                <div class="rating-stars" id="ratingStars">
+                    <span class="star" data-value="1">☆</span>
+                    <span class="star" data-value="2">☆</span>
+                    <span class="star" data-value="3">☆</span>
+                    <span class="star" data-value="4">☆</span>
+                    <span class="star" data-value="5">☆</span>
+                </div>
+                <input type="hidden" name="rating" id="ratingInput" value="0" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Type of Feedback</label>
+                <div class="feedback-type">
+                    <label>
+                        <input type="radio" name="feedback_type" value="suggestion" checked />
+                        Suggestion
+                    </label>
+                    <label>
+                        <input type="radio" name="feedback_type" value="bug" />
+                        Bug Report
+                    </label>
+                    <label>
+                        <input type="radio" name="feedback_type" value="praise" />
+                        Praise
+                    </label>
+                    <label>
+                        <input type="radio" name="feedback_type" value="other" />
+                        Other
+                    </label>
+                    <label>
+                        <input type="radio" name="feedback_type" value="premium_monthly" />
+                        💰 Premium Monthly Purchase ($4.99)
+                    </label>
+                    <label>
+                        <input type="radio" name="feedback_type" value="premium_yearly" />
+                        💰 Premium Yearly Purchase ($47.99)
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Your Feedback *</label>
+                <textarea 
+                    name="message" 
+                    class="form-control" 
+                    placeholder="What did you like? What can we improve? What features would you like to see?"
+                    required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email (optional - if you'd like a response)</label>
+                <input 
+                    type="email" 
+                    name="email" 
+                    class="form-control" 
+                    placeholder="your@email.com" />
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn-primary" style="width: 100%; padding: 14px; font-weight: bold; border-radius: 6px;">
+                    <i class="fas fa-paper-plane"></i> Submit Feedback
+                </button>
+            </div>
+
+            <p style="text-align: center; color: #777; font-size: 14px; margin-top: 15px;">
+                <i class="fas fa-lock"></i> Your feedback is private and will only be used to improve Join-PDFs
+            </p>
+        </form>
+
+        <!-- Hidden Submission Success Banner Container -->
+        <div id="successMessage" style="display: none; padding: 30px; background: #d4edda; color: #155724; border-radius: 8px; text-align: center; border: 1px solid #c3e6cb;">
+            <i class="fas fa-check-circle" style="font-size: 40px; color: #28a745; margin-bottom: 15px;"></i>
+            <h3>Thank You!</h3>
+            <p style="margin: 0; font-size: 16px;">Your feedback has been submitted successfully. We appreciate your support in improving Join-PDFs!</p>
+        </div>
+    </div>
+</Layout>
+
+<!-- Client side validation event handler scripts -->
+<script is:inline>
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const premiumType = urlParams.get('type');
+    
+    if (premiumType === 'premium_monthly' || premiumType === 'premium_yearly') {
+        const radioBtn = document.querySelector(`input[name="feedback_type"][value="${premiumType}"]`);
+        if (radioBtn) {
+            radioBtn.checked = true;
+            const emailField = document.querySelector('input[name="email"]');
+            if (emailField) { emailField.focus(); }
+        }
+    }
+
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('ratingInput');
+    
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const value = parseInt(this.getAttribute('data-value'));
+            ratingInput.value = value;
+            
+            stars.forEach((s, index) => {
+                if (index < value) {
+                    s.classList.add('active');
+                    s.textContent = '★';
+                } else {
+                    s.classList.remove('active');
+                    s.textContent = '☆';
+                }
+            });
+        });
+    });
+
+    const form = document.getElementById('feedbackForm');
+    const successMessage = document.getElementById('successMessage');
+    
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting Review...';
+        submitBtn.disabled = true;
+        
+        try {
+            // Package payload as standard JSON fields instead of server-side multipart formats
+            const payload = {
+                rating: ratingInput.value,
+                feedback_type: form.elements['feedback_type'].value,
+                message: form.elements['message'].value,
+                email: form.elements['email'].value
+            };
+
+            const response = await fetch('/api/submit-feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                form.style.display = 'none';
+                successMessage.style.display = 'block';
+                successMessage.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert('Error: ' + (result.error || 'Failed to submit feedback'));
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        } catch (error) {
+            alert('Network communication exception error. Please try again.');
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+});
+</script>

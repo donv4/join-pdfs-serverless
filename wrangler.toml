@@ -1,0 +1,8 @@
+name = "join-pdfs"
+compatibility_date = "2026-05-24"
+compatibility_flags = [ "global_fetch_strictly_public" ]
+pages_build_output_dir = "dist"
+
+[[kv_namespaces]]
+binding = "JOIN_PDFS_STORE"
+id = "6cbd55b4-efec-408a-bebd-0bd8d7a1660c"

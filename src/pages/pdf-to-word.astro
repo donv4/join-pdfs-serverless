@@ -1,0 +1,132 @@
+---
+// src/pages/pdf-to-word.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="PDF to Word Converter - Convert PDF to DOCX Online" 
+    description="Convert PDF files to editable Word documents (.docx) while preserving formatting. Free online conversion tool."
+>
+    <!-- Inject page-specific stylesheet from your public folder assets -->
+    <link rel="stylesheet" href="/css/pdf_to_word.css" slot="extra-head" />
+
+    <div class="tool-container">
+        <h1>PDF to Word Converter</h1>
+        <p class="subtitle">Convert PDF files to editable Word documents (.docx) while preserving original layouts.</p>
+        
+        <!-- Interactive Upload Drag & Drop Zone -->
+        <div class="upload-zone" id="uploadZone" style="cursor: pointer;">
+            <div class="upload-icon">
+                <i class="fas fa-file-word"></i>
+            </div>
+            <h3>Drop PDF here or click to upload</h3>
+            <p>Maximum file size: 50MB • Converts to .docx format</p>
+            <input type="file" id="fileInput" accept=".pdf" style="display: none;" />
+            <button class="btn-primary" id="browseBtn">
+                <i class="fas fa-upload"></i> Select PDF File
+            </button>
+        </div>
+        
+        <!-- Selected File Meta Dashboard Box (Initially Hidden) -->
+        <div class="file-info" id="fileInfo" style="display: none;">
+            <h4>Selected File:</h4>
+            <div class="file-details">
+                <span id="fileName">No file selected</span>
+                <span id="fileSize">0 MB</span>
+            </div>
+            <button class="btn-primary" id="convertBtn">
+                <i class="fas fa-sync-alt"></i> Convert to Word
+            </button>
+        </div>
+        
+        <!-- Processing State Screen Overlay (Initially Hidden) -->
+        <div class="progress-overlay" id="progressOverlay" style="display: none;">
+            <div class="spinner"></div>
+            <p id="progressText">Converting PDF to Word...</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+        
+        <!-- Conversion Success Screen Overlay Section (Initially Hidden) -->
+        <div class="result-section" id="resultSection" style="display: none;">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Conversion Successful!</h3>
+            <p>Your PDF has been converted to Word format successfully.</p>
+            <a href="#" class="btn-primary" id="downloadBtn">
+                <i class="fas fa-download"></i> Download Word Document
+            </a>
+            <button class="btn-secondary" id="newConvertBtn">
+                <i class="fas fa-redo"></i> Convert Another
+            </button>
+        </div>
+        
+        <!-- Core App Performance Features List Grid -->
+        <div class="features">
+            <h3>Why Use Our PDF to Word Converter?</h3>
+            <div class="feature-grid">
+                <div class="feature">
+                    <i class="fas fa-check-circle"></i>
+                    <h4>Preserves Formatting</h4>
+                    <p>Maintains original document structure, fonts, and inline assets</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-bolt"></i>
+                    <h4>Fast Conversion</h4>
+                    <p>Uses an optimized processing algorithm for instant results</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-shield-alt"></i>
+                    <h4>Secure & Private</h4>
+                    <p>Data runs entirely inside local browser memory channels securely</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade Affiliate Marketing CTA Section -->
+    <div class="upgrade-cta" style="margin: 40px auto; max-width: 1000px; padding: 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white; text-align: left;">
+        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 280px;">
+                <h3 style="color: white; margin: 0 0 10px 0;">Need More Than Conversion?</h3>
+                <p style="margin: 0; opacity: 0.9;">Our free tool converts your standard documents securely, but what if you need to:</p>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                    <li>Edit text directly in alternative layers?</li>
+                    <li>Add corporate signatures or annotations?</li>
+                    <li>Convert scanned layout documents with deep OCR engines?</li>
+                    <li>Process 100+ files at once?</li>
+                </ul>
+            </div>
+            <div style="text-align: center; min-width: 200px; margin-top: 10px;">
+                <a href="/pdf-comparison" style="display: inline-block; background: white; color: #667eea; padding: 12px 30px; border-radius: 30px; text-decoration: none; font-weight: bold; transition: all 0.3s;">
+                    Compare Premium Solutions →
+                </a>
+                <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.8;">Find the right tool for advanced needs</p>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<!-- Core browser-side functionality execution modules from public folder -->
+<script is:inline src="/js/pdf_to_word.js"></script>
+
+<!-- Astro bridge handler link catching dragzone click actions -->
+<script is:inline>
+document.addEventListener('DOMContentLoaded', () => {
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+    const browseBtn = document.getElementById('browseBtn');
+
+    if (uploadZone && fileInput) {
+        uploadZone.addEventListener('click', (e) => {
+            if (e.target !== browseBtn && !browseBtn.contains(e.target)) {
+                fileInput.click();
+            }
+        });
+    }
+    if (browseBtn && fileInput) {
+        browseBtn.addEventListener('click', () => fileInput.click());
+    }
+});
+</script>

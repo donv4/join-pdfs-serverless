@@ -1,0 +1,222 @@
+/* Collage Maker Styles */
+.collage-upload {
+    text-align: center;
+    padding: 40px;
+    border: 3px dashed #667eea;
+    border-radius: 15px;
+    background: #f8f9ff;
+    margin-bottom: 30px;
+    transition: all 0.3s;
+}
+
+.collage-upload:hover {
+    background: #edf2ff;
+    border-color: #4c51bf;
+}
+
+.collage-upload i {
+    font-size: 4rem;
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+.collage-upload h3 {
+    margin: 10px 0;
+    color: #333;
+}
+
+.collage-upload p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* Toolbar */
+.toolbar {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+}
+
+.toolbar h3 {
+    margin-bottom: 20px;
+    color: #444;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toolbar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+.tool-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tool-group label {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.layout-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.layout-btn {
+    padding: 8px 15px;
+    background: #e9ecef;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+}
+
+.layout-btn:hover {
+    background: #dee2e6;
+}
+
+.layout-btn.active {
+    background: #667eea;
+    color: white;
+    border-color: #5a67d8;
+}
+
+/* Canvas Preview */
+.preview-area {
+    position: relative;
+    background: #f8f9fa;
+    border-radius: 12px;
+    min-height: 500px;
+    margin-bottom: 25px;
+    overflow: hidden;
+    border: 2px solid #e9ecef;
+}
+
+#collageCanvas {
+    display: block;
+    max-width: 100%;
+    max-height: 500px;
+    margin: 0 auto;
+}
+
+.canvas-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+}
+
+.canvas-placeholder i {
+    font-size: 5rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+/* Thumbnails */
+.thumbnails-container {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.thumbnails-container h3 {
+    margin-bottom: 15px;
+    color: #444;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.thumbnails {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    min-height: 120px;
+}
+
+.thumbnail-item {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 3px solid #dee2e6;
+    cursor: move;
+    transition: all 0.2s;
+}
+
+.thumbnail-item:hover {
+    border-color: #667eea;
+    transform: translateY(-3px);
+}
+
+.thumbnail-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.thumbnail-remove {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(255, 0, 0, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .toolbar-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .preview-area {
+        min-height: 300px;
+    }
+    
+    .thumbnail-item {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+/* Small button for border controls */
+.btn-small {
+    padding: 5px 10px;
+    background: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.btn-small:hover {
+    background: #dee2e6;
+}

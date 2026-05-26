@@ -1,0 +1,326 @@
+---
+// src/pages/faq.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="FAQ | Join-PDFs - Frequently Asked Questions" 
+    description="Frequently asked questions about Join-PDFs. Learn about security, file limits, processing times, and how to use our PDF tools."
+>
+    <!-- Inject page-specific stylesheet from your public assets folder -->
+    <link rel="stylesheet" href="/css/faq.css" slot="extra-head" />
+
+    <!-- Hero Section -->
+    <section class="upload-section">
+        <div class="upload-header">
+            <h2><i class="fas fa-question-circle"></i> Frequently Asked Questions</h2>
+            <p class="subtitle">Find answers to common questions about Join-PDFs</p>
+        </div>
+
+        <!-- Info Boxes -->
+        <div class="upload-info">
+            <div class="info-box">
+                <i class="fas fa-clock"></i>
+                <p><strong>Quick Answers</strong></p>
+                <p class="small">Find solutions fast</p>
+            </div>
+            <div class="info-box">
+                <i class="fas fa-shield-alt"></i>
+                <p><strong>Security Info</strong></p>
+                <p class="small">Privacy & safety details</p>
+            </div>
+            <div class="info-box">
+                <i class="fas fa-tools"></i>
+                <p><strong>Tool Guides</strong></p>
+                <p class="small">How to use each tool</p>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-section">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="faqSearch" placeholder="Search for questions or keywords..." class="search-input" />
+                <button id="clearSearch" class="clear-search-btn" style="display: none;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <p class="search-hint">Type to filter questions or browse categories below</p>
+        </div>
+
+        <!-- FAQ Categories -->
+        <div class="faq-categories">
+            <div class="category-tabs">
+                <button class="category-tab active" data-category="all">
+                    <i class="fas fa-th"></i> All Questions
+                </button>
+                <button class="category-tab" data-category="general">
+                    <i class="fas fa-info-circle"></i> General
+                </button>
+                <button class="category-tab" data-category="security">
+                    <i class="fas fa-shield-alt"></i> Security
+                </button>
+                <button class="category-tab" data-category="tools">
+                    <i class="fas fa-tools"></i> Tools
+                </button>
+                <button class="category-tab" data-category="technical">
+                    <i class="fas fa-cog"></i> Technical
+                </button>
+            </div>
+        </div>
+
+        <!-- FAQ List -->
+        <div class="faq-container">
+            <!-- General Questions -->
+            <div class="faq-category" data-category="general">
+                <h3 class="category-title">
+                    <i class="fas fa-info-circle"></i> General Questions
+                </h3>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Is Join-PDFs really free?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! Our standard web processing tools are completely free with no hidden charges. We don't require registration, account creation, or watermarks on your processed files. We also offer a premium tier for automated batch processing operations.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Do I need to create an account?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No account is required for standard tools. You can use our primary tools immediately without signing up. We don't collect personal information or require any tracking registrations.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What browsers are supported?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Join-PDFs works on all modern web engines including Google Chrome, Mozilla Firefox, Apple Safari, Microsoft Edge, and Opera. For optimal hardware-accelerated processing speeds, keep your browser updated.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Is there a file size limit?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Because our upgraded framework processes files locally using your computer's own processing hardware, standard tools can now comfortably handle heavy documents up to 50MB+ smoothly! For massive premium operations up to 50 files simultaneously, check out our Batch tool section.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Questions -->
+            <div class="faq-category" data-category="security">
+                <h3 class="category-title">
+                    <i class="fas fa-shield-alt"></i> Security & Privacy
+                </h3>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How long are my files kept?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>They aren't stored at all! Thanks to our modern cloud layout, processing runs completely inside your browser's local memory. Your documents are never uploaded across the internet to a remote server, offering perfect, immediate security.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Are my files secure?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, your privacy is absolute:
+                            <ul>
+                                <li>All processing executes locally in memory on your own device</li>
+                                <li>Files are never transmitted to or cached on remote servers</li>
+                                <li>Zero third-party access to any document data arrays</li>
+                                <li>No cloud analytics monitoring your file content layers</li>
+                            </ul>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Who can access my files?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Only you! Since data manipulation occurs entirely on your device's web environment, no network admins, web servers, or third parties can ever inspect, access, or intercept your documents.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Do you store any personal information?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We only monitor minimal, completely anonymous usage trends to verify system stability. We do not track IP addresses, capture location profiles, or retain any identifying operational metrics.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tools Questions -->
+            <div class="faq-category" data-category="tools">
+                <h3 class="category-title">
+                    <i class="fas fa-tools"></i> Tool-Specific Questions
+                </h3>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What PDF tools are available?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We currently offer three main core utilities directly on our main interface:
+                            <ul>
+                                <li><strong>Merge PDF</strong> - Combine multiple PDFs into one document instantly</li>
+                                <li><strong>Split PDF</strong> - Split PDFs by page ranges or extract individual pages</li>
+                                <li><strong>Compress PDF</strong> - Reduce PDF file size while maintaining high readability</li>
+                            </ul>
+                        We also feature image optimization modules, an interactive canvas logo maker, and serverless media demuxing utilities.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How do I merge PDF files?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>To merge PDFs:
+                            <ol>
+                                <li>Go to the Merge PDF section from our homepage tool grid</li>
+                                <li>Upload or drop your PDF files</li>
+                                <li>Arrange them into your customized processing sequence</li>
+                                <li>Click "Merge PDFs"</li>
+                                <li>Download the merged file buffer instantly to your hard drive</li>
+                            </ol>
+                        You can drag and drop multiple files at once or browse files locally.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How do I split a PDF?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>To split a PDF:
+                            <ol>
+                                <li>Go to the Split PDF tool view</li>
+                                <li>Upload your PDF file buffer</li>
+                                <li>Choose your split configuration rules (custom page ranges or extraction slices)</li>
+                                <li>Select the distinct page thumbnails you want to extract</li>
+                                <li>Click "Split PDF"</li>
+                                <li>Download the processed results safely compiled as a ZIP file archive</li>
+                            </ol>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How does PDF compression work?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Our client-side compression script optimizes file size by:
+                            <ul>
+                                <li>Downsampling layout images safely based on your custom slider threshold</li>
+                                <li>Stripping redundant document tracking metadata and unused layer strings</li>
+                                <li>Compressing core page fonts and structural text layouts natively</li>
+                            </ul>
+                        This process maintains high document rendering resolution while dropping massive unnecessary payload weight.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Questions -->
+            <div class="faq-category" data-category="technical">
+                <h3 class="category-title">
+                    <i class="fas fa-cog"></i> Technical Questions
+                </h3>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What PDF versions are supported?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We support all modern PDF specifications from version 1.4 through 2.0. This handles nearly all files created by modern text processors, scanning equipment, and layout editors. If an archive fails to compile, re-saving it inside any generic viewer will usually reset its structural blocks for parsing.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Why is my file failing to process?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Common local pipeline bottlenecks:
+                            <ul>
+                                <li>The file buffer is completely corrupt or unreadable</li>
+                                <li>The target document is not a valid PDF layout</li>
+                                <li>Aggressive browser ad-blockers or security sandboxes are restricting script canvas allocations</li>
+                                <li>The file array structure requires premium access permissions</li>
+                            </ul>
+                        Try clearing cache parameters, testing a different web browser engine, or reviewing your document health integrity.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Why is file generation taking a long time?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Processing durations are directly dependent on your local system specs (CPU and available browser memory allocation thresholds). Because compilation happens right on your device, simpler documents will finish in milliseconds, while massive files with complex graphical assets can scale up processing time based on your computer's execution hardware speed capabilities.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can I process password-protected PDFs?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Currently, password-encrypted documents cannot be decoded without prior user decryption authorization. You will need to remove the authentication layer via security utilities before importing the file into our browser processing dashboard arrays.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Still Have Questions? CTA Footer Module Layout -->
+        <div class="contact-cta">
+            <div class="section-header">
+                <h3><i class="fas fa-envelope"></i> Still Have Questions?</h3>
+            </div>
+            <div class="cta-content" style="text-align: center; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; margin-top: 30px;">
+                <p class="text-muted">Can't find the answer you're looking for? Our team and assistant workflows are here to help!</p>
+                <div class="action-buttons d-flex gap-3 justify-content-center mt-4">
+                    <a href="/contact" class="btn btn-primary px-4 fw-bold">
+                        <i class="fas fa-envelope"></i> Contact Us
+                    </a>
+                    <a href="/about" class="btn btn-outline-secondary px-4 fw-bold">
+                        <i class="fas fa-info-circle"></i> Learn More About Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</Layout>
+
+<!-- Client side search indexing and filter execution scripts -->
+<script is:inline src="/js/faq.js"></script>

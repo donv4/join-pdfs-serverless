@@ -1,0 +1,125 @@
+---
+// src/pages/audio-video-extractor.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Audio & Video Extractor | Join-PDFs" 
+    description="Extract audio tracks from video files, capture frames, or convert formats directly in your web browser securely. No server uploads required."
+>
+    <!-- Inject template-specific assets if you have them -->
+    <link rel="stylesheet" href="/css/home.css" slot="extra-head" />
+
+    <div class="container py-5" style="max-width: 700px; margin: 40px auto; background: rgba(255,255,255,0.95); padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); text-align: center;">
+        <h2 class="text-primary mb-3"><i class="fas fa-file-video"></i> Audio/Video Extractor</h2>
+        <p class="text-muted mb-4">Extract audio, capture snapshots, or inspect media elements completely inside your browser safely.</p>
+        
+        <!-- Drag & Drop / File Select Area -->
+        <div id="mediaDropzone" style="border: 3px dashed #cbd5e1; border-radius: 8px; padding: 40px 20px; cursor: pointer; background: #f8fafc; transition: all 0.2s;">
+            <p><i class="fas fa-video" style="font-size: 40px; color: #94a3b8; margin-bottom: 10px;"></i></p>
+            <p>Drag & drop your video/audio file here, or <strong style="color: #2563eb;">click to browse</strong></p>
+            <input type="file" id="mediaInput" accept="video/*,audio/*" style="display: none;">
+        </div>
+
+        <!-- Media Player Preview Dashboard (Hidden by default) -->
+        <div id="mediaPreviewContainer" style="display: none; margin-top: 30px; text-align: left;">
+            <h5 class="fw-bold text-secondary mb-3"><i class="fas fa-photo-video"></i> File Preview & Meta</h5>
+            <div style="background: #f1f5f9; padding: 15px; border-radius: 6px; font-size: 14px; margin-bottom: 20px;">
+                <span style="display:block;"><strong>File Name:</strong> <span id="metaName">N/A</span></span>
+                <span style="display:block; margin-top: 5px;"><strong>File Size:</strong> <span id="metaSize">N/A</span></span>
+            </div>
+
+            <!-- Native Browser Video Canvas Player -->
+            <video id="previewVideo" controls style="width: 100%; border-radius: 6px; background: #000; margin-bottom: 20px; max-height: 350px;"></video>
+
+            <!-- Operational Processing Button Controls -->
+            <div class="d-flex flex-column gap-2">
+                <button id="extractAudioBtn" style="background: #2563eb; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                    <i class="fas fa-music"></i> Extract Audio Track (Extract Demux)
+                </button>
+                <button id="captureFrameBtn" style="background: #10b981; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                    <i class="fas fa-camera"></i> Capture Current Video Frame Snapshot
+                </button>
+            </div>
+        </div>
+
+        <!-- Hidden canvas for tracking video pixel snapshots -->
+        <canvas id="snapshotCanvas" style="display: none;"></canvas>
+    </div>
+</Layout>
+
+<script is:inline>
+    const mediaDropzone = document.getElementById('mediaDropzone');
+    const mediaInput = document.getElementById('mediaInput');
+    const mediaPreviewContainer = document.getElementById('mediaPreviewContainer');
+    const previewVideo = document.getElementById('previewVideo');
+    const extractAudioBtn = document.getElementById('extractAudioBtn');
+    const captureFrameBtn = document.getElementById('captureFrameBtn');
+    const snapshotCanvas = document.getElementById('snapshotCanvas');
+
+    let loadedFileBlob = null;
+
+    mediaDropzone.addEventListener('click', () => mediaInput.click());
+    mediaDropzone.addEventListener('dragover', (e) => { e.preventDefault(); mediaDropzone.style.borderColor = '#3b82f6'; });
+    mediaDropzone.addEventListener('dragleave', () => { mediaDropzone.style.borderColor = '#cbd5e1'; });
+    mediaDropzone.addEventListener('drop', (e) => { e.preventDefault(); mediaDropzone.style.borderColor = '#cbd5e1'; handleMediaUpload(e.dataTransfer.files[0]); });
+    mediaInput.addEventListener('change', (e) => handleMediaUpload(e.target.files[0]));
+
+    function handleMediaUpload(file) {
+        if (!file) return;
+        loadedFileBlob = file;
+
+        // Populate metadata trackers
+        document.getElementById('metaName').innerText = file.name;
+        document.getElementById('metaSize').innerText = (file.size / 1024 / 1024).toFixed(2) + " MB";
+
+        // Bind source stream straight to browser player container
+        const fileUrl = URL.createObjectURL(file);
+        previewVideo.src = fileUrl;
+        
+        mediaDropzone.style.display = 'none';
+        mediaPreviewContainer.style.display = 'block';
+    }
+
+    // 📸 ACTION 1: CAPTURE FRAME SNAPSHOT (100% Client-Side Web API)
+    captureFrameBtn.addEventListener('click', () => {
+        const ctx = snapshotCanvas.getContext('2d');
+        snapshotCanvas.width = previewVideo.videoWidth;
+        snapshotCanvas.height = previewVideo.videoHeight;
+        
+        // Draw the exact video viewport frame straight onto canvas pixels
+        ctx.drawImage(previewVideo, 0, 0, snapshotCanvas.width, snapshotCanvas.height);
+        
+        // Convert array buffer into a rapid download channel
+        const imageUrl = snapshotCanvas.toDataURL('image/jpeg');
+        const a = document.createElement('a');
+        a.href = imageUrl;
+        a.download = `frame-snapshot-${Math.floor(Date.now() / 1000)}.jpg`;
+        a.click();
+    });
+
+    // 🎵 ACTION 2: EXTRACT AUDIO TRACK VIA BROWSER DECODING CONTEXT
+    extractAudioBtn.addEventListener('click', async () => {
+        if (!loadedFileBlob) return;
+        extractAudioBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Initializing Extraction Logic...';
+        extractAudioBtn.disabled = true;
+
+        try {
+            // Read array buffers straight off user's memory channels
+            const arrayBuffer = await loadedFileBlob.arrayBuffer();
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Web Audio API decodes the audio track safely in-browser
+            const decodedData = await audioCtx.decodeAudioData(arrayBuffer);
+            
+            alert(`Audio Track successfully isolated! Found ${decodedData.numberOfChannels} channels running at ${decodedData.sampleRate}Hz.`);
+            // (Note: In the next phase, we can plug in ffmpeg.wasm to turn this decoded data buffer into a rapid downloadable MP3 file automatically!)
+            
+        } catch (error) {
+            alert('Could not decode audio channel payload elements inside local system layers.');
+            console.error(error);
+        } finally {
+            extractAudioBtn.innerHTML = '<i class="fas fa-music"></i> Extract Audio Track (Extract Demux)';
+            extractAudioBtn.disabled = false;
+        }
+    });
+</script>

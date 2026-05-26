@@ -1,0 +1,58 @@
+---
+// src/pages/chatbot.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="AI PDF Assistant - Join-PDFs" 
+    description="Chat with our AI assistant for help with PDF merging, splitting, compression, premium features, and troubleshooting."
+>
+    <!-- Inject your newly separated styles cleanly into your head container -->
+    <link rel="stylesheet" href="/css/chatbot.css" slot="extra-head" />
+
+    <div class="chat-page-container">
+        <div class="chat-page-header">
+            <h1><i class="fas fa-robot"></i> PDF AI Assistant</h1>
+            <p class="subtitle">Get instant help with PDF tools, premium features, and troubleshooting</p>
+        </div>
+        
+        <div class="chat-interface">
+            <div class="chat-header">
+                <h2><i class="fas fa-comments"></i> Chat with Assistant</h2>
+                <div class="chat-stats">
+                    <small style="color: white; opacity: 0.9;">19 Q&A Knowledge Base • Context-Aware • Privacy-First</small>
+                </div>
+            </div>
+            
+            <!-- Unique namespaces assigned below to completely freeze out the corner widget -->
+            <div class="chat-messages" id="pageChatMessages">
+                <div class="message bot">
+                    <div class="message-content">
+                        <strong>Hello! I'm your PDF Tools Assistant. 🤖</strong><br><br>
+                        I can help you with:<br>
+                        • PDF merging, splitting, compression, and conversion<br>
+                        • Premium features and pricing information<br>
+                        • Security and privacy questions<br>
+                        • Troubleshooting and technical support<br>
+                        • Logo maker and other tools<br><br>
+                        What would you like to know about?
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="pageChatInput" placeholder="Type your question here..." autocomplete="off">
+                <button class="send-button" id="pageSendButton">
+                    <i class="fas fa-paper-plane"></i> Send
+                </button>
+            </div>
+        </div>
+        
+        <div class="chat-info">
+            <p><i class="fas fa-shield-alt"></i> Privacy First: Questions may be logged anonymously to improve responses. No personal data stored.</p>
+            <p><i class="fas fa-brain"></i> Smart Assistant: I remember our conversation context for better follow-up responses.</p>
+        </div>
+    </div>
+</Layout>
+
+<!-- Link your clean separated page logic file at the base of the page -->
+<script is:inline src="/js/chatbot.js"></script>

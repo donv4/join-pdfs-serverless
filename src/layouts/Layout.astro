@@ -1,0 +1,278 @@
+---
+// src/layouts/Layout.astro
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Free online PDF tools to merge, compress, and split PDF files. No registration required. Secure processing." } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="impact-site-verification" content="13b31544-7a3a-4d75-aa32-2c671688d5e9">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:site_name" content="Join-PDFs">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content={title}>
+    <meta property="og:description" content={description}>
+    <meta property="og:image" content="https://join-pdfs.com">
+    <meta property="og:image:width" content="800">
+    <meta property="og:image:height" content="800">
+    <meta property="og:image:alt" content="Join-PDFs - Free PDF Tools">
+    <meta property="og:url" content="https://join-pdfs.com">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@JoinPDFs">
+    <meta name="twitter:creator" content="@JoinPDFs">
+    <meta name="twitter:title" content={title}>
+    <meta name="twitter:description" content={description}>
+    <meta name="twitter:image" content="https://join-pdfs.com">
+    
+    <!-- Pinterest -->
+    <meta name="p:domain_verify" content="66ffdf29f333a3c655595d7b93f79269"/>
+    <meta name="pinterest-rich-pin" content="true" />
+    
+    <!-- Dynamic Title & Description Injection Blocks -->
+    <title>{title}</title>
+    <meta name="description" content={description}>
+
+    <!-- Favicon Links Routed to Public Subfolders -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon/favicon-64x64.png">
+    <link rel="icon" type="image/png" sizes="128x128" href="/favicon/favicon-128x128.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/favicon.png" type="image/png">
+
+    <!-- Global Common Core Layout System Layout Style Sheets -->
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+
+    <!-- Font Awesome Injections -->
+    <link rel="stylesheet" href="https://cloudflare.com" />
+
+    <!-- Page Specific Header Stylesheet Slots -->
+    <slot name="extra-head" />
+    
+    <!-- Google Tag Analytics Module Tracker -->
+    <script is:inline async src="https://googletagmanager.com"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-C984E7L279');
+    </script>
+</head>
+<body>
+    <div class="container">
+    <!-- ========== PROFESSIONAL NAVIGATION ========== -->
+    <nav class="pro-navbar">
+        <div class="pro-nav-container">
+            <!-- Logo Link Back to Top Root -->
+            <a href="/" class="pro-nav-logo">
+                <i class="fas fa-file-pdf"></i>
+                <span>Join-PDFs</span>
+            </a>
+
+            <!-- Desktop Menu Layout Grid Blocks -->
+            <div class="pro-nav-menu">
+                <a href="/" class="pro-nav-link">
+                    <i class="fas fa-home"></i> Home
+                </a>
+            
+                <div class="pro-nav-dropdown">
+                    <a href="#" class="pro-nav-link">
+                        <i class="fas fa-tools"></i> PDF Tools ▾
+                    </a>
+                    <div class="pro-dropdown-menu">
+                        <a href="/merge"><i class="fas fa-object-group"></i> Merge PDFs</a>
+                        <a href="/split"><i class="fas fa-cut"></i> Split PDF</a>
+                        <a href="/compress"><i class="fas fa-compress-alt"></i> Compress PDF</a>
+                        <a href="/images-to-pdf"><i class="fas fa-file-image"></i> Images to PDF</a>
+                        <a href="/pdf-to-image"><i class="fas fa-file-image"></i> PDF to Image</a>
+                        <a href="/pdf-to-word"><i class="fas fa-file-word"></i> PDF to Word</a>
+                        <a href="/pdf-to-excel"><i class="fas fa-file-excel"></i> PDF to Excel</a>
+                        <a href="/pdf-to-powerpoint"><i class="fas fa-file-powerpoint"></i> PDF to PPT</a>
+                        <a href="/pdf-to-text"><i class="fas fa-file-alt"></i> PDF to Text</a>
+                        <a href="/image-editor"><i class="fas fa-edit"></i> Image Editor</a>
+                        <a href="/collage-maker"><i class="fas fa-th-large"></i> Photo Collage Maker</a>
+                        <a href="/logo-maker"><i class="fas fa-palette"></i> Logo Maker</a>
+                        <a href="/audio-video-extractor"><i class="fas fa-file-video"></i> Audio/Video Extractor</a>
+                   </div>
+                </div>
+
+                <!-- Premium Batch Operations Link -->
+                <a href="/batch-process" class="pro-nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 6px; padding: 6px 12px; margin: 0 3px;">
+                    <i class="fas fa-bolt"></i> Premium / Batch
+                </a>
+
+                <!-- AI Assistant Trigger Action Redirects -->
+                <a href="/chatbot" class="pro-nav-link" style="background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%); color: white; border-radius: 6px; padding: 6px 12px; margin: 0 3px;">
+                    <i class="fas fa-robot"></i> AI Assistant
+                </a>
+
+                <a href="/pdf-comparison" class="pro-nav-link">
+                    <i class="fas fa-chart-bar"></i> Software Compare
+                </a>
+
+                <a href="/blog" class="pro-nav-link">
+                    <i class="fas fa-blog"></i> Blog
+                </a>
+
+                <a href="/templates" class="pro-nav-link" style="background: #2ecc71; color: white; border-radius: 6px; padding: 6px 12px; margin: 0 3px;">
+                    <i class="fas fa-file-download"></i> Templates
+                </a>
+
+                <!-- Theme Dynamic Toggle Trigger Control Node -->
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            
+                <a href="/about" class="pro-nav-link">
+                    <i class="fas fa-info-circle"></i> About
+                </a>
+            </div>
+
+            <!-- Mobile Core Header Bar Action Slots -->
+            <div class="pro-mobile-nav">
+                <a href="/" class="pro-mobile-home" aria-label="Home">
+                    <i class="fas fa-home"></i>
+                </a>
+                <button class="pro-hamburger" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Hidden Drawer Menu Navigation Links Layer -->
+        <div class="pro-mobile-menu">
+            <a href="/"><i class="fas fa-home"></i> Home</a>
+            <div class="pro-mobile-dropdown">
+                <button class="pro-mobile-dropdown-btn">
+                    <i class="fas fa-tools"></i> PDF Tools <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="pro-mobile-dropdown-content">
+                    <a href="/merge"><i class="fas fa-object-group"></i> Merge PDFs</a>
+                    <a href="/split"><i class="fas fa-cut"></i> Split PDF</a>
+                    <a href="/compress"><i class="fas fa-compress-alt"></i> Compress PDF</a>
+                    <a href="/images-to-pdf"><i class="fas fa-file-image"></i> Images to PDF</a>
+                    <a href="/pdf-to-image"><i class="fas fa-file-image"></i> PDF to Image</a>
+                    <a href="/pdf-to-word"><i class="fas fa-file-word"></i> PDF to Word</a>
+                    <a href="/pdf-to-excel"><i class="fas fa-file-excel"></i> PDF to Excel</a>
+                    <a href="/pdf-to-powerpoint"><i class="fas fa-file-powerpoint"></i> PDF to PPT</a>
+                    <a href="/pdf-to-text"><i class="fas fa-file-alt"></i> PDF to Text</a>
+                    <a href="/image-editor"><i class="fas fa-edit"></i> Image Editor</a>
+                    <a href="/logo-maker"><i class="fas fa-palette"></i> Logo Maker</a>
+                    <a href="/audio-video-extractor"><i class="fas fa-file-video"></i> Audio/Video Extractor</a>
+                </div>
+            </div>
+            <a href="/pdf-comparison"><i class="fas fa-chart-bar"></i> Software Compare</a>
+            <a href="/blog"><i class="fas fa-blog"></i> Blog</a>
+            <a href="/templates"><i class="fas fa-file-download"></i> Templates</a>
+            <a href="/batch-process" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 6px; padding: 8px 12px; margin: 5px 0; display: block; text-align: center;">
+                <i class="fas fa-bolt"></i> Premium / Batch Processing
+            </a>
+            <a href="/about"><i class="fas fa-info-circle"></i> About</a>
+            
+            <!-- Mobile Navigation Drawer Footer Layout Trigger Nodes -->
+            <div style="text-align: center; padding: 15px; border-top: 1px solid var(--border-color); margin-top: 10px;">
+                <button class="theme-toggle" id="themeToggleMobile" style="margin: 0 auto;" aria-label="Toggle dark/light mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+    <!-- ========== END NAVIGATION ========== -->
+
+    <div class="ad-sidebar-layout">
+        <main class="main-content">
+            <!-- 📥 INDIVIDUAL VIEW INJECTION POINT SLOT NODE -->
+            <slot />
+        </main>
+    </div>
+
+    <!-- Universal Brand Compliance Site Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Join-PDFs. All rights reserved.</p>
+        <p class="footer-links">
+            <a href="/">Home</a> |
+            <a href="/about">About</a> |
+            <a href="/privacy">Privacy Policy</a> |
+            <a href="/terms">Terms of Service</a> |
+            <a href="/refund-policy">Refund Policy</a> |
+            <a href="/contact">Contact</a> |
+            <a href="/faq">FAQ</a> |
+            <a href="/sitemap">Sitemap</a> |
+            <a href="/feedback">Feedback</a>
+        </p>
+        <p class="footer-disclaimer">
+            <i class="fas fa-lock"></i> Your files are secure and automatically processed client-side locally
+        </p>
+        
+        <!-- Social Communities Media Hub Connections Row -->
+        <div style="text-align: center; margin: 30px 0 20px; padding: 20px 0; border-top: 1px solid #e0e0e0;">
+            <h4 style="margin-bottom: 15px; color: #333;">Follow Join-PDFs</h4>
+            <div class="footer-social-icons" style="display: flex; justify-content: center; gap: 20px; margin-bottom: 10px;">
+                <a href="https://twitter.com" target="_blank" aria-label="X (formerly Twitter)" style="color: #000000; text-decoration: none; font-size: 24px;"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn" style="color: #0077b5; text-decoration: none; font-size: 24px;"><i class="fab fa-linkedin"></i></a>
+                <a href="https://tiktok.com" target="_blank" aria-label="TikTok" style="color: #000000; text-decoration: none; font-size: 24px;"><i class="fab fa-tiktok"></i></a>
+                <a href="https://facebook.com" target="_blank" aria-label="Facebook" style="color: #1877f2; text-decoration: none; font-size: 24px;"><i class="fab fa-facebook"></i></a>
+            </div>
+            <p style="color: #666; font-size: 14px; margin-top: 10px;">Get PDF tips, updates, and productivity hacks</p>
+        </div>
+    </footer>
+    </div>
+
+    <!-- Primary Web Client Script Logic Blocks -->
+    <script is:inline src="/js/theme.js"></script>
+    <script is:inline>
+    // Mobile responsive menu toggle event handlers
+    document.addEventListener('DOMContentLoaded', function() {
+        const hamburger = document.querySelector('.pro-hamburger');
+        const mobileMenu = document.querySelector('.pro-mobile-menu');
+        const mobileDropdownBtns = document.querySelectorAll('.pro-mobile-dropdown-btn');
+
+        if (hamburger && mobileMenu) {
+            hamburger.addEventListener('click', function() {
+                this.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+            });
+        }
+
+        mobileDropdownBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const dropdown = this.nextElementSibling;
+                if (dropdown) {
+                    dropdown.classList.toggle('active');
+                    const chevron = this.querySelector('.fa-chevron-down');
+                    if (chevron) {
+                        chevron.style.transform = dropdown.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+                    }
+                }
+            });
+        });
+
+        document.addEventListener('click', function(event) {
+            if (mobileMenu && mobileMenu.classList.contains('active')) {
+                if (!event.target.closest('.pro-nav-container') && !event.target.closest('.pro-mobile-menu')) {
+                    if (hamburger) hamburger.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                }
+            }
+        });
+    });
+    </script>
+    
+    <!-- Client Side Real Time Chatbot Widget Array Links -->
+    <link rel="stylesheet" href="/css/chat_widget.css">
+    <script is:inline src="/js/chat_widget.js"></script>
+</body>
+</html>
+

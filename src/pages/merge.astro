@@ -1,0 +1,205 @@
+---
+// src/pages/merge.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Join-PDFs | Merge PDF Files - Combine PDFs Online" 
+    description="Combine multiple PDF files into one document. Merge PDFs easily online for free. No watermarks, no limits."
+>
+    <!-- Inject page-specific stylesheet from your public folder assets -->
+    <link rel="stylesheet" href="/css/merge.css" slot="extra-head" />
+
+    <!-- Header -->
+    <div class="page-header">
+        <h2><i class="fas fa-object-group"></i> Merge PDF Files</h2>
+        <p class="subtitle">Combine multiple PDFs into a single document</p>
+    </div>
+
+    <!-- Info Grid -->
+    <div class="info-grid">
+        <div class="info-box">
+            <i class="fas fa-layer-group"></i>
+            <p>Combine Files</p>
+            <p class="small">Merge up to 20 PDFs</p>
+        </div>
+        <div class="info-box">
+            <i class="fas fa-bolt"></i>
+            <p>Fast Merging</p>
+            <p class="small">Process in seconds</p>
+        </div>
+        <div class="info-box">
+            <i class="fas fa-shield-alt"></i>
+            <p>Secure</p>
+            <p class="small">Processed completely locally in browser</p>
+        </div>
+        <div class="info-box">
+            <i class="fas fa-sort"></i>
+            <p>Reorder Pages</p>
+            <p class="small">Drag & drop to rearrange</p>
+        </div>
+    </div>
+
+    <!-- Upload Zone -->
+    <div class="upload-zone" id="uploadZone">
+        <div class="upload-icon">
+            <i class="fas fa-file-upload"></i>
+        </div>
+        <h3>Drag & Drop Your PDFs Here</h3>
+        <p>Select multiple PDF files to merge into one document</p>
+        <input type="file" id="fileInput" accept=".pdf" multiple style="display: none;" />
+        <button class="btn-primary" id="browseBtn">
+            <i class="fas fa-folder-open"></i> Select PDF Files
+        </button>
+    </div>
+
+    <!-- File List -->
+    <div class="file-list-section" id="fileListSection" style="display: none;">
+        <div class="section-header">
+            <h3><i class="fas fa-list"></i> Selected Files</h3>
+            <div class="badge" id="fileCount">0 files</div>
+        </div>
+
+        <div class="file-list" id="fileList">
+            <!-- Files will be added here dynamically -->
+        </div>
+
+        <div class="merge-options">
+            <div class="option-toggle">
+                <div class="toggle-label">
+                    <i class="fas fa-sort-alpha-down"></i>
+                    <span>Sort by filename</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="autoSort" checked />
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Details -->
+    <div class="merge-stats" id="mergeStats" style="display: none;">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <i class="fas fa-file-pdf"></i>
+                    <h4>Total Files</h4>
+                </div>
+                <div class="stat-value" id="totalFiles">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <i class="fas fa-copy"></i>
+                    <h4>Total Pages</h4>
+                </div>
+                <div class="stat-value" id="totalPages">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <i class="fas fa-weight-hanging"></i>
+                    <h4>Total Size</h4>
+                </div>
+                <div class="stat-value" id="totalSize">0 KB</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <i class="fas fa-clock"></i>
+                    <h4>Estimated Time</h4>
+                </div>
+                <div class="stat-value" id="estimatedTime">0s</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button class="btn-primary" id="mergeBtn" disabled>
+            <i class="fas fa-object-group"></i> Merge PDFs
+        </button>
+        <button class="btn-secondary" id="clearBtn" disabled>
+            <i class="fas fa-trash"></i> Clear All
+        </button>
+    </div>
+
+    <!-- Progress Overlay -->
+    <div class="progress-overlay" id="progressOverlay">
+        <div class="progress-content">
+            <div class="spinner">
+                <div class="spinner-circle"></div>
+            </div>
+            <h3 id="progressText">Merging PDFs...</h3>
+            <p>Please wait while we combine your files</p>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text">
+                <span id="progressPercent">0%</span>
+                <span id="progressFile">Preparing...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Merge Complete!</h3>
+            <p>Your PDFs have been successfully merged</p>
+
+            <div class="success-stats">
+                <div class="stat-item">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Files Merged</span>
+                    <strong id="successFiles">0</strong>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-copy"></i>
+                    <span>Total Pages</span>
+                    <strong id="successPages">0</strong>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-bolt"></i>
+                    <span>Processing Time</span>
+                    <strong id="successTime">0s</strong>
+                </div>
+            </div>
+
+            <div class="success-buttons">
+                <a href="#" class="btn-download" id="downloadBtn">
+                    <i class="fas fa-download"></i> Download Merged PDF
+                </a>
+                <button class="btn-secondary" id="newMergeBtn">
+                    <i class="fas fa-redo"></i> Merge More PDFs
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade CTA Section -->
+    <div class="upgrade-cta" style="margin: 40px 0; padding: 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
+        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 280px;">
+                <h3 style="color: white; margin: 0 0 10px 0;">Need More Than Conversion?</h3>
+                <p style="margin: 0; opacity: 0.9;">Our free tool processes your files securely, but what if you need to:</p>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                    <li>Edit text directly in PDFs?</li>
+                    <li>Add e-signatures or annotations?</li>
+                    <li>Convert scanned documents with OCR?</li>
+                    <li>Process 100+ files at once?</li>
+                </ul>
+            </div>
+            <div style="text-align: center; min-width: 200px; margin-top: 10px;">
+                <a href="/pdf-comparison" style="display: inline-block; background: white; color: #667eea; padding: 12px 30px; border-radius: 30px; text-decoration: none; font-weight: bold; transition: all 0.3s;">
+                    Compare Premium Solutions →
+                </a>
+                <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.8;">Find the right tool for advanced needs</p>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<!-- Core browser-side functionality module scripts from public folder -->
+<script is:inline src="/js/merge.js"></script>

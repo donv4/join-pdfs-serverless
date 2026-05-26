@@ -1,0 +1,85 @@
+---
+// src/pages/image-editor.astro
+import Layout from '../layouts/Layout.astro';
+import 'bootstrap/dist/css/bootstrap.min.css';
+---
+<Layout 
+    title="Free Online Image Editor - Join-PDFs" 
+    description="Crop, rotate, and apply filters to your images instantly right inside your browser. Fast, private, and 100% serverless."
+>
+    <div class="container py-5" style="margin-top: 40px;">
+        <div class="text-center mb-5">
+            <h1 class="text-primary"><i class="fas fa-magic"></i> Advanced Image Editor</h1>
+            <p class="lead text-muted">Apply filters, adjustments, and rotate your photos completely inside local browser memory.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Controls Panel -->
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm" style="background: var(--bg-primary); border: 1px solid var(--border-color) !important; border-radius: 12px;">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4 text-secondary"><i class="fas fa-sliders-h"></i> Filters & Controls</h4>
+                        
+                        <div class="mb-4">
+                            <button class="btn btn-primary w-100" onclick="document.getElementById('editorUpload').click()">
+                                <i class="fas fa-upload"></i> Upload Image
+                            </button>
+                            <input type="file" id="editorUpload" accept="image/*" hidden />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary">Brightness</label>
+                            <input type="range" id="brightness" min="0" max="200" value="100" class="form-range">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary">Contrast</label>
+                            <input type="range" id="contrast" min="0" max="200" value="100" class="form-range">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary">Saturation</label>
+                            <input type="range" id="saturation" min="0" max="200" value="100" class="form-range">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary">Blur</label>
+                            <input type="range" id="blur" min="0" max="10" value="0" class="form-range">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-secondary d-block">Transform</label>
+                            <div class="btn-group w-100" role="group">
+                                <button type="button" class="btn btn-outline-secondary" id="rotateLeft"><i class="fas fa-undo"></i> -90°</button>
+                                <button type="button" class="btn btn-outline-secondary" id="rotateRight"><i class="fas fa-redo"></i> +90°</button>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-secondary">Save Format</label>
+                            <select id="formatSelect" class="form-select" style="background: var(--bg-secondary); color: var(--text-primary); border-color: var(--border-color);">
+                                <option value="png">PNG (Best Quality)</option>
+                                <option value="jpg">JPG (Compressed)</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-success btn-lg w-100" id="saveImageBtn" disabled>
+                            <i class="fas fa-download"></i> Save Image
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Viewport -->
+            <div class="col-md-8">
+                <div class="card border-0 shadow-sm p-3 text-center" style="background: #1a1a1a; min-height: 500px; display: flex; align-items: center; justify-content: center; border-radius: 12px; border: 1px solid var(--border-color) !important;">
+                    <canvas id="editorCanvas" style="max-width: 100%; max-height: 600px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border-radius: 4px;"></canvas>
+                    <div id="editorPlaceholder" class="text-muted py-5">
+                        <i class="fas fa-image fa-4x mb-3 text-secondary"></i>
+                        <p class="m-0">Upload a photograph file to begin adjustments workbench processing</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<!-- Clean script reference link separated cleanly from your layout code -->
+<script is:inline src="/js/image_editor.js"></script>

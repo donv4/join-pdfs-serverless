@@ -1,0 +1,207 @@
+---
+// src/pages/manual-payment.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Manual Payment - Join-PDFs" 
+    description="Purchase premium access via manual payment. Get your premium key within 24 hours."
+>
+    <!-- Load structural Bootstrap layout styles into Layout head slot -->
+    <link href="https://jsdelivr.net" rel="stylesheet" slot="extra-head" />
+
+    <!-- Inline Layout Custom Style Overrides -->
+    <style slot="extra-head" is:global>
+        .plan-card {
+            transition: all 0.3s;
+            border: 2px solid #dee2e6;
+            background-color: white;
+        }
+        .plan-card:hover {
+            transform: translateY(-5px);
+            border-color: #0d6efd;
+        }
+        .plan-card.border-primary {
+            border-color: #0d6efd !important;
+            background-color: rgba(13, 110, 253, 0.05) !important;
+        }
+        .price {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--primary-color, #0d6efd);
+            margin: 10px 0;
+        }
+    </style>
+
+    <div class="container" style="max-width: 600px; margin: 40px auto;">
+        <h1 class="text-center mb-4"><i class="fas fa-envelope text-primary"></i> Manual Premium Purchase</h1>
+        
+        <div class="card shadow-lg border-0" style="border-radius: 12px; background: rgba(255, 255, 255, 0.95);">
+            <div class="card-body p-4">
+                <p class="text-center text-muted mb-4">
+                    Select your plan and provide your email. We'll send PayPal & bank payment instructions within minutes.
+                    Premium key delivered within 24 hours after payment confirmation.
+                </p>            
+                
+                <form id="manualPaymentForm">
+                    <!-- Plan Selection Grid Array -->
+                    <div class="form-group mb-4">
+                        <label class="form-label fw-bold text-secondary">Select Plan *</label>
+                        <div class="row">
+                            <!-- Monthly Card -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card plan-card h-100" id="card_premium_monthly" style="cursor: pointer;">
+                                    <div class="card-body text-center d-flex flex-column justify-content-center p-3">
+                                        <h5 class="fw-bold text-dark">Monthly Premium</h5>
+                                        <div class="price">$4.99</div>
+                                        <small class="text-muted">per month</small>
+                                        <div class="form-check justify-content-center mt-3 d-flex align-items-center gap-1">
+                                            <input class="form-check-input" type="radio" name="feedback_type" id="plan_monthly" value="premium_monthly" checked />
+                                            <label class="form-check-label fw-semibold" for="plan_monthly">Select</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Yearly Card -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card plan-card h-100" id="card_premium_yearly" style="cursor: pointer;">
+                                    <div class="card-body text-center d-flex flex-column justify-content-center p-3">
+                                        <h5 class="fw-bold text-dark">Yearly Premium</h5>
+                                        <div class="price">$47.99</div>
+                                        <small class="text-muted">per year</small>
+                                        <div class="badge bg-success mt-1 mb-2 align-self-center px-3 py-2">Save 20%</div>
+                                        <div class="form-check justify-content-center d-flex align-items-center gap-1">
+                                            <input class="form-check-input" type="radio" name="feedback_type" id="plan_yearly" value="premium_yearly" />
+                                            <label class="form-check-label fw-semibold" for="plan_yearly">Select</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Email Input Field -->
+                    <div class="form-group mb-4">
+                        <label class="form-label fw-bold text-secondary">Email Address *</label>
+                        <input type="email" class="form-control form-control-lg" name="email" placeholder="your@email.com" required style="font-size: 16px;" />
+                        <small class="form-text text-muted mt-1 d-block"><i class="fas fa-info-circle"></i> We'll send payment instructions here</small>
+                    </div>
+                    
+                    <!-- Optional Message Field -->
+                    <div class="form-group mb-4">
+                        <label class="form-label fw-bold text-secondary">Optional Message</label>
+                        <textarea class="form-control" name="message" rows="3" placeholder="Any special requests or questions..." style="font-size: 15px;"></textarea>
+                    </div>
+                    
+                    <!-- Hidden baseline data mapping required by database pipeline schema -->
+                    <input type="hidden" name="rating" id="ratingInput" value="5" />
+                    
+                    <!-- Submit Execution Node Trigger Button -->
+                    <div class="d-grid mt-2">
+                        <button type="submit" class="btn btn-primary btn-lg fw-bold py-3" style="box-shadow: 0 4px 12px rgba(13,110,253,0.15);">
+                            📧 Get Payment Instructions
+                        </button>
+                    </div>
+                    
+                    <p class="text-center text-muted mt-3 small mb-0">
+                        You'll receive payment instructions via email within minutes.<br />
+                        After payment confirmation, your premium key will be emailed within 24 hours.
+                    </p>
+                </form>
+                
+                <!-- Submission Success Popup Container -->
+                <div id="successMessage" style="display: none;">
+                    <div class="alert alert-success text-center border-0 shadow-sm p-4 m-0">
+                        <i class="fas fa-check-circle text-success mb-3" style="font-size: 40px;"></i>
+                        <h4 class="fw-bold">✅ Request Submitted!</h4>
+                        <p class="text-muted mb-2">Payment instructions have been generated and dispatched to your email address.</p>
+                        <p class="mb-0 fw-semibold text-secondary small">Please verify your inbox (and spam folder) within the next few minutes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<!-- Client side routing script managing dynamic highlight triggers and endpoints -->
+<script is:inline>
+function selectPlan(planType) {
+    document.querySelectorAll('.plan-card').forEach(card => {
+        card.classList.remove('border-primary');
+    });
+    
+    const targetCard = document.getElementById(`card_${planType}`);
+    if (targetCard) {
+        targetCard.classList.add('border-primary');
+    }
+    
+    const radioBtn = document.querySelector(`input[value="${planType}"]`);
+    if (radioBtn) {
+        radioBtn.checked = true;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Bind click listeners directly to layout elements to maintain Astro isolation compliance
+    const cardMonthly = document.getElementById('card_premium_monthly');
+    const cardYearly = document.getElementById('card_premium_yearly');
+    
+    if (cardMonthly) cardMonthly.addEventListener('click', () => selectPlan('premium_monthly'));
+    if (cardYearly) cardYearly.addEventListener('click', () => selectPlan('premium_yearly'));
+
+    // Autofill mapping evaluations matching URL search query variables
+    const urlParams = new URLSearchParams(window.location.search);
+    const planType = urlParams.get('type');
+    if (planType === 'premium_monthly' || planType === 'premium_yearly') {
+        selectPlan(planType);
+    } else {
+        // Fallback checks the monthly selection default style configuration state
+        selectPlan('premium_monthly');
+    }
+    
+    const form = document.getElementById('manualPaymentForm');
+    const successMessage = document.getElementById('successMessage');
+    
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Request...';
+            submitBtn.disabled = true;
+            
+            try {
+                // Package fields using clean backend JSON structural contracts
+                const payload = {
+                    rating: document.getElementById('ratingInput').value,
+                    feedback_type: form.elements['feedback_type'].value,
+                    message: form.elements['message'].value,
+                    email: form.elements['email'].value
+                };
+
+                const response = await fetch('/api/submit-feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    form.style.display = 'none';
+                    successMessage.style.display = 'block';
+                    successMessage.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('Error: ' + (result.error || 'Failed to submit billing request.'));
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                alert('Network operational timeout exception error. Please try again.');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+});
+</script>

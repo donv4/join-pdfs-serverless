@@ -1,0 +1,102 @@
+---
+// src/pages/collage-maker.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Free Photo Collage Maker - Join-PDFs" 
+    description="Create beautiful photo collages online. Upload, arrange, customize, and download as a single image. No registration required."
+>
+    <!-- Inject page-specific stylesheet from your public assets -->
+    <link rel="stylesheet" href="/css/collage_maker.css" slot="extra-head" />
+
+    <div class="main-content">
+        <h1>Photo Collage Maker</h1>
+        <p class="subtitle">Upload multiple photos, arrange them beautifully, download as one image.</p>
+
+        <!-- Upload Zone -->
+        <div class="upload-zone collage-upload" id="uploadZone">
+            <i class="fas fa-images"></i>
+            <h3>Drop photos here or click to select</h3>
+            <p>Supports JPG, PNG, WebP, GIF (Max 10MB each)</p>
+            <input type="file" id="imageInput" accept="image/*" multiple hidden>
+            <button class="btn-primary" id="addPhotosBtn">
+                <i class="fas fa-plus"></i> Add Photos
+            </button>
+        </div>
+
+        <!-- Layout & Editing Area -->
+        <div class="collage-container">
+            <div class="toolbar">
+                <h3><i class="fas fa-sliders-h"></i> Layout & Style</h3>
+                <div class="toolbar-grid">
+                    <!-- Layout Templates -->
+                    <div class="tool-group">
+                        <label>Layout:</label>
+                        <div class="layout-options">
+                            <button class="layout-btn active" data-cols="2" data-rows="2">2×2</button>
+                            <button class="layout-btn" data-cols="3" data-rows="2">3×2</button>
+                            <button class="layout-btn" data-cols="1" data-rows="3">1×3</button>
+                            <button class="layout-btn" data-cols="4" data-rows="3">4×3</button>
+                        </div>
+                    </div>
+
+                    <!-- Spacing & Background -->
+                    <div class="tool-group">
+                        <label>Spacing:</label>
+                        <input type="range" id="spacingSlider" min="0" max="50" value="10">
+                        <label>Background:</label>
+                        <input type="color" id="bgColor" value="#ffffff">
+                    </div>
+                    
+                    <!-- Border Controls -->
+                    <div class="tool-group">
+                        <label>Border:</label>
+                        <input type="range" id="borderSlider" min="0" max="20" value="0">
+                        <input type="color" id="borderColor" value="#000000">
+                        <button class="btn-small" id="applyBorderBtn">Apply to All</button>
+                    </div>
+
+                    <!-- Text Overlay -->
+                    <div class="tool-group">
+                        <label>Text:</label>
+                        <input type="text" id="textInput" placeholder="Add text here">
+                        <input type="color" id="textColor" value="#000000">
+                        <input type="range" id="textSize" min="10" max="100" value="30">
+                        <button class="btn-small" id="addTextBtn">Add Text</button>
+                    </div>
+
+                    <!-- Download -->
+                    <div class="tool-group">
+                        <label>Format:</label>
+                        <select id="formatSelect">
+                            <option value="png">PNG (Best quality)</option>
+                            <option value="jpeg">JPG (Smaller file)</option>
+                            <option value="webp">WebP (Modern)</option>
+                        </select>
+                        <button class="btn-success" id="downloadBtn">
+                            <i class="fas fa-download"></i> Download Collage
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Canvas Preview -->
+            <div class="preview-area">
+                <canvas id="collageCanvas"></canvas>
+                <div class="canvas-placeholder" id="canvasPlaceholder">
+                    <i class="fas fa-image"></i>
+                    <p>Your collage will appear here</p>
+                </div>
+            </div>
+
+            <!-- Image Thumbnails -->
+            <div class="thumbnails-container" id="thumbnailsContainer">
+                <h3><i class="fas fa-th"></i> Your Photos</h3>
+                <div class="thumbnails" id="thumbnails"></div>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<script is:inline src="/js/collage_maker.js"></script>
+

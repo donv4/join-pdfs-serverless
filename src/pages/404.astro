@@ -1,0 +1,71 @@
+---
+// Cloudflare & Astro custom 404 handler
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found - Join-PDFs</title>
+    <style is:global>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .error-container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+        }
+        h1 {
+            color: #e74c3c;
+            font-size: 4rem;
+            margin: 0;
+        }
+        h2 {
+            color: #2c3e50;
+            margin: 20px 0;
+        }
+        p {
+            color: #7f8c8d;
+            margin: 20px 0;
+        }
+        .btn {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <h1>404</h1>
+        <h2>Page Not Found</h2>
+        <p>The page you're looking for doesn't exist or has been moved.</p>
+        <div>
+            <!-- Clean routing endpoints replacing old Flask tags -->
+            <a href="/" class="btn">Go to Merge PDF</a>
+            <a href="/compress" class="btn">Go to Compress PDF</a>
+        </div>
+    </div>
+</body>
+</html>

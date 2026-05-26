@@ -1,0 +1,258 @@
+---
+// src/pages/pdf-comparison.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Best PDF Software 2026: Adobe vs PDFelement vs Free Tools" 
+    description="Compare Adobe Acrobat, PDFelement, and free alternatives. Find the best PDF editor for your needs and budget."
+>
+    <!-- Inject page-specific inline styles directly into Layout's head slot -->
+    <style slot="extra-head" is:global>
+        .comparison-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 30px;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .comparison-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .comparison-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: var(--font-size-4xl);
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+        
+        .comparison-table th {
+            background: var(--bg-secondary);
+            padding: 20px;
+            text-align: center;
+            font-size: var(--font-size-xl);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .comparison-table td {
+            padding: 15px 20px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        
+        .feature-row {
+            background: var(--bg-secondary);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+        }
+        
+        .winner {
+            background: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .good {
+            background: rgba(52, 152, 219, 0.1);
+        }
+        
+        .price-tag {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+        }
+        
+        .price-note {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+        
+        .recommendation-box {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius-sm);
+            padding: 25px;
+            margin: 30px 0;
+            border-left: 4px solid var(--primary-color);
+            text-align: left;
+        }
+        
+        .recommendation-box h3 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .btn-large {
+            padding: 15px 30px;
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            text-decoration: none;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-container {
+                padding: 20px;
+                margin: 20px auto;
+            }
+            
+            .comparison-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+    <div class="comparison-container">
+        <div class="comparison-header">
+            <h1><i class="fas fa-chart-bar"></i> PDF Software Comparison 2026</h1>
+            <p class="text-muted">Find the perfect PDF editor for your needs and budget</p>
+        </div>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Adobe Acrobat Pro</th>
+                    <th>Wondershare PDFelement</th>
+                    <th>Free Tools (Like Ours)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="feature-row">
+                    <td>Price</td>
+                    <td class="winner">
+                        <div class="price-tag">$14.99/mo</div>
+                        <div class="price-note">Subscription</div>
+                    </td>
+                    <td class="good">
+                        <div class="price-tag">$79 one-time</div>
+                        <div class="price-note">Lifetime purchase</div>
+                    </td>
+                    <td>
+                        <div class="price-tag">Free</div>
+                        <div class="price-note">No cost</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>PDF Editing</td>
+                    <td>⭐⭐⭐⭐⭐</td>
+                    <td>⭐⭐⭐⭐</td>
+                    <td>⭐⭐ (Basic)</td>
+                </tr>
+                <tr>
+                    <td>OCR Technology</td>
+                    <td>✅ Yes</td>
+                    <td>✅ Yes</td>
+                    <td>❌ No</td>
+                </tr>
+                <tr>
+                    <td>Batch Processing</td>
+                    <td>✅ Yes</td>
+                    <td>✅ Yes</td>
+                    <td>❌ Limited (Premium)</td>
+                </tr>
+                <tr>
+                    <td>E-Signatures</td>
+                    <td>✅ Yes</td>
+                    <td>✅ Yes</td>
+                    <td>❌ No</td>
+                </tr>
+                <tr>
+                    <td>Learning Curve</td>
+                    <td>Steep</td>
+                    <td>Moderate</td>
+                    <td>Easy</td>
+                </tr>
+                <tr>
+                    <td>Best For</td>
+                    <td>Professionals, businesses</td>
+                    <td>Small businesses, individuals</td>
+                    <td>Students, basic needs</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="recommendation-box">
+            <h3><i class="fas fa-lightbulb"></i> Our Recommendation</h3>
+            <p><strong>For most users:</strong> Start with our free tools for basic needs. If you need deeper editing capabilities, Wondershare PDFelement offers the absolute best value. Adobe is for enterprises who need edge-case corporate features.</p>
+            <p><strong>Quick guide:</strong> Need basic merge/split/compress? Use our homepage toolkit layout. Need to modify layout text or fill native fields? Consider a legimate alternative partner like PDFelement.</p>
+        </div>
+
+        <div class="cta-buttons">
+            <!-- Affiliate triggers hooked to browser alerts until approval configurations are mapped -->
+            <a href="#" class="btn-primary btn-large" id="adobe-link">
+                <i class="fab fa-adobe"></i> Try Adobe Acrobat
+            </a>
+            <a href="#" class="btn-secondary btn-large" id="pdfelement-link">
+                <i class="fas fa-bolt"></i> Get PDFelement
+            </a>
+            <a href="/" class="btn-primary btn-large" style="background: var(--success-color, #2ecc71);">
+                <i class="fas fa-tools"></i> Use Our Free Tools
+            </a>
+        </div>
+
+        <div class="recommendation-box">
+            <h3><i class="fas fa-sync-alt"></i> Upgrade Path</h3>
+            <p>Many of our users follow this exact cost-saving sequence:</p>
+            <ol style="margin-left: 20px; margin-top: 10px; line-height: 1.6;">
+                <li>Start with our <strong>free browser tools</strong> for standard compilation layouts.</li>
+                <li>Realize they require advanced local features (full block replacements, deep OCR conversions).</li>
+                <li>Migrate to **Wondershare PDFelement** to dodge Adobe's subscription model.</li>
+                <li>Only opt for **Adobe** if corporate infrastructure forcing guidelines mandate it.</li>
+            </ol>
+            <p style="margin-top: 15px;">This structure insulates your budget while scaling utility perfectly.</p>
+        </div>
+    </div>
+</Layout>
+
+<!-- Client side interaction code tracking placeholder link events safely -->
+<script is:inline>
+document.addEventListener('DOMContentLoaded', function() {
+    const adobeLink = document.getElementById('adobe-link');
+    if (adobeLink) {
+        adobeLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Adobe affiliate link validation coming soon! Check back on your profile once approval metrics are synced.');
+        });
+    }
+    
+    const pdfelementLink = document.getElementById('pdfelement-link');
+    if (pdfelementLink) {
+        pdfelementLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Wondershare PDFelement affiliate channel linking code activates once portal parameters are unlocked.');
+        });
+    }
+});
+</script>

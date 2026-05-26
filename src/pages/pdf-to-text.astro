@@ -1,0 +1,223 @@
+---
+// src/pages/pdf-to-text.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Join-PDFs | PDF to Text - Extract Text from PDF Online" 
+    description="Extract text from PDF files with accurate formatting. Convert PDF to TXT online for free. No registration required."
+>
+    <!-- Inject page-specific stylesheet from your public assets folder -->
+    <link rel="stylesheet" href="/css/pdf_to_text.css" slot="extra-head" />
+
+    <!-- Header -->
+    <div class="upload-header">
+        <h2><i class="fas fa-file-alt"></i> PDF to Text Converter</h2>
+        <p class="subtitle">Extract text from PDF files with accurate formatting</p>
+    </div>
+
+    <!-- Info Boxes -->
+    <div class="upload-info">
+        <div class="info-box">
+            <i class="fas fa-file-pdf"></i>
+            <p>PDF Input</p>
+            <p class="small">Upload any PDF file</p>
+        </div>
+        <div class="info-box">
+            <i class="fas fa-file-alt"></i>
+            <p>Text Output</p>
+            <p class="small">Get clean .txt file</p>
+        </div>
+        <div class="info-box">
+            <i class="fas fa-bolt"></i>
+            <p>Fast Extraction</p>
+            <p class="small">Process in seconds</p>
+        </div>
+        <div class="info-box">
+            <i class="fas fa-shield-alt"></i>
+            <p>Secure</p>
+            <p class="small">Processed completely locally in browser</p>
+        </div>
+    </div>
+
+    <!-- Upload Area -->
+    <div class="upload-area" id="uploadZone">
+        <div class="upload-icon">
+            <i class="fas fa-file-upload"></i>
+        </div>
+        <h3>Drag & Drop Your PDF Here</h3>
+        <p class="upload-hint">Maximum file size: 50MB • Single file only</p>
+        <input type="file" id="fileInput" accept=".pdf" style="display: none;" />
+        <button class="browse-btn" id="browseBtn">
+            <i class="fas fa-folder-open"></i> Select PDF File
+        </button>
+    </div>
+
+    <!-- File Info Section -->
+    <div class="file-list-section" id="fileInfoSection" style="display: none;">
+        <div class="section-header">
+            <h3><i class="fas fa-file-pdf"></i> Selected File</h3>
+            <div class="badge" id="fileInfoBadge">1 file</div>
+        </div>
+
+        <div class="file-list" id="fileList">
+            <!-- Single file will be added here dynamically -->
+        </div>
+
+        <!-- Extraction Options -->
+        <div class="merge-options">
+            <div class="option-toggle">
+                <div class="toggle-label">
+                    <i class="fas fa-text-width"></i>
+                    <span>Preserve formatting</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="preserveFormatting" checked />
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="option-toggle">
+                <div class="toggle-label">
+                    <i class="fas fa-sort-numeric-down"></i>
+                    <span>Add page numbers</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="addPageNumbers" checked />
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Details -->
+    <div class="merge-stats" id="extractStats" style="display: none;">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <i class="fas fa-file-pdf"></i>
+                    <h4>PDF File</h4>
+                </div>
+                <div class="stat-value" id="fileNameDisplay">---</div>
+                <div class="stat-label" id="fileSizeDisplay">---</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <i class="fas fa-copy"></i>
+                    <h4>Pages</h4>
+                </div>
+                <div class="stat-value" id="pageCount">0</div>
+                <div class="stat-label">Total pages</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <i class="fas fa-font"></i>
+                    <h4>Text Length</h4>
+                </div>
+                <div class="stat-value" id="textLength">0</div>
+                <div class="stat-label">Characters</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons" id="actionButtons" style="display: none;">
+        <button class="btn-primary" id="extractBtn">
+            <i class="fas fa-file-alt"></i> Extract Text
+        </button>
+        <button class="btn-secondary" id="clearBtn">
+            <i class="fas fa-times"></i> Clear File
+        </button>
+    </div>
+
+    <!-- Progress Overlay -->
+    <div class="progress-overlay" id="progressOverlay" style="display: none;">
+        <div class="progress-content">
+            <div class="spinner"></div>
+            <h3>Extracting Text from PDF...</h3>
+            <p id="progressText">Processing your file</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay" style="display: none;">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Text Extraction Complete!</h3>
+            
+            <div class="stats-bar">
+                <div class="stat">
+                    <span class="stat-label">Pages</span>
+                    <span class="stat-value" id="successPages">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Characters</span>
+                    <span class="stat-value" id="successChars">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">File Size</span>
+                    <span class="stat-value" id="successSize">0 KB</span>
+                </div>
+            </div>
+
+            <!-- Text Preview Section -->
+            <div class="text-preview-section" style="text-align: left;">
+                <h4><i class="fas fa-eye"></i> Text Preview</h4>
+                <div class="text-preview-box" id="textPreview">
+                    <!-- Text will appear here dynamically -->
+                </div>
+                <p class="preview-note">
+                    <i class="fas fa-info-circle"></i> Showing first 1000 characters. Full text available in download.
+                </p>
+            </div>
+
+            <div class="success-actions">
+                <a href="#" class="btn-primary" id="downloadBtn">
+                    <i class="fas fa-download"></i> Download Text File
+                </a>
+                <button class="btn-secondary" id="newExtractBtn">
+                    <i class="fas fa-redo"></i> Extract Another
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade CTA Section -->
+    <div class="upgrade-cta" style="margin: 40px 0; padding: 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white; text-align: left;">
+        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 280px;">
+                <h3 style="color: white; margin: 0 0 10px 0;">Need More Than Conversion?</h3>
+                <p style="margin: 0; opacity: 0.9;">Our free tool converts your text assets securely, but what if you need to:</p>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                    <li>Edit text directly in PDFs?</li>
+                    <li>Add e-signatures or annotations?</li>
+                    <li>Convert scanned documents with OCR?</li>
+                    <li>Process 100+ files at once?</li>
+                </ul>
+            </div>
+            <div style="text-align: center; min-width: 200px; margin-top: 10px;">
+                <a href="/pdf-comparison" style="display: inline-block; background: white; color: #667eea; padding: 12px 30px; border-radius: 30px; text-decoration: none; font-weight: bold; transition: all 0.3s;">
+                    Compare Premium Solutions →
+                </a>
+                <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.8;">Find the right tool for advanced needs</p>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<!-- Core browser-side functionality module scripts from public folder -->
+<script is:inline src="/js/pdf_to_text.js"></script>
+
+<!-- Astro component bridge handling manual click actions for file upload triggers -->
+<script is:inline>
+document.addEventListener('DOMContentLoaded', () => {
+    const browseBtn = document.getElementById('browseBtn');
+    const fileInput = document.getElementById('fileInput');
+    if (browseBtn && fileInput) {
+        browseBtn.addEventListener('click', () => fileInput.click());
+    }
+});
+</script>

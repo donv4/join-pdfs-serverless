@@ -1,0 +1,42 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+const markdownFiles = import.meta.glob('./*.md', { eager: true });
+
+const posts = Object.values(markdownFiles);
+---
+<Layout 
+    title="Our Blog - Document & Image Optimization Insights" 
+    description="Read our latest insights on private, browser-automated file processing workflows, system performance, and updates."
+>
+    <div class="container py-5" style="margin-top: 40px;">
+        <div class="text-center mb-5">
+            <h1 class="text-primary"><i class="fas fa-blog"></i> Join-PDFs Blog</h1>
+            <p class="lead text-muted">Latest insights on private, high-performance browser-automated tools.</p>
+        </div>
+
+        <div class="row g-4">
+            {posts.map((post: any) => (
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0" style="background: var(--bg-primary); border: 1px solid var(--border-color) !important; border-radius: 12px;">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <span class="badge bg-secondary text-dark align-self-start mb-2" style="font-size: 11px;">
+                                {post.frontmatter?.pubDate || 'Recent'}
+                            </span>
+                            <h4 class="card-title fw-bold text-primary mb-2">
+                                {post.frontmatter?.title}
+                            </h4>
+                            <p class="card-text text-muted small flex-grow-1">
+                                {post.frontmatter?.description}
+                            </p>
+                            <a href={post.url} class="btn btn-outline-primary btn-sm w-100 mt-3 fw-semibold">
+                                Read Article <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    </div>
+</Layout>

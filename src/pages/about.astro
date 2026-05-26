@@ -1,0 +1,232 @@
+---
+// src/pages/about.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="About Join-PDFs | Free Online PDF Solutions" 
+    description="Learn about Join-PDFs - free online PDF utilities for merging, compressing, and splitting PDF files. Our mission and security practices."
+>
+    <!-- Inject page-specific style sheets directly here -->
+    <link rel="stylesheet" href="/css/about.css" slot="extra-head" />
+
+    <!-- Hero Section (Matches Home Page Style) -->
+    <section class="upload-section">
+        <div class="upload-header">
+            <h2><i class="fas fa-info-circle"></i> About Join-PDFs</h2>
+            <p class="subtitle">Your Free, Secure, and Powerful PDF Solution</p>
+        </div>
+
+        <!-- Info Boxes (Matches Home Page) -->
+        <div class="upload-info">
+            <div class="info-box">
+                <i class="fas fa-users"></i>
+                <p><strong>10,000+</strong></p>
+                <p class="small">Users Trust Us</p>
+            </div>
+            <div class="info-box">
+                <i class="fas fa-file-pdf"></i>
+                <p><strong>50,000+</strong></p>
+                <p class="small">PDFs Processed</p>
+            </div>
+            <div class="info-box">
+                <i class="fas fa-shield-alt"></i>
+                <p><strong>100%</strong></p>
+                <p class="small">Secure & Private</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="about-content">
+            <!-- Mission Section -->
+            <div class="about-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-bullseye"></i> Our Mission</h3>
+                </div>
+                <div class="content-box">
+                    <p>At Join-PDFs, we believe that managing PDF documents should be simple, secure, and accessible to everyone. Our mission is to provide free, high-quality PDF tools that work directly in your browser without any downloads or installations.</p>
+                    <p>Whether you're a student compressing lecture notes, a professional splitting large reports, or anyone needing to merge multiple documents, we're here to make your PDF tasks effortless.</p>
+                </div>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="about-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-star"></i> Why Choose Join-PDFs?</h3>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-lock"></i></div>
+                        <h4>Complete Privacy</h4>
+                        <p>Your files are processed locally and never stored on our servers. We don't keep any copies of your documents.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                        <h4>Fast Processing</h4>
+                        <p>Our optimized algorithms process PDFs quickly without compromising quality. No waiting, instant results.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+                        <h4>Device Friendly</h4>
+                        <p>Works perfectly on desktop, tablet, and mobile. Access your PDF tools anywhere, anytime.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-dollar-sign"></i></div>
+                        <h4>100% Free</h4>
+                        <p>No hidden fees, no subscriptions, no watermarks. All our tools are completely free to use forever.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                        <h4>No Registration</h4>
+                        <p>Use our tools immediately without creating an account. No personal information required.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-cloud"></i></div>
+                        <h4>Browser-Based</h4>
+                        <p>No software to download or install. Everything runs securely in your web browser.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="about-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-cogs"></i> How It Works</h3>
+                </div>
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Upload</h4>
+                            <p>Drag & drop your PDF file or click to browse. We support files up to 50MB.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Process</h4>
+                            <p>Choose your desired operation - split, merge, or compress with custom settings.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Download</h4>
+                            <p>Get your processed PDF instantly. Multiple files are automatically zipped.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Section -->
+            <div class="about-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-shield-alt"></i> Security & Privacy</h3>
+                </div>
+                <div class="security-content">
+                    <div class="security-points">
+                        <div class="security-point">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Files processed securely inside your web browser</span>
+                        </div>
+                        <div class="security-point">
+                            <i class="fas fa-check-circle"></i>
+                            <span>No third-party access to your documents</span>
+                        </div>
+                        <div class="security-point">
+                            <i class="fas fa-check-circle"></i>
+                            <span>SSL encrypted connections</span>
+                        </div>
+                        <div class="security-point">
+                            <i class="fas fa-check-circle"></i>
+                            <span>No tracking or analytics on your files</span>
+                        </div>
+                    </div>
+                    <div class="security-note">
+                        <p><strong>Important:</strong> We never store your original PDF files. All processing happens in memory and files are automatically cleaned up after download.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="cta-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-play-circle"></i> Ready to Get Started?</h3>
+                </div>
+                <div class="action-buttons">
+                    <!-- Adjusted links to match clean serverless routing paths -->
+                    <a href="/" class="btn-primary"><i class="fas fa-object-group"></i> Merge PDF</a>
+                    <a href="/split" class="btn-primary"><i class="fas fa-cut"></i> Split PDF</a>
+                    <a href="/compress" class="btn-primary"><i class="fas fa-compress-alt"></i> Compress PDF</a>
+                </div>
+            </div>
+
+                        <!-- Team/Author Section -->
+            <div class="about-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-user-circle"></i> About Our Team</h3>
+                </div>
+                <div class="content-box">
+                    <div class="author-bio" style="margin: 0; background: transparent; border: none; padding: 20px 0;">
+                        <div class="author-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="author-info">
+                            <h3>PDF Tools Expert & Founder</h3>
+                            <p>With years of experience in document management software, I created Join-PDFs to provide honest reviews and free tools to help users work smarter with PDFs.</p>
+                            <p>After Adobe rejected our affiliate application for being "too honest," we partnered with Wondershare PDFelement to offer legitimate alternatives while maintaining our commitment to transparency.</p>
+                            <div class="author-social">
+                                <a href="https://twitter.com/JoinPDFs" target="_blank" aria-label="X">
+                                    <i class="fab fa-x-twitter"></i>
+                                </a>
+                                <a href="https://linkedin.com/company/join-pdfs" target="_blank" aria-label="LinkedIn">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                                <a href="https://facebook.com/profile.php?id=61585709501243" target="_blank" aria-label="Facebook">
+                                    <i class="fab fa-facebook"></i>
+                                </a>
+                                <a href="https://tiktok.com/@joinpdfs" target="_blank" aria-label="TikTok">
+                                    <i class="fab fa-tiktok"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="about-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-envelope"></i> Contact Us</h3>
+                </div>
+                <div class="content-box">
+                    <p>Have questions or suggestions? We'd love to hear from you!</p>
+                    <p><strong>Email:</strong> <a href="mailto:join.pdfs2025@gmail.com">join.pdfs2025@gmail.com</a></p>
+                    <p>Follow us on social media for PDF tips, software updates, and productivity hacks.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</Layout>
+
+<script is:inline>
+    // Simple animation for stats
+    document.addEventListener('DOMContentLoaded', function() {
+        const stats = document.querySelectorAll('.info-box p:first-child');
+        stats.forEach(stat => {
+            const target = parseInt(stat.textContent);
+            if (!isNaN(target)) {
+                let current = 0;
+                const increment = target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    stat.textContent = Math.floor(current) + (stat.textContent.includes('+') ? '+' : '');
+                }, 20);
+            }
+        });
+    });
+</script>
