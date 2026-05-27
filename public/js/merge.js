@@ -149,27 +149,14 @@ document.addEventListener('DOMContentLoaded', function() {
         showProgress('Reading and compiling document sheets locally...');
         
         try {
-            // 1. Injected script mapping layer
-            if (typeof window.PDFLib === 'undefined' && typeof window.pdfLib === 'undefined') {
-                showProgress('Loading secure rendering matrix engine...');
-                await new Promise((resolve, reject) => {
-                    const script = document.createElement('script');
-                    script.src = '/js/pdf-lib.min.js';
-                    script.onload = resolve;
-                    script.onerror = reject;
-                    document.head.appendChild(script);
-                });
+            // Check the official, standard global object directly provided by the script tag
+            const libEngine = window.PDFLib;
+            if (!libEngine) {
+                throw new Error("Secure rendering matrix engine was not found on page initialization.");
             }
 
             showProgress('Merging document streams completely client-side...');
             
-            // 2. Safe-mapping assignment to bridge any case-sensitivity conflicts
-            const libEngine = window.PDFLib || window.pdfLib;
-            if (!libEngine) {
-                throw new Error("Local engine object signature resolution dropped");
-            }
-            
-            // 3. Document generation engine running directly against our mapped object
             const mergedPdf = await libEngine.PDFDocument.create();
             
             for (const file of files) {

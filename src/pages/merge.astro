@@ -201,5 +201,8 @@ import Layout from '../layouts/Layout.astro';
     </div>
 </Layout>
 
-<!-- Core browser-side functionality module scripts from public folder -->
+<!-- Load the core local processing engine asset first -->
+<script is:inline src="/js/pdf-lib.min.js"></script>
+
+<!-- Your existing page controller script links -->
 <script is:inline src="/js/merge.js"></script>
