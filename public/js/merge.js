@@ -155,7 +155,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 await new Promise((resolve, reject) => {
                     const script = document.createElement('script');
                     script.src = '/js/pdf-lib.min.js';
-                    script.onload = resolve;
+                    script.onload = () => {
+                        window.PDFLib = window.PDFLib || window['pdf-lib'];
+                        resolve();
+                    };
                     script.onerror = reject;
                     document.head.appendChild(script);
                 });
