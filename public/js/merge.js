@@ -149,16 +149,13 @@ document.addEventListener('DOMContentLoaded', function() {
         showProgress('Reading and compiling document sheets locally...');
         
         try {
-            // 1. Dynamically load the high-performance local PDF manipulation script if not present
-            if (typeof PDFLib === 'undefined') {
+            // 1. Injected script mapping layer
+            if (typeof window.PDFLib === 'undefined' && typeof window.pdfLib === 'undefined') {
                 showProgress('Loading secure rendering matrix engine...');
                 await new Promise((resolve, reject) => {
                     const script = document.createElement('script');
                     script.src = '/js/pdf-lib.min.js';
-                    script.onload = () => {
-                        window.PDFLib = window.PDFLib || window['pdf-lib'];
-                        resolve();
-                    };
+                    script.onload = resolve;
                     script.onerror = reject;
                     document.head.appendChild(script);
                 });
@@ -166,23 +163,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
             showProgress('Merging document streams completely client-side...');
             
-            // 2. Initialize a blank workspace container document
-            const mergedPdf = await PDFLib.PDFDocument.create();
+            // 2. Safe-mapping assignment to bridge any case-sensitivity conflicts
+            const libEngine = window.PDFLib || window.pdfLib;
+            if (!libEngine) {
+                throw new Error("Local engine object signature resolution dropped");
+            }
             
-            // 3. Loop through files in local memory buffers
+            // 3. Document generation engine running directly against our mapped object
+            const mergedPdf = await libEngine.PDFDocument.create();
+            
             for (const file of files) {
                 const fileArrayBuffer = await file.arrayBuffer();
-                const sourcePdf = await PDFLib.PDFDocument.load(fileArrayBuffer);
+                const sourcePdf = await libEngine.PDFDocument.load(fileArrayBuffer);
                 const copiedPages = await mergedPdf.copyPages(sourcePdf, sourcePdf.getPageIndices());
                 copiedPages.forEach((page) => mergedPdf.addPage(page));
             }
             
-            // 4. Compile the output bytes into a localized blob URL
             const mergedPdfBytes = await mergedPdf.save();
             const pdfBlob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
             const dynamicDownloadUrl = URL.createObjectURL(pdfBlob);
             
-            // 5. Structure a mock return payload matching your success modal layout
             const localResult = {
                 success: true,
                 download_url: dynamicDownloadUrl,
