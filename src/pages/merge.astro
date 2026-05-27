@@ -2,12 +2,18 @@
 // src/pages/merge.astro
 import Layout from '../layouts/Layout.astro';
 ---
+
 <Layout 
-    title="Join-PDFs | Merge PDF Files - Combine PDFs Online" 
+    title="Merge PDF Documents Instantly | Join-PDFs"
     description="Combine multiple PDF files into one document. Merge PDFs easily online for free. No watermarks, no limits."
 >
-    <!-- Inject page-specific stylesheet from your public folder assets -->
+    <!-- 🔥 FORCE LOAD ASSIGNED ENGINE LIBS VIA INLINE HEAD SLOTS -->
+    <script is:inline src="/js/pdf-lib.min.js?v=2" slot="extra-head"></script>
+    <script is:inline src="/js/merge.js?v=2" slot="extra-head"></script>
     <link rel="stylesheet" href="/css/merge.css" slot="extra-head" />
+
+    <!-- Main Tool Dashboard UI Layout Section -->
+    <div class="container py-5">
 
     <!-- Header -->
     <div class="page-header">
@@ -201,6 +207,3 @@ import Layout from '../layouts/Layout.astro';
     </div>
 </Layout>
 
-<!-- 1. Use standard lowercase HTML tags with a custom cache-busting timestamp string -->
-<script is:inline src="/js/pdf-lib.min.js?v=1"></script>
-<script is:inline src="/js/merge.js?v=1"></script>
