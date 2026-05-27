@@ -146,31 +146,55 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         startTime = Date.now();
-        showProgress('Preparing files...');
-        
-        const formData = new FormData();
-        files.forEach((file, index) => {
-            formData.append('files[]', file);
-        });
+        showProgress('Reading and compiling document sheets locally...');
         
         try {
-            const response = await fetch('/api/merge', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                showSuccess(result);
-            } else {
-                throw new Error(result.error || 'Merge failed');
+            // 1. Dynamically load the high-performance local PDF manipulation script if not present
+            if (typeof PDFLib === 'undefined') {
+                showProgress('Loading secure rendering matrix engine...');
+                await new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = 'https://cloudflare.com';
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
             }
+
+            showProgress('Merging document streams completely client-side...');
+            
+            // 2. Initialize a blank workspace container document
+            const mergedPdf = await PDFLib.PDFDocument.create();
+            
+            // 3. Loop through files in local memory buffers
+            for (const file of files) {
+                const fileArrayBuffer = await file.arrayBuffer();
+                const sourcePdf = await PDFLib.PDFDocument.load(fileArrayBuffer);
+                const copiedPages = await mergedPdf.copyPages(sourcePdf, sourcePdf.getPageIndices());
+                copiedPages.forEach((page) => mergedPdf.addPage(page));
+            }
+            
+            // 4. Compile the output bytes into a localized blob URL
+            const mergedPdfBytes = await mergedPdf.save();
+            const pdfBlob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+            const dynamicDownloadUrl = URL.createObjectURL(pdfBlob);
+            
+            // 5. Structure a mock return payload matching your success modal layout
+            const localResult = {
+                success: true,
+                download_url: dynamicDownloadUrl,
+                filename: `merged_${Date.now()}.pdf`
+            };
+            
+            showSuccess(localResult);
+
         } catch (error) {
             hideProgress();
-            alert(`Error: ${error.message}`);
+            console.error('Local memory document compilation failed:', error);
+            alert(`Error: Local processing encountered an issue (${error.message}). Please verify document formats.`);
         }
     }
+
 
     function showProgress(message) {
         document.getElementById('progressText').textContent = message;
