@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 showProgress('Loading secure rendering matrix engine...');
                 await new Promise((resolve, reject) => {
                     const script = document.createElement('script');
-                    script.src = 'https://cloudflare.com';
+                    script.src = '/js/pdf-lib.min.js';
                     script.onload = resolve;
                     script.onerror = reject;
                     document.head.appendChild(script);
