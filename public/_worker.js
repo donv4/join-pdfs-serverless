@@ -166,6 +166,24 @@ export default {
       }
     }
 
-    return env.ASSETS.fetch(request);
+    // ─── 4. STATIC REWRITE & CSP INJECTION ACCELERATOR ───
+    const staticResponse = await env.ASSETS.fetch(request);
+    
+    // Create a mutable copy of the static asset response headers
+    const newHeaders = new Headers(staticResponse.headers);
+    
+    // Dynamically apply your airtight security whitelists to all structural elements
+    newHeaders.set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://googletagmanager.com https://jsdelivr.net; connect-src 'self' https://*.google-analytics.com https://join-pdfs.com https://*.pages.dev; img-src 'self' data: https://*.google-analytics.com https://googletagmanager.com; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; form-action 'self';");
+    newHeaders.set("X-Frame-Options", "DENY");
+    newHeaders.set("X-Content-Type-Options", "nosniff");
+    newHeaders.set("Referrer-Policy", "strict-origin-when-cross-origin");
+    newHeaders.set("X-XSS-Protection", "1; mode=block");
+
+    return new Response(staticResponse.body, {
+      status: staticResponse.status,
+      statusText: staticResponse.statusText,
+      headers: newHeaders
+    });
+
   }
 };
