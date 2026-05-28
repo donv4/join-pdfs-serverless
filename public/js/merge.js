@@ -149,14 +149,16 @@ document.addEventListener('DOMContentLoaded', function() {
         showProgress('Reading and compiling document sheets locally...');
         
         try {
-            // Check the official, standard global object directly provided by the script tag
-            const libEngine = window.PDFLib;
+            // 🔥 Check for the engine object here inside the function when the button is clicked, NOT on page initialization
+            const libEngine = window.PDFLib || window.pdfLib || window['pdf-lib'];
+            
             if (!libEngine) {
-                throw new Error("Secure rendering matrix engine was not found on page initialization.");
+                throw new Error("Secure rendering matrix engine was not fully initialized in browser memory yet. Please wait a moment and try clicking merge again.");
             }
 
             showProgress('Merging document streams completely client-side...');
             
+            // Core generation engine running safely against our resolved object hook
             const mergedPdf = await libEngine.PDFDocument.create();
             
             for (const file of files) {
@@ -184,6 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
             alert(`Error: Local processing encountered an issue (${error.message}). Please verify document formats.`);
         }
     }
+
 
 
     function showProgress(message) {
