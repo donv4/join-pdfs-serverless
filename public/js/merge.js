@@ -36,18 +36,24 @@ document.addEventListener('DOMContentLoaded', function() {
     initEventListeners();
 
     function initEventListeners() {
-        // File selection
-        browseBtn.addEventListener('click', () => fileInput.click());
+        // 1. File selection via button (with event bubbling stopped)
+        browseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fileInput.click();
+        });
+        
+        // 2. File input element listener
         fileInput.addEventListener('change', handleFileSelect);
         
-        // Drag and drop
+        // 3. Drag and drop container behaviors
         uploadZone.addEventListener('dragover', handleDragOver);
         uploadZone.addEventListener('drop', handleDrop);
         
-        // Buttons
+        // 4. Core control buttons
         mergeBtn.addEventListener('click', handleMerge);
         clearBtn.addEventListener('click', clearFiles);
         newMergeBtn.addEventListener('click', resetPage);
+        
         downloadBtn.addEventListener('click', (e) => {
             if (!downloadBtn.href || downloadBtn.href === '#') {
                 e.preventDefault();
@@ -55,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
 
     function handleDragOver(e) {
         e.preventDefault();
