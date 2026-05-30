@@ -149,21 +149,24 @@ document.addEventListener('DOMContentLoaded', function() {
         showProgress('Reading and compiling document sheets locally...');
         
         try {
-            // 🔥 Check for the engine object here inside the function when the button is clicked, NOT on page initialization
-            const libEngine = window.PDFLib || window.pdfLib || window['pdf-lib'];
+            // 🔥 Check for the library globally OR directly as an object module signature
+            const engine = window.PDFLib || window.pdfLib || (window['pdf-lib'] ? window['pdf-lib'] : null);
             
-            if (!libEngine) {
+            // Check if the global PDFDocument method exists directly under the engine namespace
+            const hasDocMethod = engine && typeof engine.PDFDocument !== 'undefined';
+            
+            if (!hasDocMethod) {
                 throw new Error("Secure rendering matrix engine was not fully initialized in browser memory yet. Please wait a moment and try clicking merge again.");
             }
 
             showProgress('Merging document streams completely client-side...');
             
-            // Core generation engine running safely against our resolved object hook
-            const mergedPdf = await libEngine.PDFDocument.create();
+            // Execute natively against your cleanly resolved object
+            const mergedPdf = await engine.PDFDocument.create();
             
             for (const file of files) {
                 const fileArrayBuffer = await file.arrayBuffer();
-                const sourcePdf = await libEngine.PDFDocument.load(fileArrayBuffer);
+                const sourcePdf = await engine.PDFDocument.load(fileArrayBuffer);
                 const copiedPages = await mergedPdf.copyPages(sourcePdf, sourcePdf.getPageIndices());
                 copiedPages.forEach((page) => mergedPdf.addPage(page));
             }
@@ -186,6 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
             alert(`Error: Local processing encountered an issue (${error.message}). Please verify document formats.`);
         }
     }
+
 
 
 
