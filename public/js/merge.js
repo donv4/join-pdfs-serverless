@@ -75,7 +75,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function handleFileSelect(e) {
-        handleFiles(e.target.files);
+        if (e.target.files && e.target.files.length > 0) {
+            handleFiles(e.target.files);
+        }
+        // Reset the input so the same file can be selected again
+        e.target.value = '';
     }
 
     function handleFiles(fileList) {
