@@ -10,11 +10,10 @@ const { title, description = "Free online PDF tools to merge, compress, and spli
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="impact-site-verification" content="13b31544-7a3a-4d75-aa32-2c671688d5e9">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="impact-site-verification" content="13b31544-7a3a-4d75-aa32-2c671688d5e9">
     
-    <slot name="extra-head" />
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:site_name" content="Join-PDFs">
     <meta property="og:type" content="website">
@@ -55,11 +54,9 @@ const { title, description = "Free online PDF tools to merge, compress, and spli
     <link rel="stylesheet" href="/css/navbar.css">
 
     <!-- Font Awesome Injections -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cloudflare.com" />
 
-    <!-- Page Specific Header Stylesheet Slots -->
-    
-    <!-- Google Tag Analytics Module Tracker -->
+    <!-- Google Tag Analytics Module Tracker (Fully Pathed Endpoint) -->
     <script is:inline async src="https://googletagmanager.com"></script>
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
@@ -67,29 +64,102 @@ const { title, description = "Free online PDF tools to merge, compress, and spli
       gtag('js', new Date());
       gtag('config', 'G-C984E7L279');
     </script>
+
+    <!-- Page Specific Header Slots (Moved to bottom of head to prevent asset inheritance blockage) -->
+    <slot name="extra-head" />
 </head>
 <body>
+    <!-- Balanced container block wraps the standard page layouts flow cleanly -->
     <div class="container">
-    <!-- ========== PROFESSIONAL NAVIGATION ========== -->
-    <nav class="pro-navbar">
-        <div class="pro-nav-container">
-            <!-- Logo Link Back to Top Root -->
-            <a href="/" class="pro-nav-logo">
-                <i class="fas fa-file-pdf"></i>
-                <span>Join-PDFs</span>
-            </a>
-
-            <!-- Desktop Menu Layout Grid Blocks -->
-            <div class="pro-nav-menu">
-                <a href="/" class="pro-nav-link">
-                    <i class="fas fa-home"></i> Home
+        <!-- ========== PROFESSIONAL NAVIGATION ========== -->
+        <nav class="pro-navbar">
+            <div class="pro-nav-container">
+                <!-- Logo Link Back to Top Root -->
+                <a href="/" class="pro-nav-logo">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Join-PDFs</span>
                 </a>
-            
-                <div class="pro-nav-dropdown">
-                    <a href="#" class="pro-nav-link">
-                        <i class="fas fa-tools"></i> PDF Tools ▾
+
+                <!-- Desktop Menu Layout Grid Blocks -->
+                <div class="pro-nav-menu">
+                    <a href="/" class="pro-nav-link">
+                        <i class="fas fa-home"></i> Home
                     </a>
-                    <div class="pro-dropdown-menu">
+                
+                    <div class="pro-nav-dropdown">
+                        <a href="#" class="pro-nav-link">
+                            <i class="fas fa-tools"></i> PDF Tools ▾
+                        </a>
+                        <div class="pro-dropdown-menu">
+                            <a href="/merge"><i class="fas fa-object-group"></i> Merge PDFs</a>
+                            <a href="/split"><i class="fas fa-cut"></i> Split PDF</a>
+                            <a href="/compress"><i class="fas fa-compress-alt"></i> Compress PDF</a>
+                            <a href="/images-to-pdf"><i class="fas fa-file-image"></i> Images to PDF</a>
+                            <a href="/pdf-to-image"><i class="fas fa-file-image"></i> PDF to Image</a>
+                            <a href="/pdf-to-word"><i class="fas fa-file-word"></i> PDF to Word</a>
+                            <a href="/pdf-to-excel"><i class="fas fa-file-excel"></i> PDF to Excel</a>
+                            <a href="/pdf-to-powerpoint"><i class="fas fa-file-powerpoint"></i> PDF to PPT</a>
+                            <a href="/pdf-to-text"><i class="fas fa-file-alt"></i> PDF to Text</a>
+                            <a href="/image-editor"><i class="fas fa-edit"></i> Image Editor</a>
+                            <a href="/collage-maker"><i class="fas fa-th-large"></i> Photo Collage Maker</a>
+                            <a href="/logo-maker"><i class="fas fa-palette"></i> Logo Maker</a>
+                            <a href="/audio-video-extractor"><i class="fas fa-file-video"></i> Audio/Video Extractor</a>
+                       </div>
+                    </div>
+
+                    <!-- Premium Batch Operations Link -->
+                    <a href="/batch-process" class="pro-nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 6px; padding: 6px 12px; margin: 0 3px;">
+                        <i class="fas fa-bolt"></i> Premium / Batch
+                    </a>
+
+                    <!-- AI Assistant Trigger Action Redirects -->
+                    <a href="/chatbot" class="pro-nav-link" style="background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%); color: white; border-radius: 6px; padding: 6px 12px; margin: 0 3px;">
+                        <i class="fas fa-robot"></i> AI Assistant
+                    </a>
+
+                    <a href="/pdf-comparison" class="pro-nav-link">
+                        <i class="fas fa-chart-bar"></i> Software Compare
+                    </a>
+
+                    <a href="/blog" class="pro-nav-link">
+                        <i class="fas fa-blog"></i> Blog
+                    </a>
+
+                    <a href="/templates" class="pro-nav-link" style="background: #2ecc71; color: white; border-radius: 6px; padding: 6px 12px; margin: 0 3px;">
+                        <i class="fas fa-file-download"></i> Templates
+                    </a>
+
+                    <!-- Theme Toggle Control Node -->
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                
+                    <a href="/about" class="pro-nav-link">
+                        <i class="fas fa-info-circle"></i> About
+                    </a>
+                </div>
+
+                <!-- Mobile Header Actions -->
+                <div class="pro-mobile-nav">
+                    <a href="/" class="pro-mobile-home" aria-label="Home">
+                        <i class="fas fa-home"></i>
+                    </a>
+                    <button class="pro-hamburger" aria-label="Toggle menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Hidden Drawer Menu Navigation Links Layer -->
+            <div class="pro-mobile-menu">
+                <a href="/"><i class="fas fa-home"></i> Home</a>
+                <div class="pro-mobile-dropdown">
+                    <button class="pro-mobile-dropdown-btn" type="button">
+                        <i class="fas fa-tools"></i> PDF Tools <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="pro-mobile-dropdown-content">
                         <a href="/merge"><i class="fas fa-object-group"></i> Merge PDFs</a>
                         <a href="/split"><i class="fas fa-cut"></i> Split PDF</a>
                         <a href="/compress"><i class="fas fa-compress-alt"></i> Compress PDF</a>
@@ -100,86 +170,17 @@ const { title, description = "Free online PDF tools to merge, compress, and spli
                         <a href="/pdf-to-powerpoint"><i class="fas fa-file-powerpoint"></i> PDF to PPT</a>
                         <a href="/pdf-to-text"><i class="fas fa-file-alt"></i> PDF to Text</a>
                         <a href="/image-editor"><i class="fas fa-edit"></i> Image Editor</a>
-                        <a href="/collage-maker"><i class="fas fa-th-large"></i> Photo Collage Maker</a>
                         <a href="/logo-maker"><i class="fas fa-palette"></i> Logo Maker</a>
                         <a href="/audio-video-extractor"><i class="fas fa-file-video"></i> Audio/Video Extractor</a>
-                   </div>
+                    </div>
                 </div>
-
-                <!-- Premium Batch Operations Link -->
-                <a href="/batch-process" class="pro-nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 6px; padding: 6px 12px; margin: 0 3px;">
-                    <i class="fas fa-bolt"></i> Premium / Batch
+                <a href="/pdf-comparison"><i class="fas fa-chart-bar"></i> Software Compare</a>
+                <a href="/blog"><i class="fas fa-blog"></i> Blog</a>
+                <a href="/templates"><i class="fas fa-file-download"></i> Templates</a>
+                <a href="/batch-process" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 6px; padding: 8px 12px; margin: 5px 0; display: block; text-align: center;">
+                    <i class="fas fa-bolt"></i> Premium / Batch Processing
                 </a>
-
-                <!-- AI Assistant Trigger Action Redirects -->
-                <a href="/chatbot" class="pro-nav-link" style="background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%); color: white; border-radius: 6px; padding: 6px 12px; margin: 0 3px;">
-                    <i class="fas fa-robot"></i> AI Assistant
-                </a>
-
-                <a href="/pdf-comparison" class="pro-nav-link">
-                    <i class="fas fa-chart-bar"></i> Software Compare
-                </a>
-
-                <a href="/blog" class="pro-nav-link">
-                    <i class="fas fa-blog"></i> Blog
-                </a>
-
-                <a href="/templates" class="pro-nav-link" style="background: #2ecc71; color: white; border-radius: 6px; padding: 6px 12px; margin: 0 3px;">
-                    <i class="fas fa-file-download"></i> Templates
-                </a>
-
-                <!-- Theme Dynamic Toggle Trigger Control Node -->
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
-                    <i class="fas fa-moon"></i>
-                </button>
-            
-                <a href="/about" class="pro-nav-link">
-                    <i class="fas fa-info-circle"></i> About
-                </a>
-            </div>
-
-            <!-- Mobile Core Header Bar Action Slots -->
-            <div class="pro-mobile-nav">
-                <a href="/" class="pro-mobile-home" aria-label="Home">
-                    <i class="fas fa-home"></i>
-                </a>
-                <button class="pro-hamburger" aria-label="Toggle menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Mobile Hidden Drawer Menu Navigation Links Layer -->
-        <div class="pro-mobile-menu">
-            <a href="/"><i class="fas fa-home"></i> Home</a>
-            <div class="pro-mobile-dropdown">
-                <button class="pro-mobile-dropdown-btn">
-                    <i class="fas fa-tools"></i> PDF Tools <i class="fas fa-chevron-down"></i>
-                </button>
-                <div class="pro-mobile-dropdown-content">
-                    <a href="/merge"><i class="fas fa-object-group"></i> Merge PDFs</a>
-                    <a href="/split"><i class="fas fa-cut"></i> Split PDF</a>
-                    <a href="/compress"><i class="fas fa-compress-alt"></i> Compress PDF</a>
-                    <a href="/images-to-pdf"><i class="fas fa-file-image"></i> Images to PDF</a>
-                    <a href="/pdf-to-image"><i class="fas fa-file-image"></i> PDF to Image</a>
-                    <a href="/pdf-to-word"><i class="fas fa-file-word"></i> PDF to Word</a>
-                    <a href="/pdf-to-excel"><i class="fas fa-file-excel"></i> PDF to Excel</a>
-                    <a href="/pdf-to-powerpoint"><i class="fas fa-file-powerpoint"></i> PDF to PPT</a>
-                    <a href="/pdf-to-text"><i class="fas fa-file-alt"></i> PDF to Text</a>
-                    <a href="/image-editor"><i class="fas fa-edit"></i> Image Editor</a>
-                    <a href="/logo-maker"><i class="fas fa-palette"></i> Logo Maker</a>
-                    <a href="/audio-video-extractor"><i class="fas fa-file-video"></i> Audio/Video Extractor</a>
-                </div>
-            </div>
-            <a href="/pdf-comparison"><i class="fas fa-chart-bar"></i> Software Compare</a>
-            <a href="/blog"><i class="fas fa-blog"></i> Blog</a>
-            <a href="/templates"><i class="fas fa-file-download"></i> Templates</a>
-            <a href="/batch-process" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 6px; padding: 8px 12px; margin: 5px 0; display: block; text-align: center;">
-                <i class="fas fa-bolt"></i> Premium / Batch Processing
-            </a>
-            <a href="/about"><i class="fas fa-info-circle"></i> About</a>
+                <a href="/about"><i class="fas fa-info-circle"></i> About</a>
             
             <!-- Mobile Navigation Drawer Footer Layout Trigger Nodes -->
             <div style="text-align: center; padding: 15px; border-top: 1px solid var(--border-color); margin-top: 10px;">
@@ -275,4 +276,3 @@ const { title, description = "Free online PDF tools to merge, compress, and spli
     <script is:inline src="/js/chat_widget.js"></script>
 </body>
 </html>
-
