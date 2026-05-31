@@ -7,6 +7,7 @@ class PDFSplitter {
         this.currentMethod = 'range';
         this.ranges = [];
         this.pdfDataUri = null;
+        this.isProcessingFile = false; // Protects from race condition loop blocks
 
         this.initializeElements();
         this.setupEventListeners();
@@ -14,7 +15,7 @@ class PDFSplitter {
         this.loadLibraries();
     }
 
-    // Load necessary third-party browser bundles dynamically to prevent layout rendering drops
+    // Load necessary third-party browser bundles dynamically with explicit valid distribution CDN endpoints
     loadLibraries() {
         if (!window.PDFLib) {
             const script1 = document.createElement('script');
@@ -25,7 +26,8 @@ class PDFSplitter {
             const script2 = document.createElement('script');
             script2.src = 'https://cloudflare.com';
             document.head.appendChild(script2);
-            // Configure worker route explicitly
+            
+            // Configure worker route explicitly using identical version handles
             script2.onload = () => {
                 window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cloudflare.com';
             };
@@ -95,7 +97,7 @@ class PDFSplitter {
                 this.uploadZone.classList.remove('dragover');
                 if (e.dataTransfer.files.length > 0) {
                     this.fileInput.files = e.dataTransfer.files;
-                    this.handleFileSelect({ target: this.fileInput });
+                    // Do not trigger handleFileSelect manually if native change handles pick it up
                 }
             });
         }
@@ -121,6 +123,7 @@ class PDFSplitter {
     }
 
     async handleFileSelect(event) {
+        if (this.isProcessingFile) return;
         const file = event.target.files[0];
         if (!file) return;
 
@@ -129,9 +132,10 @@ class PDFSplitter {
             return;
         }
 
+        this.isProcessingFile = true;
         this.currentFile = file;
-        this.fileName.textContent = file.name;
-        this.fileSize.textContent = this.formatFileSize(file.size);
+        if (this.fileName) this.fileName.textContent = file.name;
+        if (this.fileSize) this.fileSize.textContent = this.formatFileSize(file.size);
 
         this.showProgress('Reading PDF...', 'Parsing page matrices locally...');
 
@@ -139,29 +143,33 @@ class PDFSplitter {
             const arrayBuffer = await file.arrayBuffer();
             this.pdfDataUri = arrayBuffer;
 
-            // Use client-side pdfjsLib to parse total document arrays instantly
+            // Check if library failed to bind safely due to network delays
+            if (!window.pdfjsLib) {
+                throw new Error("Library pdfjsLib failed to initiate on document runtime node.");
+            }
+
             const loadingTask = window.pdfjsLib.getDocument({ data: arrayBuffer });
             const pdfDoc = await loadingTask.promise;
             
             this.totalPageCount = pdfDoc.numPages;
 
-            // Update user dashboard nodes
             const statsBar = document.getElementById('statsBar');
             if (statsBar) statsBar.style.display = 'flex';
-            document.getElementById('fileName').textContent = file.name;
-            document.getElementById('fileSize').textContent = this.formatFileSize(file.size);
-            document.getElementById('totalPages').textContent = this.totalPageCount;
-
+            if (this.totalPages) this.totalPages.textContent = this.totalPageCount;
             if (this.pageCountElement) this.pageCountElement.textContent = `${this.totalPageCount} pages`;
 
-            this.fromPageInput.max = this.totalPageCount;
-            this.toPageInput.max = this.totalPageCount;
-            this.fromPageInput.value = 1;
-            this.toPageInput.value = this.totalPageCount;
+            if (this.fromPageInput) {
+                this.fromPageInput.max = this.totalPageCount;
+                this.fromPageInput.value = 1;
+            }
+            if (this.toPageInput) {
+                this.toPageInput.max = this.totalPageCount;
+                this.toPageInput.value = this.totalPageCount;
+            }
 
-            this.splitOptions.style.display = 'block';
-            this.clearBtn.disabled = false;
-            this.processSplitBtn.disabled = false;
+            if (this.splitOptions) this.splitOptions.style.display = 'block';
+            if (this.clearBtn) this.clearBtn.disabled = false;
+            if (this.processSplitBtn) this.processSplitBtn.disabled = false;
 
             this.initializePages();
             this.hideProgress();
@@ -169,6 +177,8 @@ class PDFSplitter {
             this.hideProgress();
             alert('Could not open the PDF document layout safely client-side.');
             console.error(error);
+        } finally {
+            this.isProcessingFile = false;
         }
     }
 
@@ -217,9 +227,25 @@ class PDFSplitter {
     setActiveMethod(method) {
         this.currentMethod = method;
         this.splitMethods.forEach(m => {
-            if (m.dataset.method === method) m.classList.add('active');
-            else m.classList.remove('active');
+            if (m.dataset.method === method) {
+                m.classList.add('active');
+            } else {
+                m.classList.remove('active');
+            }
         });
+
+        // Visually toggle UI panels based on selected splitting strategy
+        const rangeSettings = document.getElementById('rangeSettings');
+        const customSelectionSettings = document.getElementById('customSelectionSettings');
+
+        if (method === 'range') {
+            if (rangeSettings) rangeSettings.style.display = 'block';
+            if (customSelectionSettings) customSelectionSettings.style.display = 'none';
+        } else {
+            if (rangeSettings) rangeSettings.style.display = 'none';
+            if (customSelectionSettings) customSelectionSettings.style.display = 'block';
+        }
+
         this.updateSelectionPreview();
     }
 
@@ -227,20 +253,63 @@ class PDFSplitter {
         const from = parseInt(this.fromPageInput.value);
         const to = parseInt(this.toPageInput.value);
 
-        if (from > 0 && to >= from && to <= this.totalPageCount) {
-            const item = document.createElement('div');
-            item.className = 'range-item';
-            item.style.cssText = 'background: #f1f5f9; padding: 8px; margin: 4px; border-radius: 4px; display: inline-block;';
-            item.innerHTML = `<span>Pages ${from}-${to}</span>`;
-            this.rangesList.appendChild(item);
+        // Prevent layout crashes by strictly validating numerical bounds
+        if (isNaN(from) || isNaN(to) || from < 1 || to < from || to > this.totalPageCount) {
+            alert(`Please enter a valid page range sequence between 1 and ${this.totalPageCount}.`);
+            return;
+        }
 
+        // Prevent duplicate range row entry overhead
+        const rangeText = `Pages ${from}-${to}`;
+        const existingRanges = Array.from(this.rangesList.querySelectorAll('.range-item span')).map(s => s.textContent);
+        if (existingRanges.includes(rangeText)) return;
+
+        const item = document.createElement('div');
+        item.className = 'range-item';
+        item.style.cssText = 'background: #f1f5f9; padding: 8px; margin: 4px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: space-between; gap: 8px;';
+        item.innerHTML = `
+            <span>Pages ${from}-${to}</span>
+            <button type="button" class="remove-range-btn" style="background: none; border: none; color: #ef4444; cursor: pointer; font-weight: bold; padding: 0 4px;">&times;</button>
+        `;
+
+        // Wire delete buttons up directly to scrub ranges gracefully
+        item.querySelector('.remove-range-btn').addEventListener('click', () => {
+            item.remove();
+            this.recalculateRangeSelection();
+        });
+
+        this.rangesList.appendChild(item);
+
+        for (let i = from; i <= to; i++) {
+            this.selectedPages.add(i);
+            const box = document.getElementById(`page-${i}`);
+            if (box) box.checked = true;
+        }
+        this.updateSelectionPreview();
+    }
+
+    recalculateRangeSelection() {
+        this.selectedPages.clear();
+        
+        // Reset all grid checkboxes visually
+        for (let i = 1; i <= this.totalPageCount; i++) {
+            const box = document.getElementById(`page-${i}`);
+            if (box) box.checked = false;
+        }
+
+        // Read remaining active ranges and re-assert state arrays
+        const rangeItems = this.rangesList.querySelectorAll('.range-item span');
+        rangeItems.forEach(item => {
+            const text = item.textContent.replace('Pages ', '');
+            const [from, to] = text.split('-').map(n => parseInt(n));
             for (let i = from; i <= to; i++) {
                 this.selectedPages.add(i);
                 const box = document.getElementById(`page-${i}`);
                 if (box) box.checked = true;
             }
-            this.updateSelectionPreview();
-        }
+        });
+
+        this.updateSelectionPreview();
     }
 
     updateCurrentRange() {
@@ -251,30 +320,46 @@ class PDFSplitter {
     }
 
     updateSelectionPreview() {
-        if (this.selectedPages.size === 0) {
+        if (!this.selectionPreview) return;
+        
+        const outputCount = this.currentMethod === 'single' ? this.selectedPages.size : this.rangesList.children.length;
+
+        if (outputCount === 0 && this.selectedPages.size === 0) {
             this.selectionPreview.style.display = 'none';
             return;
         }
-        this.selectedCount.textContent = `${this.selectedPages.size} pages selected`;
-        this.selectedPagesList.textContent = Array.from(this.selectedPages).sort((a,b)=>a-b).join(', ');
-        this.filesCount.textContent = this.currentMethod === 'single' ? this.selectedPages.size : this.rangesList.children.length;
+        
+        if (this.selectedCount) this.selectedCount.textContent = `${this.selectedPages.size} pages selected`;
+        if (this.selectedPagesList) this.selectedPagesList.textContent = Array.from(this.selectedPages).sort((a,b)=>a-b).join(', ');
+        if (this.filesCount) this.filesCount.textContent = outputCount;
         this.selectionPreview.style.display = 'block';
     }
 
     // NATIVE BROWSER ASSEMBLY METHOD - ZERO SERVER DEPENDENCY
     async splitPDF() {
         if (!this.pdfDataUri) return;
+        
+        if (!window.PDFLib || !window.JSZip) {
+            alert('Core slicing libraries are still configuring, please wait 2 seconds and try again.');
+            return;
+        }
+
         this.showProgress('Processing...', 'Assembling file arrays locally...');
 
         try {
-            const srcPdfDoc = await PDFLib.PDFDocument.load(this.pdfDataUri);
-            const zip = new JSZip();
+            const srcPdfDoc = await window.PDFLib.PDFDocument.load(this.pdfDataUri);
+            const zip = new window.JSZip();
             let fileCounter = 0;
 
             if (this.currentMethod === 'single') {
                 const pages = Array.from(this.selectedPages).sort((a,b)=>a-b);
+                if (pages.length === 0) {
+                    alert('Please select at least one page sheet checkbox to split.');
+                    this.hideProgress();
+                    return;
+                }
                 for (const pageNum of pages) {
-                    const newPdf = await PDFLib.PDFDocument.create();
+                    const newPdf = await window.PDFLib.PDFDocument.create();
                     const [copiedPage] = await newPdf.copyPages(srcPdfDoc, [pageNum - 1]);
                     newPdf.addPage(copiedPage);
                     const pdfBytes = await newPdf.save();
@@ -282,13 +367,19 @@ class PDFSplitter {
                     fileCounter++;
                 }
             } else {
-                // Range execution loop blocks
                 const rangeItems = this.rangesList.querySelectorAll('.range-item span');
+                if (rangeItems.length === 0) {
+                    alert('Please specify and add at least one custom extraction page range list channel.');
+                    this.hideProgress();
+                    return;
+                }
                 for (const item of rangeItems) {
                     const text = item.textContent.replace('Pages ', '');
                     const [from, to] = text.split('-').map(n => parseInt(n));
                     
-                    const newPdf = await PDFLib.PDFDocument.create();
+                    if (isNaN(from) || isNaN(to)) continue;
+
+                    const newPdf = await window.PDFLib.PDFDocument.create();
                     const indices = [];
                     for (let i = from; i <= to; i++) indices.push(i - 1);
                     
@@ -302,14 +393,16 @@ class PDFSplitter {
             }
 
             const zipBlob = await zip.generateAsync({ type: 'blob' });
-            this.downloadLink.href = URL.createObjectURL(zipBlob);
-            this.downloadLink.download = 'split-documents-archive.zip';
+            if (this.downloadLink) {
+                this.downloadLink.href = URL.createObjectURL(zipBlob);
+                this.downloadLink.download = 'split-documents-archive.zip';
+            }
 
-            this.filesCreated.textContent = fileCounter;
-            this.totalPagesProcessed.textContent = this.selectedPages.size;
+            if (this.filesCreated) this.filesCreated.textContent = fileCounter;
+            if (this.totalPagesProcessed) this.totalPagesProcessed.textContent = this.selectedPages.size;
             
             this.hideProgress();
-            this.successOverlay.style.display = 'flex';
+            if (this.successOverlay) this.successOverlay.style.display = 'flex';
         } catch (err) {
             this.hideProgress();
             alert('Could not isolate and slice page arrays.');
@@ -322,14 +415,15 @@ class PDFSplitter {
     }
 
     showProgress(title, message) {
-        this.progressText.textContent = message;
-        this.progressPercent.textContent = '100%';
-        this.progressFill.style.width = '100%';
+        if (!this.progressOverlay) return;
+        if (this.progressText) this.progressText.textContent = message;
+        if (this.progressPercent) this.progressPercent.textContent = '100%';
+        if (this.progressFill) this.progressFill.style.width = '100%';
         this.progressOverlay.style.display = 'flex';
     }
 
     hideProgress() {
-        this.progressOverlay.style.display = 'none';
+        if (this.progressOverlay) this.progressOverlay.style.display = 'none';
     }
 
     formatFileSize(bytes) {

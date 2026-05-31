@@ -6,7 +6,10 @@ import Layout from '../layouts/Layout.astro';
     title="Join-PDFs | Split PDF Files Online - Free Tool" 
     description="Split PDF into separate pages or extract specific pages. Divide large PDF documents into smaller files. Free online PDF splitting tool."
 >
-    <!-- Inject page-specific stylesheet from your public folder assets -->
+    <!-- Content Security Policy Bypasses & Security Fallbacks -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; worker-src 'self' blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://googletagmanager.com https://jsdelivr.net https://cloudflareinsights.com https://cloudflare.com https://unpkg.com https://cloudflare.com; connect-src 'self' https://*.google-analytics.com https://join-pdfs.com https://*.pages.dev https://cloudflareinsights.com https://*.cloudflareinsights.com; img-src 'self' data: https://*.google-analytics.com https://googletagmanager.com; style-src 'self' 'unsafe-inline' https://cloudflare.com; font-src 'self' data: https://cloudflare.com; frame-ancestors 'none'; form-action 'self';" slot="extra-head" />
+
+    <!-- Page Specific Stylesheet -->
     <link rel="stylesheet" href="/css/split.css" slot="extra-head" />
 
     <!-- Header -->
@@ -58,7 +61,7 @@ import Layout from '../layouts/Layout.astro';
         <h3>Drop PDF file here or click to browse</h3>
         <p>Select a PDF file to split into multiple documents</p>
         <input type="file" id="fileInput" accept=".pdf" style="display: none;" />
-        <button class="btn-primary" id="browseBtn">
+        <button class="btn-primary" id="browseBtn" type="button">
             <i class="fas fa-folder-open"></i> Browse Files
         </button>
     </div>
@@ -87,20 +90,22 @@ import Layout from '../layouts/Layout.astro';
                     <h4>Split by Page Range</h4>
                 </div>
                 <p>Select specific page ranges (e.g., 1-3, 5-7)</p>
-                <div class="range-inputs">
-                    <div class="range-input-group">
-                        <label>From Page:</label>
-                        <input type="number" id="fromPage" min="1" value="1" placeholder="1" />
+                <div id="rangeSettings" class="range-settings-panel">
+                    <div class="range-inputs">
+                        <div class="range-input-group">
+                            <label for="fromPage">From Page:</label>
+                            <input type="number" id="fromPage" min="1" value="1" placeholder="1" />
+                        </div>
+                        <div class="range-input-group">
+                            <label for="toPage">To Page:</label>
+                            <input type="number" id="toPage" min="1" value="1" placeholder="1" />
+                        </div>
+                        <button id="addRangeBtn" class="btn-small" type="button">
+                            <i class="fas fa-plus"></i> Add Range
+                        </button>
                     </div>
-                    <div class="range-input-group">
-                        <label>To Page:</label>
-                        <input type="number" id="toPage" min="1" value="1" placeholder="1" />
-                    </div>
-                    <button id="addRangeBtn" class="btn-small">
-                        <i class="fas fa-plus"></i> Add Range
-                    </button>
+                    <div id="rangesList" class="ranges-list"></div>
                 </div>
-                <div id="rangesList" class="ranges-list"></div>
             </div>
 
             <div class="split-method" data-method="single">
@@ -109,15 +114,17 @@ import Layout from '../layouts/Layout.astro';
                     <h4>Extract Single Pages</h4>
                 </div>
                 <p>Extract individual pages as separate files</p>
-                <div class="page-selection">
-                    <div id="pagesGrid" class="pages-grid"></div>
-                    <div class="page-controls">
-                        <button id="selectAllBtn" class="btn-small">
-                            <i class="fas fa-check-square"></i> Select All
-                        </button>
-                        <button id="clearSelectionBtn" class="btn-small">
-                            <i class="fas fa-square"></i> Clear All
-                        </button>
+                <div id="customSelectionSettings" class="custom-selection-panel" style="display: none;">
+                    <div class="page-selection">
+                        <div id="pagesGrid" class="pages-grid"></div>
+                        <div class="page-controls">
+                            <button id="selectAllBtn" class="btn-small" type="button">
+                                <i class="fas fa-check-square"></i> Select All
+                            </button>
+                            <button id="clearSelectionBtn" class="btn-small" type="button">
+                                <i class="fas fa-square"></i> Clear All
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -189,7 +196,7 @@ import Layout from '../layouts/Layout.astro';
                 <a id="downloadLink" class="btn-download" href="#">
                     <i class="fas fa-download"></i> Download Results (ZIP)
                 </a>
-                <button id="newSplitBtn" class="btn-secondary">
+                <button id="newSplitBtn" class="btn-secondary" type="button">
                     <i class="fas fa-redo"></i> Split Another PDF
                 </button>
             </div>
@@ -224,23 +231,3 @@ import Layout from '../layouts/Layout.astro';
 
 <!-- Core browser-side functionality execution modules from public folder -->
 <script is:inline src="/js/split.js"></script>
-
-<!-- Astro bridge layout script handling input window click triggers -->
-<script is:inline>
-document.addEventListener('DOMContentLoaded', () => {
-    const uploadZone = document.getElementById('uploadZone');
-    const fileInput = document.getElementById('fileInput');
-    const browseBtn = document.getElementById('browseBtn');
-
-    if (uploadZone && fileInput) {
-        uploadZone.addEventListener('click', (e) => {
-            if (e.target !== browseBtn && !browseBtn.contains(e.target)) {
-                fileInput.click();
-            }
-        });
-    }
-    if (browseBtn && fileInput) {
-        browseBtn.addEventListener('click', () => fileInput.click());
-    }
-});
-</script>
