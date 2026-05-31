@@ -19,22 +19,23 @@ class PDFSplitter {
     loadLibraries() {
         if (!window.PDFLib) {
             const script1 = document.createElement('script');
-            script1.src = 'https://unpkg.com';
+            script1.src = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
             document.head.appendChild(script1);
         }
+        
         if (!window.pdfjsLib) {
             const script2 = document.createElement('script');
-            script2.src = 'https://cloudflare.com';
+            script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js';
             document.head.appendChild(script2);
             
-            // Configure worker route explicitly using identical version handles
             script2.onload = () => {
-                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cloudflare.com';
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
             };
         }
+        
         if (!window.JSZip) {
             const script3 = document.createElement('script');
-            script3.src = 'https://cloudflare.com';
+            script3.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
             document.head.appendChild(script3);
         }
     }
