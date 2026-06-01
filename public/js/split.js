@@ -1,4 +1,4 @@
-// public/js/split.js - SERVERLESS HYBRID BROWSER CLIENT
+// public/js/split.js - Simplified version
 class PDFSplitter {
     constructor() {
         this.currentFile = null;
@@ -7,37 +7,41 @@ class PDFSplitter {
         this.currentMethod = 'range';
         this.ranges = [];
         this.pdfDataUri = null;
-        this.isProcessingFile = false; // Protects from race condition loop blocks
+        this.isProcessingFile = false;
 
         this.initializeElements();
         this.setupEventListeners();
         this.initializePagePreviews();
-        this.loadLibraries();
+        
+        // Check if libraries are available
+        this.checkLibraries();
     }
 
-    // Load necessary third-party browser bundles dynamically with explicit valid distribution CDN endpoints
-    loadLibraries() {
-        if (!window.PDFLib) {
-            const script1 = document.createElement('script');
-            script1.src = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
-            document.head.appendChild(script1);
-        }
+    checkLibraries() {
+        // Wait for libraries to be available (they should load from HTML)
+        let attempts = 0;
+        const maxAttempts = 50; // 5 seconds max
         
-        if (!window.pdfjsLib) {
-            const script2 = document.createElement('script');
-            script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js';
-            document.head.appendChild(script2);
+        const interval = setInterval(() => {
+            attempts++;
             
-            script2.onload = () => {
-                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-            };
-        }
-        
-        if (!window.JSZip) {
-            const script3 = document.createElement('script');
-            script3.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-            document.head.appendChild(script3);
-        }
+            if (window.pdfjsLib && window.PDFLib && window.JSZip) {
+                // Set worker
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/build/pdf.worker.min.js';
+                clearInterval(interval);
+                console.log('✅ Libraries ready');
+                this.librariesReady = true;
+                
+                // Enable any pending UI
+                if (this.pendingFile) {
+                    this.processSelectedFile(this.pendingFile);
+                }
+            } else if (attempts >= maxAttempts) {
+                clearInterval(interval);
+                console.error('Libraries failed to load');
+                alert('Failed to load PDF libraries. Please check your internet connection and refresh the page.');
+            }
+        }, 100);
     }
 
     initializeElements() {
@@ -84,6 +88,8 @@ class PDFSplitter {
 
     setupEventListeners() {
         if (this.fileInput) this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+        
+        if (this.browseBtn) this.browseBtn.addEventListener('click', () => this.fileInput.click());
 
         if (this.uploadZone) {
             this.uploadZone.addEventListener('dragover', (e) => {
@@ -98,7 +104,7 @@ class PDFSplitter {
                 this.uploadZone.classList.remove('dragover');
                 if (e.dataTransfer.files.length > 0) {
                     this.fileInput.files = e.dataTransfer.files;
-                    // Do not trigger handleFileSelect manually if native change handles pick it up
+                    this.handleFileSelect({ target: { files: e.dataTransfer.files } });
                 }
             });
         }
@@ -129,25 +135,32 @@ class PDFSplitter {
         if (!file) return;
 
         if (!file.name.toLowerCase().endsWith('.pdf')) {
-            alert('Please select a valid PDF file archive.');
+            alert('Please select a valid PDF file.');
             return;
         }
 
-        this.isProcessingFile = true;
         this.currentFile = file;
         if (this.fileName) this.fileName.textContent = file.name;
         if (this.fileSize) this.fileSize.textContent = this.formatFileSize(file.size);
 
+        if (!window.pdfjsLib || !window.PDFLib || !window.JSZip) {
+            this.showProgress('Loading Libraries...', 'Please wait...');
+            this.pendingFile = file;
+            return;
+        }
+        
+        await this.processSelectedFile();
+    }
+
+    async processSelectedFile() {
+        if (!this.currentFile) return;
+        
+        this.isProcessingFile = true;
         this.showProgress('Reading PDF...', 'Parsing page matrices locally...');
 
         try {
-            const arrayBuffer = await file.arrayBuffer();
+            const arrayBuffer = await this.currentFile.arrayBuffer();
             this.pdfDataUri = arrayBuffer;
-
-            // Check if library failed to bind safely due to network delays
-            if (!window.pdfjsLib) {
-                throw new Error("Library pdfjsLib failed to initiate on document runtime node.");
-            }
 
             const loadingTask = window.pdfjsLib.getDocument({ data: arrayBuffer });
             const pdfDoc = await loadingTask.promise;
@@ -174,16 +187,19 @@ class PDFSplitter {
 
             this.initializePages();
             this.hideProgress();
+            this.pendingFile = null;
         } catch (error) {
             this.hideProgress();
-            alert('Could not open the PDF document layout safely client-side.');
-            console.error(error);
+            console.error('PDF loading error:', error);
+            alert(`Could not open the PDF document: ${error.message}`);
         } finally {
             this.isProcessingFile = false;
         }
     }
 
     initializePages() {
+        if (!this.pagesGrid) return;
+        
         this.pagesGrid.innerHTML = '';
         this.selectedPages.clear();
 
@@ -204,6 +220,8 @@ class PDFSplitter {
             });
             this.pagesGrid.appendChild(pageDiv);
         }
+        
+        this.updateSelectionPreview();
     }
 
     selectAllPages() {
@@ -235,7 +253,6 @@ class PDFSplitter {
             }
         });
 
-        // Visually toggle UI panels based on selected splitting strategy
         const rangeSettings = document.getElementById('rangeSettings');
         const customSelectionSettings = document.getElementById('customSelectionSettings');
 
@@ -254,13 +271,11 @@ class PDFSplitter {
         const from = parseInt(this.fromPageInput.value);
         const to = parseInt(this.toPageInput.value);
 
-        // Prevent layout crashes by strictly validating numerical bounds
         if (isNaN(from) || isNaN(to) || from < 1 || to < from || to > this.totalPageCount) {
             alert(`Please enter a valid page range sequence between 1 and ${this.totalPageCount}.`);
             return;
         }
 
-        // Prevent duplicate range row entry overhead
         const rangeText = `Pages ${from}-${to}`;
         const existingRanges = Array.from(this.rangesList.querySelectorAll('.range-item span')).map(s => s.textContent);
         if (existingRanges.includes(rangeText)) return;
@@ -273,7 +288,6 @@ class PDFSplitter {
             <button type="button" class="remove-range-btn" style="background: none; border: none; color: #ef4444; cursor: pointer; font-weight: bold; padding: 0 4px;">&times;</button>
         `;
 
-        // Wire delete buttons up directly to scrub ranges gracefully
         item.querySelector('.remove-range-btn').addEventListener('click', () => {
             item.remove();
             this.recalculateRangeSelection();
@@ -292,13 +306,11 @@ class PDFSplitter {
     recalculateRangeSelection() {
         this.selectedPages.clear();
         
-        // Reset all grid checkboxes visually
         for (let i = 1; i <= this.totalPageCount; i++) {
             const box = document.getElementById(`page-${i}`);
             if (box) box.checked = false;
         }
 
-        // Read remaining active ranges and re-assert state arrays
         const rangeItems = this.rangesList.querySelectorAll('.range-item span');
         rangeItems.forEach(item => {
             const text = item.textContent.replace('Pages ', '');
@@ -316,6 +328,8 @@ class PDFSplitter {
     updateCurrentRange() {
         let from = parseInt(this.fromPageInput.value);
         let to = parseInt(this.toPageInput.value);
+        if (isNaN(from)) from = 1;
+        if (isNaN(to)) to = this.totalPageCount;
         if (from < 1) this.fromPageInput.value = 1;
         if (to > this.totalPageCount) this.toPageInput.value = this.totalPageCount;
     }
@@ -336,12 +350,11 @@ class PDFSplitter {
         this.selectionPreview.style.display = 'block';
     }
 
-    // NATIVE BROWSER ASSEMBLY METHOD - ZERO SERVER DEPENDENCY
     async splitPDF() {
         if (!this.pdfDataUri) return;
         
         if (!window.PDFLib || !window.JSZip) {
-            alert('Core slicing libraries are still configuring, please wait 2 seconds and try again.');
+            alert('Libraries are still loading, please wait a moment and try again.');
             return;
         }
 
@@ -355,7 +368,7 @@ class PDFSplitter {
             if (this.currentMethod === 'single') {
                 const pages = Array.from(this.selectedPages).sort((a,b)=>a-b);
                 if (pages.length === 0) {
-                    alert('Please select at least one page sheet checkbox to split.');
+                    alert('Please select at least one page to extract.');
                     this.hideProgress();
                     return;
                 }
@@ -370,7 +383,7 @@ class PDFSplitter {
             } else {
                 const rangeItems = this.rangesList.querySelectorAll('.range-item span');
                 if (rangeItems.length === 0) {
-                    alert('Please specify and add at least one custom extraction page range list channel.');
+                    alert('Please add at least one page range to extract.');
                     this.hideProgress();
                     return;
                 }
@@ -406,7 +419,7 @@ class PDFSplitter {
             if (this.successOverlay) this.successOverlay.style.display = 'flex';
         } catch (err) {
             this.hideProgress();
-            alert('Could not isolate and slice page arrays.');
+            alert('Could not split the PDF. Please try again.');
             console.error(err);
         }
     }
@@ -432,6 +445,11 @@ class PDFSplitter {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    new PDFSplitter();
-});
+// Initialize
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.pdfSplitter = new PDFSplitter();
+    });
+} else {
+    window.pdfSplitter = new PDFSplitter();
+}

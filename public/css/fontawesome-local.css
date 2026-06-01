@@ -1,0 +1,40 @@
+/* Local Font Awesome 6 */
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 900;
+  src: url('/fonts/fa-solid-900.woff2') format('woff2'),
+       url('/fonts/fa-solid-900.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/fa-regular-400.woff2') format('woff2'),
+       url('/fonts/fa-regular-400.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Font Awesome 6 Brands';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/fa-brands-400.woff2') format('woff2'),
+       url('/fonts/fa-brands-400.ttf') format('truetype');
+}
+
+.fa, .fas, .far, .fal, .fat, .fad {
+  font-family: 'Font Awesome 6 Free';
+}
+
+.fab {
+  font-family: 'Font Awesome 6 Brands';
+}
+
+.fa, .fas {
+  font-weight: 900;
+}
+
+.far {
+  font-weight: 400;
+}
