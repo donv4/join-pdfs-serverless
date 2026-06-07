@@ -67,19 +67,6 @@ const { title, description = "Free online PDF tools to merge, compress, and spli
 
     <!-- Page Specific Header Slots (Moved to bottom of head to prevent asset inheritance blockage) -->
     <slot name="extra-head" />
-    <!-- PDF Processing Libraries - Statically loaded -->
-    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/build/pdf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-    <script>
-        // Initialize PDF.js worker after libraries load
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof pdfjsLib !== 'undefined') {
-                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/build/pdf.worker.min.js';
-                console.log('PDF.js worker initialized');
-            }
-        });
-    </script>
 </head>
 <body>
     <!-- Balanced container block wraps the standard page layouts flow cleanly -->

@@ -9,6 +9,9 @@ import Layout from '../layouts/Layout.astro';
     <!-- Inject page-specific stylesheet from your public folder assets -->
     <link rel="stylesheet" href="/css/images_to_pdf.css" slot="extra-head" />
 
+    <!-- Add PDF-lib library -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js" slot="extra-head"></script>
+
     <!-- Header -->
     <div class="upload-header">
         <h2><i class="fas fa-images"></i> Convert Images to PDF</h2>

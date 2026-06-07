@@ -7,11 +7,12 @@
 	},
 	"scripts": {
 		"dev": "astro dev",
-		"build": "astro build",
+		"build": "astro build && npm run copy-libs",
+		"copy-libs": "xcopy /E /I /Y public\\js\\lib dist\\js\\lib",
 		"preview": "astro build && astro preview",
 		"astro": "astro",
 		"generate-types": "wrangler types",
-		"deploy": "astro build && wrangler deploy",
+		"deploy": "npm run build && npx wrangler pages deploy dist --project-name=join-pdfs --branch=main",
 		"cf-typegen": "wrangler types"
 	},
 	"dependencies": {

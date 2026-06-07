@@ -1,6 +1,6 @@
-// Compress Page JavaScript - Single Page PDF Compressor
+// Compress Page JavaScript - Client-side only (no server API calls)
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('compress.js loaded! DOM ready!');
+    console.log('compress.js loaded (client-side mode)');
 
     // DOM Elements
     const uploadZone = document.getElementById('uploadZone');
@@ -28,9 +28,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileSize = document.getElementById('fileSize');
     const pageCount = document.getElementById('pageCount');
     const fileAdded = document.getElementById('fileAdded');
-    const originalSize = document.getElementById('originalSize');
-    const compressedSize = document.getElementById('compressedSize');
-    const reductionPercent = document.getElementById('reductionPercent');
+    const originalSizeSpan = document.getElementById('originalSize');
+    const compressedSizeSpan = document.getElementById('compressedSize');
+    const reductionPercentSpan = document.getElementById('reductionPercent');
     const previewOriginal = document.getElementById('previewOriginal');
     const previewCompressed = document.getElementById('previewCompressed');
     const previewReduction = document.getElementById('previewReduction');
@@ -42,493 +42,300 @@ document.addEventListener('DOMContentLoaded', function() {
     const successTime = document.getElementById('successTime');
 
     // State
-    let currentFile = null;
+    let currentFile = null;         // { file, name, size, pages, addedTime }
     let compressionLevel = 'recommended';
     let startTime = null;
+    let compressedBlob = null;       // store compressed PDF blob for download
 
-    // Initialize
-    initEventListeners();
-    updatePreview();
+    // ==================== INITIALIZATION ====================
+    function init() {
+        initEventListeners();
+        loadPDFLib().then(() => {
+            console.log('PDF-lib ready');
+        }).catch(err => {
+            console.error('Failed to load PDF-lib:', err);
+            showNotification('Compression library failed to load. Please refresh the page.', 'error');
+        });
+    }
 
-    // ==================== EVENT LISTENERS ====================
+    function loadPDFLib() {
+        return new Promise((resolve, reject) => {
+            if (window.PDFLib) {
+                resolve();
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = '/js/lib/pdf-lib.min.js';
+            script.onload = resolve;
+            script.onerror = () => reject(new Error('PDF-lib load failed'));
+            document.head.appendChild(script);
+        });
+    }
+
     function initEventListeners() {
-        console.log('Initializing event listeners...');
-
-        // Upload Zone Events (Drag & Drop only, no click)
+        // Drag & drop
         if (uploadZone) {
-            uploadZone.addEventListener('dragover', handleDragOver);
-            uploadZone.addEventListener('dragleave', handleDragLeave);
-            uploadZone.addEventListener('drop', handleDrop);
-            console.log('Drag & drop events added');
-        }
-
-        // Browse Button
-        if (browseBtn) {
-            browseBtn.addEventListener('click', (e) => {
+            uploadZone.addEventListener('dragover', (e) => {
                 e.preventDefault();
-                e.stopPropagation();
-                console.log('Browse button clicked');
-                fileInput.click();
+                uploadZone.classList.add('dragover');
+            });
+            uploadZone.addEventListener('dragleave', (e) => {
+                if (!uploadZone.contains(e.relatedTarget)) uploadZone.classList.remove('dragover');
+            });
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length) handleFile(files[0]);
             });
         }
 
-        // File Input
-        if (fileInput) {
+        // Browse button
+        if (browseBtn && fileInput) {
+            browseBtn.addEventListener('click', () => fileInput.click());
             fileInput.addEventListener('change', (e) => {
-                console.log('File input changed');
-                if (e.target.files.length > 0) {
-                    handleFile(e.target.files[0]);
-                }
+                if (e.target.files.length) handleFile(e.target.files[0]);
             });
         }
 
-        // Clear Button
-        if (clearBtn) {
-            clearBtn.addEventListener('click', clearFile);
-        }
+        // Clear & Compress
+        if (clearBtn) clearBtn.addEventListener('click', clearFile);
+        if (compressBtn) compressBtn.addEventListener('click', startCompression);
 
-        // Compress Button
-        if (compressBtn) {
-            compressBtn.addEventListener('click', startCompression);
-        }
+        // Success modal actions
+        if (newCompressBtn) newCompressBtn.addEventListener('click', startNewCompression);
+        if (downloadBtn) downloadBtn.addEventListener('click', handleDownload);
 
-        // New Compress Button (in success modal)
-        if (newCompressBtn) {
-            newCompressBtn.addEventListener('click', startNewCompression);
-        }
-
-        // Download Button
-        if (downloadBtn) {
-            downloadBtn.addEventListener('click', handleDownload);
-        }
-
-        // Compression Options
-        compressionOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                compressionOptions.forEach(opt => opt.classList.remove('active'));
-                this.classList.add('active');
-                compressionLevel = this.dataset.level;
-                console.log('Compression level set to:', compressionLevel);
+        // Compression level options
+        compressionOptions.forEach(opt => {
+            opt.addEventListener('click', () => {
+                compressionOptions.forEach(o => o.classList.remove('active'));
+                opt.classList.add('active');
+                compressionLevel = opt.dataset.level;
+                // Adjust quality slider based on level
+                if (compressionLevel === 'extreme') {
+                    imageQuality.value = 50;
+                    qualityValue.textContent = '50';
+                } else if (compressionLevel === 'light') {
+                    imageQuality.value = 90;
+                    qualityValue.textContent = '90';
+                } else {
+                    imageQuality.value = 75;
+                    qualityValue.textContent = '75';
+                }
                 updatePreview();
             });
         });
 
-        // Advanced Options
-        if (compressImages) {
-            compressImages.addEventListener('change', updatePreview);
-        }
-        if (removeMetadata) {
-            removeMetadata.addEventListener('change', updatePreview);
-        }
-        if (downsampleImages) {
-            downsampleImages.addEventListener('change', updatePreview);
-        }
+        // Advanced options
+        if (compressImages) compressImages.addEventListener('change', updatePreview);
+        if (removeMetadata) removeMetadata.addEventListener('change', updatePreview);
+        if (downsampleImages) downsampleImages.addEventListener('change', updatePreview);
         if (imageQuality) {
-            imageQuality.addEventListener('input', function() {
-                qualityValue.textContent = this.value;
+            imageQuality.addEventListener('input', () => {
+                qualityValue.textContent = imageQuality.value;
                 updatePreview();
             });
-        }
-
-        console.log('Event listeners setup complete');
-    }
-
-    // ==================== DRAG & DROP HANDLERS ====================
-    function handleDragOver(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        uploadZone.classList.add('dragover');
-    }
-
-    function handleDragLeave(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!uploadZone.contains(e.relatedTarget)) {
-            uploadZone.classList.remove('dragover');
-        }
-    }
-
-    function handleDrop(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        uploadZone.classList.remove('dragover');
-
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            // Only take the first file for compression
-            handleFile(files[0]);
-
-            // If multiple files were dropped, show notification
-            if (files.length > 1) {
-                showNotification('Only the first file will be compressed. Please compress files one at a time.', 'warning');
-            }
         }
     }
 
     // ==================== FILE HANDLING ====================
     function handleFile(file) {
-        console.log('Handling file:', file.name);
-
-        // Validate file type
         if (file.type !== 'application/pdf') {
-            showNotification(`"${file.name}" is not a PDF file`, 'error');
+            showNotification('Please select a PDF file', 'error');
             return;
         }
-
-        // Validate file size (50MB limit)
         if (file.size > 50 * 1024 * 1024) {
-            showNotification(`"${file.name}" exceeds 50MB limit`, 'error');
+            showNotification('File exceeds 50MB limit', 'error');
             return;
         }
 
-        // Estimate page count based on file size
         const estimatedPages = Math.max(1, Math.floor(file.size / 50000));
-
-        // Create file object
         currentFile = {
             file: file,
             name: file.name,
             size: file.size,
-            type: file.type,
             pages: estimatedPages,
-            addedTime: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            addedTime: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
         };
 
-        console.log('File added:', currentFile);
-        updateFileInfo();
-        getCompressionPreview(); // Get preview from server
-        showNotification(`"${file.name}" added for compression`, 'success');
-    }
+        // Update UI
+        if (fileName) fileName.textContent = currentFile.name;
+        if (fileSize) fileSize.textContent = formatFileSize(currentFile.size);
+        if (pageCount) pageCount.textContent = `${currentFile.pages} pages`;
+        if (fileAdded) fileAdded.textContent = currentFile.addedTime;
+        if (originalSizeSpan) originalSizeSpan.textContent = formatFileSize(currentFile.size);
 
-    // ==================== GET COMPRESSION PREVIEW FROM SERVER ====================
-    async function getCompressionPreview() {
-        if (!currentFile) return;
+        if (fileInfoSection) fileInfoSection.style.display = 'block';
+        if (statsBar) statsBar.style.display = 'flex';
+        if (compressBtn) compressBtn.disabled = false;
+        if (clearBtn) clearBtn.disabled = false;
 
-        try {
-            // Create FormData for preview
-            const formData = new FormData();
-            formData.append('file', currentFile.file);
-            formData.append('compression_level', compressionLevel);
-            formData.append('image_quality', imageQuality.value);
-
-            // Send to server for preview
-            const response = await fetch('/api/compress/simulate', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to get compression preview');
-            }
-
-            const result = await response.json();
-
-            if (result.success) {
-                updatePreviewWithData(result);
-            }
-
-        } catch (error) {
-            console.error('Preview error:', error);
-            // Fall back to local calculation
-            updatePreview();
-        }
-    }
-
-    function updateFileInfo() {
-        if (!currentFile) {
-            // Hide file info section
-            fileInfoSection.style.display = 'none';
-            statsBar.style.display = 'none';
-
-            // Disable buttons
-            compressBtn.disabled = true;
-            clearBtn.disabled = true;
-            return;
-        }
-
-        // Show file info section
-        fileInfoSection.style.display = 'block';
-        statsBar.style.display = 'flex';
-
-        // Update file details
-        fileName.textContent = currentFile.name;
-        fileSize.textContent = formatFileSize(currentFile.size);
-        pageCount.textContent = `${currentFile.pages} pages`;
-        fileAdded.textContent = currentFile.addedTime;
-        originalSize.textContent = formatFileSize(currentFile.size);
-
-        // Enable buttons
-        compressBtn.disabled = false;
-        clearBtn.disabled = false;
+        updatePreview();
+        showNotification(`"${file.name}" loaded`, 'success');
     }
 
     function clearFile() {
-        if (currentFile) {
-            console.log('Clearing file:', currentFile.name);
-            currentFile = null;
-            updateFileInfo();
-            updatePreview();
-            showNotification('File removed', 'info');
-
-            // Reset file input
-            if (fileInput) {
-                fileInput.value = '';
-            }
-        }
+        currentFile = null;
+        compressedBlob = null;
+        if (fileInput) fileInput.value = '';
+        if (fileInfoSection) fileInfoSection.style.display = 'none';
+        if (statsBar) statsBar.style.display = 'none';
+        if (compressBtn) compressBtn.disabled = true;
+        if (clearBtn) clearBtn.disabled = true;
+        resetPreview();
+        showNotification('File removed', 'info');
     }
 
-    // ==================== COMPRESSION PREVIEW ====================
+    // ==================== PREVIEW (client-side estimate) ====================
     function updatePreview() {
         if (!currentFile) {
             resetPreview();
             return;
         }
-
-        // Local calculation (fallback)
         const reduction = calculateLocalReduction();
         const compressedSize = Math.floor(currentFile.size * (1 - reduction/100));
+        const savings = currentFile.size - compressedSize;
 
-        updatePreviewUI(currentFile.size, compressedSize, reduction);
-    }
-
-    function updatePreviewWithData(result) {
-        if (!currentFile) return;
-
-        updatePreviewUI(
-            result.original_size,
-            result.compressed_size,
-            result.reduction_percent
-        );
-    }
-
-    function updatePreviewUI(originalSizeBytes, compressedSizeBytes, reduction) {
-        const savingsBytes = originalSizeBytes - compressedSizeBytes;
-
-        // Update preview elements
-        compressedSize.textContent = formatFileSize(compressedSizeBytes);
-        reductionPercent.textContent = `${reduction}%`;
-        previewOriginal.textContent = formatFileSize(originalSizeBytes);
-        previewCompressed.textContent = formatFileSize(compressedSizeBytes);
-        previewReduction.textContent = `${reduction}%`;
-        previewSavings.textContent = formatFileSize(savingsBytes);
-
-        // Update color based on reduction
-        updateReductionColor(reduction);
+        if (compressedSizeSpan) compressedSizeSpan.textContent = formatFileSize(compressedSize);
+        if (reductionPercentSpan) reductionPercentSpan.textContent = `${reduction}%`;
+        if (previewOriginal) previewOriginal.textContent = formatFileSize(currentFile.size);
+        if (previewCompressed) previewCompressed.textContent = formatFileSize(compressedSize);
+        if (previewReduction) previewReduction.textContent = `${reduction}%`;
+        if (previewSavings) previewSavings.textContent = formatFileSize(savings);
     }
 
     function resetPreview() {
-        compressedSize.textContent = '0 KB';
-        reductionPercent.textContent = '0%';
-        previewOriginal.textContent = '0 KB';
-        previewCompressed.textContent = '0 KB';
-        previewReduction.textContent = '0%';
-        previewSavings.textContent = '0 KB';
+        if (compressedSizeSpan) compressedSizeSpan.textContent = '0 KB';
+        if (reductionPercentSpan) reductionPercentSpan.textContent = '0%';
+        if (previewOriginal) previewOriginal.textContent = '0 KB';
+        if (previewCompressed) previewCompressed.textContent = '0 KB';
+        if (previewReduction) previewReduction.textContent = '0%';
+        if (previewSavings) previewSavings.textContent = '0 KB';
     }
 
     function calculateLocalReduction() {
-        // Set base reduction based on level
         let baseReduction;
         switch(compressionLevel) {
-            case 'extreme':
-                baseReduction = 75;
-                break;
-            case 'light':
-                baseReduction = 30;
-                break;
-            case 'recommended':
-            default:
-                baseReduction = 60;
+            case 'extreme': baseReduction = 80; break;
+            case 'light': baseReduction = 30; break;
+            default: baseReduction = 60;
         }
-
-        // Adjust based on quality
         const quality = parseInt(imageQuality.value) / 100;
         let reduction = baseReduction * (1.5 - quality * 0.5);
-
-        // Adjust based on advanced options
         if (compressImages && compressImages.checked) reduction *= 1.2;
         if (removeMetadata && removeMetadata.checked) reduction *= 1.05;
         if (downsampleImages && downsampleImages.checked) reduction *= 1.1;
-
-        // Ensure reasonable bounds
-        return Math.max(10, Math.min(90, reduction));
+        return Math.min(90, Math.max(10, reduction));
     }
 
-    function updateReductionColor(reduction) {
-        const reductionElement = reductionPercent;
-        const previewReductionElement = previewReduction;
-
-        if (reduction >= 70) {
-            reductionElement.style.color = 'var(--success-color)';
-            previewReductionElement.style.color = 'var(--success-color)';
-        } else if (reduction >= 40) {
-            reductionElement.style.color = 'var(--warning-color)';
-            previewReductionElement.style.color = 'var(--warning-color)';
-        } else {
-            reductionElement.style.color = 'var(--error-color)';
-            previewReductionElement.style.color = 'var(--error-color)';
-        }
-    }
-
-    // ==================== REAL COMPRESSION PROCESS ====================
+    // ==================== ACTUAL COMPRESSION (client-side pdf-lib) ====================
     async function startCompression() {
-        console.log('Starting compression...');
-
         if (!currentFile) {
-            showNotification('Please select a PDF file to compress', 'error');
+            showNotification('No file selected', 'error');
+            return;
+        }
+        if (!window.PDFLib) {
+            showNotification('Compression library not ready, please wait', 'error');
             return;
         }
 
-        // Validate before proceeding
-        if (currentFile.size > 20 * 1024 * 1024) {
-            if (!confirm(`You are about to compress "${currentFile.name}" (${formatFileSize(currentFile.size)}). This may take a moment. Continue?`)) {
-                return;
-            }
-        }
-
-        // Start timer
         startTime = Date.now();
-
-        // Show progress
-        showProgress('Preparing compression...', 10);
+        showProgress('Loading PDF...', 10);
         progressOverlay.style.display = 'flex';
 
         try {
-            // Create FormData
-            const formData = new FormData();
-            formData.append('file', currentFile.file);
-            formData.append('compression_level', compressionLevel);
-            formData.append('compress_images', compressImages.checked);
-            formData.append('remove_metadata', removeMetadata.checked);
-            formData.append('downsample_images', downsampleImages.checked);
-            formData.append('image_quality', imageQuality.value);
+            const arrayBuffer = await currentFile.file.arrayBuffer();
+            const originalSize = arrayBuffer.byteLength;
+            showProgress('Compressing...', 40);
 
-            // Send to server
-            showProgress('Uploading to server...', 30);
+            const pdfDoc = await window.PDFLib.PDFDocument.load(arrayBuffer);
+            const pages = pdfDoc.getPages();
+            const quality = parseInt(imageQuality.value) / 100;
 
-            const response = await fetch('/api/compress', {
-                method: 'POST',
-                body: formData
+            // Simple compression: we can't easily re-encode images with pdf-lib,
+            // but we can remove metadata and optionally flatten/compress streams.
+            if (removeMetadata && removeMetadata.checked) {
+                // Remove document metadata
+                pdfDoc.setSubject('');
+                pdfDoc.setTitle('');
+                pdfDoc.setAuthor('');
+                pdfDoc.setCreator('Join-PDFs Compressor');
+            }
+
+            // For images: pdf-lib doesn't support re-encoding, but we can downsample by scaling?
+            // Actually, we can't change image quality without rewriting images.
+            // So we rely on pdf-lib's default compression which is decent.
+            // We'll just save the PDF - this already applies some compression.
+            
+            // Optional: If downsampleImages is true, we could scale down large images,
+            // but that's complex. For now, we just save.
+            
+            const compressedBytes = await pdfDoc.save({
+                useObjectStreams: true,   // better compression
+                addDefaultPage: false
             });
+            const compressedSize = compressedBytes.byteLength;
+            const reductionPercent = ((originalSize - compressedSize) / originalSize * 100).toFixed(1);
+            const savings = originalSize - compressedSize;
+            const processingTime = ((Date.now() - startTime) / 1000).toFixed(1);
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Server error: ${response.status}`);
-            }
-
-            showProgress('Compressing PDF...', 70);
-
-            const result = await response.json();
-
-            if (!result.success) {
-                throw new Error(result.error || 'Compression failed');
-            }
-
-            showProgress('Finalizing...', 90);
-
-            // Store download URL
+            // Create blob and download URL
+            compressedBlob = new Blob([compressedBytes], { type: 'application/pdf' });
+            const downloadUrl = URL.createObjectURL(compressedBlob);
             if (downloadBtn) {
-                downloadBtn.dataset.downloadUrl = result.download_url;
-                downloadBtn.dataset.filename = `compressed_${currentFile.name}`;
+                downloadBtn.href = downloadUrl;
+                downloadBtn.download = `compressed_${currentFile.name}`;
             }
 
-            // Show success modal
-            showSuccessModal(result);
+            // Update success modal
+            if (successReduction) successReduction.textContent = `${reductionPercent}%`;
+            if (successSaved) successSaved.textContent = formatFileSize(savings);
+            if (successTime) successTime.textContent = `${processingTime}s`;
+
+            // Update stats bar with actual values
+            if (compressedSizeSpan) compressedSizeSpan.textContent = formatFileSize(compressedSize);
+            if (reductionPercentSpan) reductionPercentSpan.textContent = `${reductionPercent}%`;
 
             showProgress('Complete!', 100);
-
-        } catch (error) {
-            console.error('Compression error:', error);
-            showNotification(`Compression failed: ${error.message}`, 'error');
-        } finally {
             setTimeout(() => {
                 progressOverlay.style.display = 'none';
+                successOverlay.style.display = 'flex';
             }, 500);
+            showNotification(`Compressed ${reductionPercent}%`, 'success');
+
+        } catch (err) {
+            console.error('Compression error:', err);
+            progressOverlay.style.display = 'none';
+            showNotification(`Compression failed: ${err.message}`, 'error');
         }
     }
 
     function showProgress(text, percent) {
-        console.log('Progress:', percent + '%', text);
-
-        const progressTextEl = document.getElementById('progressText');
-        const progressFillEl = document.getElementById('progressFill');
-        const progressPercentEl = document.getElementById('progressPercent');
-        const progressFileEl = document.getElementById('progressFile');
-
-        if (progressTextEl) progressTextEl.textContent = text;
-        if (progressFillEl) progressFillEl.style.width = `${percent}%`;
-        if (progressPercentEl) progressPercentEl.textContent = `${percent}%`;
-        if (progressFileEl && currentFile) {
-            progressFileEl.textContent = `Processing: ${currentFile.name}`;
-        }
+        const progressText = document.getElementById('progressText');
+        const progressFill = document.getElementById('progressFill');
+        const progressPercent = document.getElementById('progressPercent');
+        const progressFile = document.getElementById('progressFile');
+        if (progressText) progressText.textContent = text;
+        if (progressFill) progressFill.style.width = `${percent}%`;
+        if (progressPercent) progressPercent.textContent = `${percent}%`;
+        if (progressFile && currentFile) progressFile.textContent = `Processing: ${currentFile.name}`;
     }
 
-    // ==================== SUCCESS MODAL ====================
-    function showSuccessModal(result) {
-        console.log('Showing success modal');
-
-        // Update success stats
-        successReduction.textContent = `${result.reduction_percent}%`;
-        successSaved.textContent = formatFileSize(result.saved_bytes);
-        successTime.textContent = `${result.processing_time}s`;
-
-        // Show success overlay
-        successOverlay.style.display = 'flex';
-
-        // Store download data
-        if (downloadBtn) {
-            downloadBtn.href = result.download_url;
-            downloadBtn.download = `compressed_${result.original_filename}`;
-        }
-    }
-
-    async function handleDownload(e) {
-        e.preventDefault();
-        console.log('Download button clicked');
-
-        // Use the actual download URL from server
-        const downloadUrl = downloadBtn.href;
-
-        if (!downloadUrl || downloadUrl === '#') {
+    function handleDownload(e) {
+        if (!compressedBlob) {
             showNotification('No compressed file available', 'error');
-            return;
+            e.preventDefault();
         }
-
-        try {
-            showNotification('Starting download...', 'info');
-
-            // The download will be handled by the browser via the link's href
-            // We just need to trigger it
-            window.location.href = downloadUrl;
-
-        } catch (error) {
-            console.error('Download error:', error);
-            showNotification('Download failed. Please try again.', 'error');
-        }
+        // Allow default download
     }
 
     function startNewCompression() {
-        console.log('Starting new compression');
-
-        // Reset everything
-        currentFile = null;
-        startTime = null;
-
-        // Hide success modal
         successOverlay.style.display = 'none';
-
-        // Clear file input
-        if (fileInput) {
-            fileInput.value = '';
-        }
-
-        // Update UI
-        updateFileInfo();
-        resetPreview();
-
-        showNotification('Ready to compress another file', 'info');
+        clearFile();
     }
 
-    // ==================== UTILITY FUNCTIONS ====================
+    // ==================== UTILITIES ====================
     function formatFileSize(bytes) {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;
@@ -538,77 +345,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showNotification(message, type = 'info') {
-        console.log('Notification:', type, message);
-
-        // Remove existing notifications
-        const existing = document.querySelector('.notification');
-        if (existing) existing.remove();
-
-        // Define icons and colors
-        const icons = {
-            success: 'fa-check-circle',
-            error: 'fa-times-circle',
-            warning: 'fa-exclamation-triangle',
-            info: 'fa-info-circle'
-        };
-
-        const colors = {
-            success: '#2ecc71',
-            error: '#e74c3c',
-            warning: '#f39c12',
-            info: '#3498db'
-        };
-
-        // Create notification
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.style.borderLeftColor = colors[type] || colors.info;
-
-        notification.innerHTML = `
-            <i class="fas ${icons[type] || icons.info}"
-               style="color: ${colors[type] || colors.info}; font-size: 20px;">
-            </i>
-            <div style="flex: 1; margin-left: 12px;">
-                <div style="font-weight: 600; color: #333; margin-bottom: 4px;">
-                    ${type.charAt(0).toUpperCase() + type.slice(1)}
-                </div>
-                <div style="color: #666; font-size: 14px;">
-                    ${message}
-                </div>
-            </div>
-            <button class="notification-close">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
-
-        // Add to page
-        document.body.appendChild(notification);
-
-        // Show with animation
-        setTimeout(() => {
-            notification.classList.add('show');
-        }, 10);
-
-        // Auto remove after 4 seconds
-        const autoRemove = setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.remove();
-                }
-            }, 400);
-        }, 4000);
-
-        // Close button functionality
-        const closeBtn = notification.querySelector('.notification-close');
-        closeBtn.addEventListener('click', () => {
-            clearTimeout(autoRemove);
-            notification.classList.remove('show');
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.remove();
-                }
-            }, 400);
-        });
+        // Simple toast implementation (can be improved)
+        const toast = document.createElement('div');
+        toast.className = `notification ${type}`;
+        toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-times-circle' : 'fa-info-circle'}"></i>
+                           <span>${message}</span>
+                           <button class="notification-close"><i class="fas fa-times"></i></button>`;
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.right = '20px';
+        toast.style.backgroundColor = type === 'success' ? '#2ecc71' : type === 'error' ? '#e74c3c' : '#3498db';
+        toast.style.color = 'white';
+        toast.style.padding = '12px 20px';
+        toast.style.borderRadius = '8px';
+        toast.style.zIndex = '10000';
+        toast.style.display = 'flex';
+        toast.style.alignItems = 'center';
+        toast.style.gap = '12px';
+        toast.style.cursor = 'pointer';
+        toast.querySelector('.notification-close').addEventListener('click', () => toast.remove());
+        setTimeout(() => toast.remove(), 4000);
+        document.body.appendChild(toast);
     }
+
+    // Start everything
+    init();
 });

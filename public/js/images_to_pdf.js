@@ -1,8 +1,8 @@
-// Images to PDF JavaScript
+// Images to PDF JavaScript - Pure Client-Side
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('images_to_pdf.js loaded!');
+    console.log('images_to_pdf.js loaded - client-side mode');
 
-    // DOM Elements
+    // DOM Elements (same as before)
     const uploadZone = document.getElementById('uploadZone');
     const fileInput = document.getElementById('fileInput');
     const browseBtn = document.getElementById('browseBtn');
@@ -29,36 +29,36 @@ document.addEventListener('DOMContentLoaded', function() {
     const successPages = document.getElementById('successPages');
     const successTime = document.getElementById('successTime');
 
+    // Progress elements
+    const progressFill = document.getElementById('progressFill');
+    const progressPercent = document.getElementById('progressPercent');
+    const progressFile = document.getElementById('progressFile');
+
     // State
     let images = [];
     let startTime = null;
+    let pdfDoc = null;
 
     // Initialize
     initEventListeners();
     updateQualityDisplay();
 
     function initEventListeners() {
-        // File selection
         browseBtn.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', handleFileSelect);
         
-        // Drag and drop
         uploadZone.addEventListener('dragover', handleDragOver);
         uploadZone.addEventListener('drop', handleDrop);
         
-        // Quality slider
         imageQuality.addEventListener('input', updateQualityDisplay);
         
-        // Buttons
         convertBtn.addEventListener('click', handleConvert);
         clearBtn.addEventListener('click', clearImages);
         newConvertBtn.addEventListener('click', resetPage);
         
-        // Download button
         downloadBtn.addEventListener('click', (e) => {
             if (!downloadBtn.href || downloadBtn.href === '#') {
                 e.preventDefault();
-                alert('Please convert images first');
             }
         });
     }
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function handleFileSelect(e) {
         handleFiles(e.target.files);
-        fileInput.value = ''; // Reset input
+        fileInput.value = '';
     }
 
     function handleFiles(fileList) {
@@ -112,10 +112,11 @@ document.addEventListener('DOMContentLoaded', function() {
             reader.onload = function(e) {
                 const imageElement = document.createElement('div');
                 imageElement.className = 'image-item';
+                imageElement.setAttribute('data-index', index);
                 imageElement.innerHTML = `
                     <img src="${e.target.result}" alt="${image.name}" class="image-preview">
                     <div class="image-info">
-                        <div class="image-name">${image.name}</div>
+                        <div class="image-name">${escapeHtml(image.name)}</div>
                         <div class="image-size">${formatFileSize(image.size)}</div>
                     </div>
                     <button class="remove-image" data-index="${index}">
@@ -124,11 +125,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 imageList.appendChild(imageElement);
                 
-                // Add remove listener
                 const removeBtn = imageElement.querySelector('.remove-image');
-                removeBtn.addEventListener('click', (e) => {
-                    const idx = parseInt(e.currentTarget.dataset.index);
-                    images.splice(idx, 1);
+                removeBtn.addEventListener('click', () => {
+                    images.splice(index, 1);
                     updateImageList();
                     updateUI();
                 });
@@ -141,119 +140,226 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateUI() {
         const hasImages = images.length > 0;
-        
-        // Show/hide sections
         imageOptionsSection.style.display = hasImages ? 'block' : 'none';
         imageListSection.style.display = hasImages ? 'block' : 'none';
-        
-        // Enable/disable buttons
         convertBtn.disabled = images.length === 0;
         clearBtn.disabled = images.length === 0;
         
-        // Update button text
         convertBtn.innerHTML = images.length === 1 
             ? '<i class="fas fa-file-pdf"></i> Convert to PDF'
             : `<i class="fas fa-file-pdf"></i> Convert ${images.length} Images to PDF`;
     }
 
+    // ========== CLIENT-SIDE CONVERSION USING PDF-LIB ==========
     async function handleConvert() {
         if (images.length === 0) {
             alert('Please select at least one image');
             return;
         }
         
+        // Check if PDF-lib is loaded
+        if (!window.PDFLib || !window.PDFLib.PDFDocument) {
+            alert('PDF library is still loading. Please wait a moment and try again.');
+            return;
+        }
+        
         startTime = Date.now();
-        showProgress('Preparing images...');
-        
-        const formData = new FormData();
-        images.forEach((image, index) => {
-            formData.append('files', image);
-        });
-        
-        // Add options
-        formData.append('page_size', pageSize.value);
-        formData.append('orientation', orientation.value);
-        formData.append('margin', margin.value);
-        formData.append('quality', imageQuality.value);
+        showProgress(0, `Processing 0/${images.length} images`);
         
         try {
-            const response = await fetch('/api/images-to-pdf', {
-                method: 'POST',
-                body: formData
-            });
+            // Use the global PDFLib object
+            const { PDFDocument, PageSizes, degrees } = window.PDFLib;
             
-            const result = await response.json();
+            // Create a new PDF document
+            const pdfDoc = await PDFDocument.create();
             
-            if (result.success) {
-                showSuccess(result);
-            } else {
-                throw new Error(result.error || 'Conversion failed');
+            // Get page size
+            const pageSizePoints = getPageSizePoints(pageSize.value);
+            
+            // Process each image
+            for (let i = 0; i < images.length; i++) {
+                const image = images[i];
+                updateProgress(i, images.length, `Processing ${image.name}`);
+                
+                const arrayBuffer = await image.arrayBuffer();
+                
+                let embeddedImage;
+                if (image.type === 'image/jpeg' || image.type === 'image/jpg') {
+                    embeddedImage = await pdfDoc.embedJpg(arrayBuffer);
+                } else if (image.type === 'image/png') {
+                    embeddedImage = await pdfDoc.embedPng(arrayBuffer);
+                } else {
+                    embeddedImage = await embedImageViaCanvas(arrayBuffer, image.type, pdfDoc, parseInt(imageQuality.value));
+                }
+                
+                const imgWidth = embeddedImage.width;
+                const imgHeight = embeddedImage.height;
+                
+                let pageWidth, pageHeight;
+                const orient = orientation.value;
+                
+                if (orient === 'auto') {
+                    pageWidth = imgWidth;
+                    pageHeight = imgHeight;
+                } else if (orient === 'landscape') {
+                    pageWidth = Math.max(pageSizePoints.width, pageSizePoints.height);
+                    pageHeight = Math.min(pageSizePoints.width, pageSizePoints.height);
+                } else {
+                    pageWidth = Math.min(pageSizePoints.width, pageSizePoints.height);
+                    pageHeight = Math.max(pageSizePoints.width, pageSizePoints.height);
+                }
+                
+                const page = pdfDoc.addPage([pageWidth, pageHeight]);
+                
+                const marginPx = parseInt(margin.value);
+                const maxWidth = pageWidth - (marginPx * 2);
+                const maxHeight = pageHeight - (marginPx * 2);
+                const scale = Math.min(maxWidth / imgWidth, maxHeight / imgHeight);
+                const drawWidth = imgWidth * scale;
+                const drawHeight = imgHeight * scale;
+                const x = marginPx + (maxWidth - drawWidth) / 2;
+                const y = marginPx + (maxHeight - drawHeight) / 2;
+                
+                page.drawImage(embeddedImage, { x, y, width: drawWidth, height: drawHeight });
             }
+            
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const processTime = ((Date.now() - startTime) / 1000).toFixed(1);
+            
+            showSuccess(url, processTime);
+            
         } catch (error) {
+            console.error('Conversion error:', error);
             hideProgress();
-            alert(`Error: ${error.message}`);
+            alert(`Conversion failed: ${error.message}\n\nPlease refresh and try again.`);
         }
     }
-
-    function showProgress(message) {
-        document.getElementById('progressText').textContent = message;
-        progressOverlay.style.display = 'flex';
-        
-        // Simulate progress for better UX
-        let progress = 0;
-        const progressInterval = setInterval(() => {
-            if (progress >= 90) {
-                clearInterval(progressInterval);
-                return;
-            }
-            progress += 10;
-            document.getElementById('progressFill').style.width = progress + '%';
-            document.getElementById('progressPercent').textContent = progress + '%';
-        }, 300);
+    
+    // Helper: Get page size in points
+    function getPageSizePoints(size) {
+        const sizes = {
+            'A4': { width: 595, height: 842 },      // A4 in points
+            'Letter': { width: 612, height: 792 },  // Letter in points
+            'Legal': { width: 612, height: 1008 },  // Legal in points
+            'Fit': { width: 0, height: 0 }          // Will use image dimensions
+        };
+        return sizes[size] || sizes['Letter'];
     }
-
+    
+    // Helper: Embed non-JPEG/PNG images via canvas
+    async function embedImageViaCanvas(arrayBuffer, mimeType, pdfDoc, quality) {
+        return new Promise((resolve, reject) => {
+            const blob = new Blob([arrayBuffer], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const img = new Image();
+            
+            img.onload = () => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    
+                    // Convert to PNG (PDF-lib supports PNG best)
+                    canvas.toBlob(async (pngBlob) => {
+                        const pngBuffer = await pngBlob.arrayBuffer();
+                        const embedded = await pdfDoc.embedPng(pngBuffer);
+                        URL.revokeObjectURL(url);
+                        resolve(embedded);
+                    }, 'image/png', quality / 100);
+                } catch (err) {
+                    URL.revokeObjectURL(url);
+                    reject(err);
+                }
+            };
+            
+            img.onerror = () => {
+                URL.revokeObjectURL(url);
+                reject(new Error(`Failed to load image: ${mimeType}`));
+            };
+            
+            img.src = url;
+        });
+    }
+    
+    function showProgress(current, total, message) {
+        progressOverlay.style.display = 'flex';
+        const percent = total > 0 ? Math.round((current / total) * 100) : 0;
+        progressFill.style.width = percent + '%';
+        progressPercent.textContent = percent + '%';
+        if (progressFile) progressFile.textContent = message;
+        document.getElementById('progressText').textContent = 'Converting Images to PDF...';
+    }
+    
+    function updateProgress(current, total, fileMessage) {
+        const percent = Math.round((current / total) * 100);
+        progressFill.style.width = percent + '%';
+        progressPercent.textContent = percent + '%';
+        if (progressFile) progressFile.textContent = fileMessage;
+    }
+    
     function hideProgress() {
         progressOverlay.style.display = 'none';
-        document.getElementById('progressFill').style.width = '0%';
-        document.getElementById('progressPercent').textContent = '0%';
+        progressFill.style.width = '0%';
+        progressPercent.textContent = '0%';
+        if (progressFile) progressFile.textContent = 'Preparing...';
     }
-
-    function showSuccess(result) {
+    
+    function showSuccess(downloadUrl, processTime) {
         hideProgress();
         
-        const processTime = ((Date.now() - startTime) / 1000).toFixed(1);
         successImages.textContent = images.length;
-        successPages.textContent = images.length; // One page per image
+        successPages.textContent = images.length;
         successTime.textContent = `${processTime}s`;
         
-        if (result.download_url) {
-            downloadBtn.href = result.download_url;
-            downloadBtn.download = result.filename || 'converted.pdf';
-        }
+        downloadBtn.href = downloadUrl;
+        downloadBtn.download = `images-to-pdf-${Date.now()}.pdf`;
+        
+        // Clean up blob URL when download happens
+        const originalClick = downloadBtn.onclick;
+        downloadBtn.onclick = (e) => {
+            // Don't revoke immediately - browser needs time to download
+            setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+        };
         
         successOverlay.style.display = 'flex';
     }
-
+    
     function clearImages() {
         if (images.length > 0 && !confirm('Remove all images?')) {
             return;
         }
-        
         images = [];
         updateImageList();
         updateUI();
     }
-
+    
     function resetPage() {
         successOverlay.style.display = 'none';
+        if (downloadBtn.href && downloadBtn.href !== '#') {
+            URL.revokeObjectURL(downloadBtn.href);
+        }
+        downloadBtn.href = '#';
         clearImages();
     }
-
+    
     function formatFileSize(bytes) {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;
         const sizes = ['Bytes', 'KB', 'MB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+    
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
     }
 });
