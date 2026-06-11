@@ -19,7 +19,8 @@
 		"@astrojs/cloudflare": "^13.5.4",
 		"astro": "^6.3.7",
 		"bootstrap": "^5.3.8",
-		"pdf-lib": "^1.17.1"
+		"pdf-lib": "^1.17.1",
+		"pdfjs-dist": "^6.0.227"
 	},
 	"devDependencies": {
 		"wrangler": "^4.94.0"

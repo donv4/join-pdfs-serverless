@@ -1,12 +1,12 @@
 ---
-// src/pages/pdf-to-word.astro
 import Layout from '../layouts/Layout.astro';
 ---
+
 <Layout 
     title="PDF to Word Converter - Convert PDF to DOCX Online" 
     description="Convert PDF files to editable Word documents (.docx) while preserving formatting. Free online conversion tool."
 >
-    <!-- Inject page-specific stylesheet from your public folder assets -->
+    <!-- Inject page-specific stylesheet -->
     <link rel="stylesheet" href="/css/pdf_to_word.css" slot="extra-head" />
 
     <div class="tool-container">
@@ -26,7 +26,7 @@ import Layout from '../layouts/Layout.astro';
             </button>
         </div>
         
-        <!-- Selected File Meta Dashboard Box (Initially Hidden) -->
+        <!-- Selected File Info -->
         <div class="file-info" id="fileInfo" style="display: none;">
             <h4>Selected File:</h4>
             <div class="file-details">
@@ -38,7 +38,7 @@ import Layout from '../layouts/Layout.astro';
             </button>
         </div>
         
-        <!-- Processing State Screen Overlay (Initially Hidden) -->
+        <!-- Progress Overlay -->
         <div class="progress-overlay" id="progressOverlay" style="display: none;">
             <div class="spinner"></div>
             <p id="progressText">Converting PDF to Word...</p>
@@ -47,7 +47,7 @@ import Layout from '../layouts/Layout.astro';
             </div>
         </div>
         
-        <!-- Conversion Success Screen Overlay Section (Initially Hidden) -->
+        <!-- Success Section -->
         <div class="result-section" id="resultSection" style="display: none;">
             <div class="success-icon">
                 <i class="fas fa-check-circle"></i>
@@ -62,7 +62,7 @@ import Layout from '../layouts/Layout.astro';
             </button>
         </div>
         
-        <!-- Core App Performance Features List Grid -->
+        <!-- Features -->
         <div class="features">
             <h3>Why Use Our PDF to Word Converter?</h3>
             <div class="feature-grid">
@@ -85,7 +85,7 @@ import Layout from '../layouts/Layout.astro';
         </div>
     </div>
 
-    <!-- Upgrade Affiliate Marketing CTA Section -->
+    <!-- Upgrade CTA -->
     <div class="upgrade-cta" style="margin: 40px auto; max-width: 1000px; padding: 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white; text-align: left;">
         <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 280px;">
@@ -108,25 +108,4 @@ import Layout from '../layouts/Layout.astro';
     </div>
 </Layout>
 
-<!-- Core browser-side functionality execution modules from public folder -->
-<script is:inline src="/js/pdf_to_word.js"></script>
-
-<!-- Astro bridge handler link catching dragzone click actions -->
-<script is:inline>
-document.addEventListener('DOMContentLoaded', () => {
-    const uploadZone = document.getElementById('uploadZone');
-    const fileInput = document.getElementById('fileInput');
-    const browseBtn = document.getElementById('browseBtn');
-
-    if (uploadZone && fileInput) {
-        uploadZone.addEventListener('click', (e) => {
-            if (e.target !== browseBtn && !browseBtn.contains(e.target)) {
-                fileInput.click();
-            }
-        });
-    }
-    if (browseBtn && fileInput) {
-        browseBtn.addEventListener('click', () => fileInput.click());
-    }
-});
-</script>
+<script type="module" src="/js/pdf_to_word.js"></script>
