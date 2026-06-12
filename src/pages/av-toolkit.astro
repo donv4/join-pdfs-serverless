@@ -1,0 +1,85 @@
+---
+// src/pages/av-toolkit.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="AV Toolkit - Extract Audio & Capture Frames | Join-PDFs" 
+    description="Extract audio tracks from video files, capture frames, and process media entirely in your browser. No uploads, no servers. 100% private."
+>
+    <!-- Inject page-specific styles -->
+    <link rel="stylesheet" href="/css/av_toolkit.css" slot="extra-head" />
+
+    <div class="av-container">
+        <div class="av-header">
+            <h1><i class="fas fa-tools"></i> AV Toolkit</h1>
+            <p class="subtitle">Extract audio, capture frames, and process media files locally in your browser. No uploads.</p>
+        </div>
+        
+        <!-- Drag & Drop Area -->
+        <div class="av-dropzone" id="mediaDropzone">
+            <i class="fas fa-video dropzone-icon"></i>
+            <h3>Drop your media file here</h3>
+            <p>or <strong>click to browse</strong></p>
+            <p class="dropzone-hint">Supports: MP4, WebM, MOV, MP3, WAV, OGG (Max 500MB)</p>
+            <input type="file" id="mediaInput" accept="video/*,audio/*" style="display: none;">
+        </div>
+
+        <!-- Preview Section (Hidden until file loaded) -->
+        <div id="mediaPreviewContainer" class="av-preview" style="display: none;">
+            <!-- File Info Card -->
+            <div class="av-info-card">
+                <div class="info-row">
+                    <span class="info-label">📄 File:</span>
+                    <span id="metaName" class="info-value">---</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">💾 Size:</span>
+                    <span id="metaSize" class="info-value">---</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">🎬 Type:</span>
+                    <span id="metaType" class="info-value">---</span>
+                </div>
+            </div>
+
+            <!-- Video Preview -->
+            <video id="previewVideo" class="av-video-preview" controls style="display: none;"></video>
+
+            <!-- Audio Preview -->
+            <audio id="previewAudio" class="av-audio-preview" controls style="display: none;"></audio>
+
+            <!-- Action Buttons -->
+            <div class="av-actions">
+                <button id="extractAudioBtn" class="btn-audio">
+                    <i class="fas fa-music"></i> Extract Audio as WAV
+                </button>
+                <button id="captureFrameBtn" class="btn-frame">
+                    <i class="fas fa-camera"></i> Capture Frame as JPEG
+                </button>
+            </div>
+            
+            <!-- Download Section -->
+            <div id="downloadSection" class="av-download-section" style="display: none;">
+                <p><i class="fas fa-check-circle"></i> Ready to download!</p>
+                <a href="#" id="downloadLink" class="btn-download">
+                    <i class="fas fa-download"></i> Download WAV File
+                </a>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="av-info-box">
+            <h5><i class="fas fa-info-circle"></i> How It Works</h5>
+            <p>
+                All processing happens locally in your browser. No files are uploaded to any server. 
+                Extract audio as high-quality WAV or capture frames as JPEG images.
+                <strong>100% private and secure.</strong>
+            </p>
+        </div>
+    </div>
+
+    <canvas id="snapshotCanvas" style="display: none;"></canvas>
+</Layout>
+
+<!-- Load JavaScript -->
+<script is:inline src="/js/av_toolkit.js"></script>
