@@ -8,7 +8,16 @@ import Layout from '../layouts/Layout.astro';
 >
     <!-- Inject page-specific stylesheet from your public assets folder -->
     <link rel="stylesheet" href="/css/pdf_to_powerpoint.css" slot="extra-head" />
+    
+    <!-- Add PDF.js and PptxGenJS libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" slot="extra-head"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js" slot="extra-head"></script>
+    <script slot="extra-head">
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+        console.log('PDF.js and PptxGenJS libraries loaded');
+    </script>
 
+    <!-- Rest of your HTML content - keep the same -->
     <div class="upload-container">
         <div class="upload-header">
             <h1>PDF to PowerPoint Converter</h1>
@@ -28,12 +37,12 @@ import Layout from '../layouts/Layout.astro';
         </div>
 
         <div class="action-buttons">
-            <button class="btn-primary" id="convertBtn">
+            <button class="btn-primary" id="convertBtn" disabled>
                 <i class="fas fa-sync-alt"></i> Convert to PowerPoint
             </button>
         </div>
 
-        <!-- Progress Overlay (Initially Hidden) -->
+        <!-- Progress Overlay -->
         <div class="progress-overlay" id="progressOverlay" style="display: none;">
             <div class="progress-content">
                 <div class="progress-spinner">
@@ -47,7 +56,7 @@ import Layout from '../layouts/Layout.astro';
             </div>
         </div>
 
-        <!-- Success Overlay (Initially Hidden) -->
+        <!-- Success Overlay -->
         <div class="success-overlay" id="successOverlay" style="display: none;">
             <div class="success-content">
                 <div class="success-icon">
@@ -143,25 +152,4 @@ import Layout from '../layouts/Layout.astro';
     </div>
 </Layout>
 
-<!-- Core browser-side functionality execution scripts from public folder -->
 <script is:inline src="/js/pdf_to_powerpoint.js"></script>
-
-<!-- Inline script handler mapping target clicks for browse selectors -->
-<script is:inline>
-document.addEventListener('DOMContentLoaded', () => {
-    const uploadArea = document.getElementById('uploadArea');
-    const pdfFile = document.getElementById('pdfFile');
-    const browseBtn = document.getElementById('browseBtn');
-
-    if (uploadArea && pdfFile) {
-        uploadArea.addEventListener('click', (e) => {
-            if (e.target !== browseBtn && !browseBtn.contains(e.target)) {
-                pdfFile.click();
-            }
-        });
-    }
-    if (browseBtn && pdfFile) {
-        browseBtn.addEventListener('click', () => pdfFile.click());
-    }
-});
-</script>

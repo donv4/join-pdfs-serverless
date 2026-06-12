@@ -1,5 +1,7 @@
-// public/js/pdf_to_excel.js - SERVERLESS HYBRID BROWSER CLIENT
+// PDF to Excel Converter - Client-side with PDF.js and SheetJS
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('PDF to Excel converter loaded');
+    
     // DOM Elements
     const uploadArea = document.getElementById('uploadArea');
     const pdfFileInput = document.getElementById('pdfFile');
@@ -15,30 +17,47 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let selectedFile = null;
     let pdfArrayBuffer = null;
-
-    // Load parsing dependencies dynamically to keep the site lightweight on boot
-    function loadLibraries() {
-        if (!window.pdfjsLib) {
-            const script1 = document.createElement('script');
-            script1.src = 'https://cloudflare.com';
-            document.head.appendChild(script1);
-            script1.onload = () => {
-                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cloudflare.com';
-            };
-        }
-        if (!window.XLSX) {
-            const script2 = document.createElement('script');
-            script2.src = 'https://jsdelivr.net';
-            document.head.appendChild(script2);
-        }
-    }
-    loadLibraries();
     
-    // ===== FILE SELECTION =====
+    // Wait for libraries to be ready with retry
+    async function waitForLibraries() {
+        let attempts = 0;
+        const maxAttempts = 50;
+        
+        while (attempts < maxAttempts) {
+            if (typeof pdfjsLib !== 'undefined' && typeof XLSX !== 'undefined') {
+                console.log('Libraries loaded successfully');
+                return true;
+            }
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
+        console.error('Libraries failed to load:', {
+            pdfjs: typeof pdfjsLib,
+            xlsx: typeof XLSX
+        });
+        return false;
+    }
+    
+    // File selection - single source to avoid double popup
+    function openFileDialog() {
+        pdfFileInput.click();
+    }
+    
     if (browseBtn) {
         browseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             e.stopPropagation();
-            pdfFileInput.click();
+            openFileDialog();
+        });
+    }
+    
+    // Click on upload area background (not on button)
+    if (uploadArea) {
+        uploadArea.addEventListener('click', (e) => {
+            if (e.target === uploadArea || e.target.classList.contains('upload-icon') || e.target.tagName === 'H3' || e.target.tagName === 'P') {
+                openFileDialog();
+            }
         });
     }
     
@@ -48,76 +67,70 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('dragover');
-    });
-    
-    uploadArea.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-    });
-    
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
+    // Drag and drop
+    if (uploadArea) {
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
         
-        if (e.dataTransfer.files.length > 0) {
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
             const file = e.dataTransfer.files[0];
-            if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
-                handleFileSelection(file);
+            if (file && file.type === 'application/pdf') {
+                await handleFileSelection(file);
             } else {
-                showNotification('Please select a valid PDF file archive', 'error');
+                showNotification('Please drop a PDF file only', 'error');
             }
-        }
-    });
+        });
+    }
     
-    uploadArea.addEventListener('click', () => {
-        pdfFileInput.click();
-    });
-    
-    // ===== FILE HANDLING =====
     async function handleFileSelection(file) {
-        const maxSize = 50 * 1024 * 1024; // 50MB
+        const maxSize = 50 * 1024 * 1024;
         if (file.size > maxSize) {
-            showNotification('File size exceeds 50MB execution limit', 'error');
+            showNotification('File size exceeds 50MB limit', 'error');
             return;
         }
         
         if (!file.name.toLowerCase().endsWith('.pdf')) {
-            showNotification('Please provide a PDF file', 'error');
+            showNotification('Please select a PDF file', 'error');
             return;
         }
         
         selectedFile = file;
+        
         try {
             pdfArrayBuffer = await file.arrayBuffer();
         } catch (err) {
-            showNotification('Could not safely buffer local file.', 'error');
+            showNotification('Could not read file', 'error');
             return;
         }
         
+        // Update UI to show selected file
         uploadArea.innerHTML = `
             <i class="fas fa-file-pdf upload-icon" style="color: #e25555;"></i>
             <h3>${file.name}</h3>
             <p class="upload-hint">${formatFileSize(file.size)} • Ready to extract</p>
-            <button class="btn-secondary" id="changeFileBtn" style="margin-top: 10px; padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc; background: white;">
+            <button class="btn-secondary" id="changeFileBtn" style="margin-top: 10px;">
                 <i class="fas fa-exchange-alt"></i> Change File
             </button>
         `;
         
-        setTimeout(() => {
-            const changeBtn = document.getElementById('changeFileBtn');
-            if (changeBtn) {
-                changeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    resetFileSelection();
-                });
-            }
-        }, 100);
+        const changeBtn = document.getElementById('changeFileBtn');
+        if (changeBtn) {
+            changeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                resetFileSelection();
+            });
+        }
         
         convertBtn.disabled = false;
-        showNotification('PDF file loaded and ready for spreadsheet generation', 'success');
+        showNotification('PDF loaded successfully', 'success');
     }
     
     function resetFileSelection() {
@@ -133,116 +146,110 @@ document.addEventListener('DOMContentLoaded', function() {
             <p class="file-info">Maximum file size: 50MB • Extracts tables to .xlsx format</p>
         `;
         
-        setTimeout(() => {
-            const bBtn = document.getElementById('browseBtn');
-            if (bBtn) {
-                bBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    pdfFileInput.click();
-                });
-            }
-        }, 100);
+        // Re-attach browse button listener
+        const newBrowseBtn = document.getElementById('browseBtn');
+        if (newBrowseBtn) {
+            newBrowseBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                pdfFileInput.click();
+            });
+        }
         
         convertBtn.disabled = true;
     }
     
-    // ===== BROWSER-BASED GRID CONVERSION ENGINE =====
     convertBtn.addEventListener('click', async () => {
         if (!pdfArrayBuffer) {
             showNotification('Please select a PDF file first', 'error');
             return;
         }
         
-        showProgress('Extracting rows and text metrics from document coordinates...');
-        simulateProgress();
+        // Show progress while waiting for libraries
+        showProgress('Loading libraries...');
+        
+        const librariesReady = await waitForLibraries();
+        if (!librariesReady) {
+            hideProgress();
+            showNotification('Libraries failed to load. Please refresh the page and try again.', 'error');
+            return;
+        }
+        
+        showProgress('Extracting tables from PDF...');
         
         try {
-            // Load buffered PDF into local runtime context memory
-            const loadingTask = window.pdfjsLib.getDocument({ data: pdfArrayBuffer });
+            const loadingTask = pdfjsLib.getDocument({ data: pdfArrayBuffer.slice(0) });
             const pdfDoc = await loadingTask.promise;
             
-            // Core SheetJS workbook container node
             const workbook = XLSX.utils.book_new();
             let tablesExtractedCount = 0;
-
-            // Iterate across pages to extract textual matrices dynamically
+            
             for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+                progressText.textContent = `Processing page ${pageNum} of ${pdfDoc.numPages}...`;
+                progressFill.style.width = `${(pageNum / pdfDoc.numPages) * 70}%`;
+                
                 const page = await pdfDoc.getPage(pageNum);
                 const textContent = await page.getTextContent();
                 
                 if (textContent.items.length === 0) continue;
-
-                // Group words sharing horizontal Y-coordinate values into uniform rows
+                
+                // Group text items by Y coordinate (rows)
                 const rowsMap = {};
                 textContent.items.forEach(item => {
-                    // Extract spatial coordinates matrix transformations [x, y, w, h]
-                    const yCoord = Math.round(item.transform[5]); 
+                    const yCoord = Math.round(item.transform[5]);
                     if (!rowsMap[yCoord]) rowsMap[yCoord] = [];
                     rowsMap[yCoord].push(item);
                 });
-
-                // Sort row arrays downward sequentially across the layout canvas
+                
                 const sortedYCoords = Object.keys(rowsMap).sort((a, b) => b - a);
                 const sheetData = [];
-
+                
                 sortedYCoords.forEach(y => {
-                    // Sort items horizontally left-to-right along the active row vector line
                     const lineItems = rowsMap[y].sort((a, b) => a.transform[4] - b.transform[4]);
                     const rowValues = lineItems.map(item => item.str.trim()).filter(str => str !== '');
                     if (rowValues.length > 0) {
                         sheetData.push(rowValues);
                     }
                 });
-
+                
                 if (sheetData.length > 0) {
-                    // Convert raw row text metrics cleanly into an official SheetJS worksheet grid
                     const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-                    XLSX.utils.book_append_sheet(workbook, worksheet, `Page ${pageNum} Table`);
+                    XLSX.utils.book_append_sheet(workbook, worksheet, `Page ${pageNum}`);
                     tablesExtractedCount++;
                 }
             }
-
+            
             if (tablesExtractedCount === 0) {
-                // Generate a baseline safe fallback grid if no structured lines match character metrics
-                const fallbackSheet = XLSX.utils.aoa_to_sheet([["No clear table rows detected on document vectors."]]);
-                XLSX.utils.book_append_sheet(workbook, fallbackSheet, "Extraction Sheet");
+                const fallbackSheet = XLSX.utils.aoa_to_sheet([["No table data detected in this PDF"]]);
+                XLSX.utils.book_append_sheet(workbook, fallbackSheet, "Extraction Result");
             }
-
-            // Write spreadsheet parameters straight into local binary system memory channels
+            
+            progressFill.style.width = '90%';
+            progressText.textContent = 'Creating Excel file...';
+            
             const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
             const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             
-            // Create localized download uri string
-            const outFilename = selectedFile.name.replace(/\.[^/.]+$/, "") + "_extracted_tables.xlsx";
-            downloadBtn.href = URL.createObjectURL(excelBlob);
+            const outFilename = selectedFile.name.replace(/\.pdf$/i, '') + '_extracted.xlsx';
+            const downloadUrl = URL.createObjectURL(excelBlob);
+            downloadBtn.href = downloadUrl;
             downloadBtn.download = outFilename;
-
+            
             showSuccess({
-                tables_found: tablesExtractedCount || 1,
+                tables_found: tablesExtractedCount,
                 filename: outFilename
             });
             
         } catch (error) {
+            console.error('Conversion error:', error);
             hideProgress();
-            showNotification('Processing exception errored out during data extraction calculations.', 'error');
-            console.error(error);
+            showNotification('Error extracting tables: ' + error.message, 'error');
         }
     });
     
-    // ===== PROGRESS CONTROLS =====
     function showProgress(message) {
         progressText.textContent = message;
         progressOverlay.style.display = 'flex';
-        progressFill.style.width = '15%';
-    }
-    
-    function simulateProgress() {
-        let progress = 15;
-        const interval = setInterval(() => {
-            progress += 8;
-            progressFill.style.width = progress + '%';
-            if (progress >= 90) clearInterval(interval);
-        }, 200);
+        progressFill.style.width = '10%';
     }
     
     function hideProgress() {
@@ -250,17 +257,16 @@ document.addEventListener('DOMContentLoaded', function() {
         progressFill.style.width = '0%';
     }
     
-    // ===== SUCCESS OVERLAY REDIRECTS =====
     function showSuccess(result) {
         progressFill.style.width = '100%';
         successStats.innerHTML = `
-            <div class="stat-item" style="margin-bottom: 10px; font-size: 15px;">
-                <span class="stat-label" style="color: #666; margin-right: 5px;">Sheets Created:</span>
-                <strong class="stat-value" style="color: #2ecc71;">${result.tables_found}</strong>
+            <div class="stat-item">
+                <span class="stat-label">Pages Processed:</span>
+                <strong class="stat-value">${result.tables_found}</strong>
             </div>
-            <div class="stat-item" style="font-size: 15px;">
-                <span class="stat-label" style="color: #666; margin-right: 5px;">Output Format:</span>
-                <strong class="stat-value" style="color: #4a6cf7;">Excel Workbook (.xlsx)</strong>
+            <div class="stat-item">
+                <span class="stat-label">Output Format:</span>
+                <strong class="stat-value">Excel (.xlsx)</strong>
             </div>
         `;
         
@@ -273,31 +279,29 @@ document.addEventListener('DOMContentLoaded', function() {
     convertAnotherBtn.addEventListener('click', () => {
         successOverlay.style.display = 'none';
         resetFileSelection();
+        if (downloadBtn.href) {
+            URL.revokeObjectURL(downloadBtn.href);
+        }
     });
     
-    // ===== TOASTER NOTIFICATIONS WORKSPACE =====
     function showNotification(message, type = 'info') {
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
         notification.style.cssText = `
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: ${type === 'error' ? '#ef4444' : '#10b981'}; color: white;
-            padding: 12px 24px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 999999; font-weight: 600; display: flex; align-items: center; gap: 10px;
+            background: ${type === 'error' ? '#ef4444' : '#10b981'}; 
+            color: white; padding: 12px 24px; border-radius: 8px;
+            z-index: 9999; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         `;
-        
-        notification.innerHTML = `
-            <span>${message}</span>
-            <button class="notification-close" style="background:transparent; border:none; color:white; font-weight:bold; cursor:pointer;">×</button>
-        `;
-        
+        notification.innerHTML = `${message} <button style="margin-left: 12px; background: none; border: none; color: white; cursor: pointer; font-size: 18px;">×</button>`;
         document.body.appendChild(notification);
-        notification.querySelector('.notification-close').addEventListener('click', () => notification.remove());
-        setTimeout(() => { if (notification.parentNode) notification.remove(); }, 4000);
+        
+        notification.querySelector('button').addEventListener('click', () => notification.remove());
+        setTimeout(() => notification.remove(), 4000);
     }
     
     function formatFileSize(bytes) {
-        return (bytes / 1024 / 1024).toFixed(2) + " MB";
+        return (bytes / 1024 / 1024).toFixed(2) + ' MB';
     }
     
     convertBtn.disabled = true;

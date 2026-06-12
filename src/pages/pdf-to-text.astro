@@ -9,6 +9,13 @@ import Layout from '../layouts/Layout.astro';
     <!-- Inject page-specific stylesheet from your public assets folder -->
     <link rel="stylesheet" href="/css/pdf_to_text.css" slot="extra-head" />
 
+    <!-- Add PDF.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" slot="extra-head"></script>
+    <script slot="extra-head">
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+        console.log('PDF.js library loaded');
+    </script>
+
     <!-- Header -->
     <div class="upload-header">
         <h2><i class="fas fa-file-alt"></i> PDF to Text Converter</h2>
@@ -208,16 +215,5 @@ import Layout from '../layouts/Layout.astro';
     </div>
 </Layout>
 
-<!-- Core browser-side functionality module scripts from public folder -->
 <script is:inline src="/js/pdf_to_text.js"></script>
 
-<!-- Astro component bridge handling manual click actions for file upload triggers -->
-<script is:inline>
-document.addEventListener('DOMContentLoaded', () => {
-    const browseBtn = document.getElementById('browseBtn');
-    const fileInput = document.getElementById('fileInput');
-    if (browseBtn && fileInput) {
-        browseBtn.addEventListener('click', () => fileInput.click());
-    }
-});
-</script>

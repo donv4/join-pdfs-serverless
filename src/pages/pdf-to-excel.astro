@@ -9,6 +9,24 @@ import Layout from '../layouts/Layout.astro';
     <!-- Inject page-specific stylesheet from your public folder assets -->
     <link rel="stylesheet" href="/css/pdf_to_excel.css" slot="extra-head" />
 
+    <!-- Add PDF.js and SheetJS libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" slot="extra-head"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" slot="extra-head"></script>
+    <script slot="extra-head">
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+        console.log('PDF.js and SheetJS loaded via head');
+            
+        // Check when SheetJS loads
+        function checkSheetJS() {
+            if (typeof XLSX !== 'undefined') {
+                console.log('SheetJS loaded successfully');
+            } else {
+                setTimeout(checkSheetJS, 100);
+            }
+        }
+        checkSheetJS();
+    </script>
+
     <div class="upload-container">
         <div class="upload-header">
             <h1>PDF to Excel Converter</h1>
@@ -156,25 +174,4 @@ import Layout from '../layouts/Layout.astro';
     </div>
 </Layout>
 
-<!-- Client side interaction logic controllers -->
 <script is:inline src="/js/pdf_to_excel.js"></script>
-
-<!-- Inline script link fallback for Browse triggering conformity -->
-<script is:inline>
-document.addEventListener('DOMContentLoaded', () => {
-    const uploadArea = document.getElementById('uploadArea');
-    const pdfFile = document.getElementById('pdfFile');
-    const browseBtn = document.getElementById('browseBtn');
-
-    if (uploadArea && pdfFile) {
-        uploadArea.addEventListener('click', (e) => {
-            if (e.target !== browseBtn && !browseBtn.contains(e.target)) {
-                pdfFile.click();
-            }
-        });
-    }
-    if (browseBtn && pdfFile) {
-        browseBtn.addEventListener('click', () => pdfFile.click());
-    }
-});
-</script>

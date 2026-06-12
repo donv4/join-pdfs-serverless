@@ -1,9 +1,10 @@
-// PDF to Text Converter
+// PDF to Text Converter - Pure Client-Side with PDF.js
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('PDF to Text converter loaded - client-side mode');
+    
     // Elements
     const uploadArea = document.getElementById('uploadZone');
     const fileInput = document.getElementById('fileInput');
-    const optionsSection = null; // No optionsSection in HTML
     const actionButtons = document.getElementById('actionButtons');
     const fileInfo = document.getElementById('fileInfoSection');
     const fileName = document.getElementById('fileNameDisplay');
@@ -18,288 +19,269 @@ document.addEventListener('DOMContentLoaded', function() {
     const pageCount = document.getElementById('pageCount');
     const charCount = document.getElementById('textLength');
     const resultSize = document.getElementById('successSize');
-    // Add these missing element references (add near line 4):
-    const browseBtn = document.getElementById('browseBtn');
-    const fileList = document.getElementById('fileList');
     const extractStats = document.getElementById('extractStats');
     const successPages = document.getElementById('successPages');
     const successChars = document.getElementById('successChars');
-    ////    const copyTextBtn = document.getElementById('copyTextBtn');
     const downloadBtn = document.getElementById('downloadBtn');
     const newFileBtn = document.getElementById('newExtractBtn');
-
+    const preserveFormattingCheckbox = document.getElementById('preserveFormatting');
+    const addPageNumbersCheckbox = document.getElementById('addPageNumbers');
+    
     let currentFile = null;
-
-    // File selection
-    browseBtn.addEventListener('click', () => fileInput.click());
-
+    let pdfDoc = null;
+    let extractedText = '';
+    
+    // Check if PDF.js is loaded
+    function isPDFjsLoaded() {
+        if (typeof pdfjsLib === 'undefined') {
+            console.error('PDF.js not loaded');
+            return false;
+        }
+        return true;
+    }
+    
+    // File selection - single source to avoid double popup
+    function openFileDialog() {
+        fileInput.click();
+    }
+    
+    // Use the existing browse button from the DOM
+    const browseBtn = document.getElementById('browseBtn');
+    if (browseBtn) {
+        browseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openFileDialog();
+        });
+    }
+    
+    // Click on upload area background
+    if (uploadArea) {
+        uploadArea.addEventListener('click', (e) => {
+            if (e.target === uploadArea || e.target.classList.contains('upload-icon') || e.target.tagName === 'H3' || e.target.tagName === 'P') {
+                openFileDialog();
+            }
+        });
+    }
+    
     fileInput.addEventListener('change', function(e) {
         if (e.target.files.length > 0) {
             handleFileSelect(e.target.files[0]);
         }
-    //alert("File selected: " + file.name);
-        console.log("File change event triggered");
-        console.log("actionButtons element:", actionButtons);
-        console.log("fileInfo element:", fileInfo);
     });
-
+    
     // Drag and drop
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, preventDefaults, false);
-    });
-
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
-    ['dragenter', 'dragover'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, highlight, false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, unhighlight, false);
-    });
-
-    function highlight() {
-        uploadArea.classList.add('dragover');
-    }
-
-    function unhighlight() {
-        uploadArea.classList.remove('dragover');
-    }
-
-    uploadArea.addEventListener('drop', function(e) {
-        const dt = e.dataTransfer;
-        const file = dt.files[0];
-        if (file && file.type === 'application/pdf') {
-            handleFileSelect(file);
-        } else {
-            showNotification('Please select a PDF file', 'error');
-        }
-    });
-
-     // File handling - UPDATED
-    function handleFileSelect(file) {
-        console.log("Handling file:", file.name, file.size);
+    if (uploadArea) {
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
         
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type === 'application/pdf') {
+                await handleFileSelect(file);
+            } else {
+                showNotification('Please drop a PDF file only', 'error');
+            }
+        });
+    }
+    
+    async function handleFileSelect(file) {
         if (file.type !== 'application/pdf') {
             showNotification('Please select a PDF file', 'error');
             return;
         }
-
+        
         if (file.size > 50 * 1024 * 1024) {
             showNotification('File size must be less than 50MB', 'error');
             return;
         }
-
+        
         currentFile = file;
-
-        // Update UI elements if they exist
-        if (fileName) {
-            fileName.textContent = file.name;
-        }
-        if (fileSize) {
-            fileSize.textContent = formatFileSize(file.size);
-        }
-        if (actionButtons) {
-            actionButtons.style.display = 'flex';
-        }
-        if (fileInfo) {
-            fileInfo.style.display = 'block';
-        }
-        if (extractStats) {
-            extractStats.style.display = 'block';
-        }
-
-        showNotification('PDF file selected. Click "Extract Text" to continue.', 'success');
-    }
-
-    // Convert button
-    convertBtn.addEventListener('click', async function() {
-        if (!currentFile) return;
-
-        // Show progress
-        progressOverlay.style.display = 'flex';
-        progressText.textContent = 'Uploading file...';
-        progressFill.style.width = '30%';
-
+        
+        // Update UI
+        if (fileName) fileName.textContent = file.name;
+        if (fileSize) fileSize.textContent = formatFileSize(file.size);
+        if (actionButtons) actionButtons.style.display = 'flex';
+        if (fileInfo) fileInfo.style.display = 'block';
+        if (extractStats) extractStats.style.display = 'block';
+        
+        // Load PDF to get page count
         try {
-            const formData = new FormData();
-            formData.append('file', currentFile);
+            const arrayBuffer = await file.arrayBuffer();
+            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+            pdfDoc = await loadingTask.promise;
             
-            // Get checkbox values
-            const preserveFormatting = document.getElementById('preserveFormatting');
-            const addPageNumbers = document.getElementById('addPageNumbers');
-            
-            // Append checkbox values with fallbacks
-            formData.append('preserveFormatting', preserveFormatting ? preserveFormatting.checked : true);
-            formData.append('addPageNumbers', addPageNumbers ? addPageNumbers.checked : true);
-
-            const response = await fetch('/api/pdf-to-text', {
-                method: 'POST',
-                body: formData
-            });
-
-            progressFill.style.width = '90%';
-
-            if (!response.ok) {
-                throw new Error(`Server error: ${response.status}`);
-            }
-
-            const result = await response.json();
-            
-            progressFill.style.width = '100%';
-            progressText.textContent = 'Complete!';
-
-            // Show results after delay
-            setTimeout(() => {
-                progressOverlay.style.display = 'none';
-                showResults(result);
-            }, 500);
-
+            if (pageCount) pageCount.textContent = pdfDoc.numPages;
+            showNotification(`PDF loaded: ${pdfDoc.numPages} pages. Click "Extract Text" to continue.`, 'success');
         } catch (error) {
-            progressOverlay.style.display = 'none';
-            showNotification(`Error: ${error.message}`, 'error');
-            console.error('Conversion error:', error);
+            console.error('Error loading PDF:', error);
+            showNotification('Error loading PDF file. Please ensure it\'s a valid PDF.', 'error');
         }
-    });
-
+    }
+    
+    async function extractTextFromPDF() {
+        if (!pdfDoc) {
+            throw new Error('No PDF document loaded');
+        }
+        
+        let fullText = '';
+        const numPages = pdfDoc.numPages;
+        const preserveFormatting = preserveFormattingCheckbox ? preserveFormattingCheckbox.checked : true;
+        const addPageNumbers = addPageNumbersCheckbox ? addPageNumbersCheckbox.checked : true;
+        
+        for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+            if (progressText) {
+                progressText.textContent = `Extracting text from page ${pageNum} of ${numPages}...`;
+                progressFill.style.width = `${(pageNum / numPages) * 90}%`;
+            }
+            
+            const page = await pdfDoc.getPage(pageNum);
+            const textContent = await page.getTextContent();
+            let pageText = textContent.items.map(item => item.str).join(preserveFormatting ? ' ' : '');
+            
+            // Clean up excessive spaces
+            pageText = pageText.replace(/\s+/g, ' ').trim();
+            
+            if (addPageNumbers) {
+                fullText += `\n\n--- Page ${pageNum} ---\n\n${pageText}`;
+            } else {
+                fullText += pageText + '\n\n';
+            }
+            
+            // Small delay to prevent UI freezing
+            await new Promise(resolve => setTimeout(resolve, 10));
+        }
+        
+        return fullText;
+    }
+    
+    // Extract button
+    if (convertBtn) {
+        convertBtn.addEventListener('click', async function() {
+            if (!pdfDoc) {
+                showNotification('Please select a valid PDF file first', 'error');
+                return;
+            }
+            
+            if (!isPDFjsLoaded()) {
+                showNotification('PDF library still loading. Please wait and try again.', 'error');
+                return;
+            }
+            
+            // Show progress
+            progressOverlay.style.display = 'flex';
+            progressText.textContent = 'Preparing extraction...';
+            progressFill.style.width = '10%';
+            
+            try {
+                extractedText = await extractTextFromPDF();
+                
+                progressFill.style.width = '95%';
+                progressText.textContent = 'Creating text file...';
+                
+                // Update character count
+                const charCountValue = extractedText.length;
+                if (charCount) charCount.textContent = charCountValue.toLocaleString();
+                
+                // Show results
+                showResults({
+                    page_count: pdfDoc.numPages,
+                    char_count: charCountValue,
+                    text: extractedText.substring(0, 1000) + (extractedText.length > 1000 ? '...' : ''),
+                    full_text: extractedText,
+                    filename: currentFile.name.replace(/\.pdf$/i, '') + '_extracted.txt',
+                    file_size_kb: Math.round(extractedText.length / 1024)
+                });
+                
+            } catch (error) {
+                console.error('Extraction error:', error);
+                progressOverlay.style.display = 'none';
+                showNotification('Error extracting text: ' + error.message, 'error');
+            }
+        });
+    }
+    
     // Cancel button
-    cancelBtn.addEventListener('click', function() {
-        resetUI();
-    });
-
-    // Show results - UPDATED VERSION with proper download handling
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+            resetUI();
+        });
+    }
+    
     function showResults(result) {
-        console.log("Show results called with:", result);
+        console.log("Show results called");
         
-        // Update page count
-        if (pageCount) {
-            pageCount.textContent = result.page_count || '0';
-        }
-        
-        // Update character count
-        if (charCount) {
-            charCount.textContent = result.char_count?.toLocaleString() || '0';
-        }
+        progressFill.style.width = '100%';
+        progressText.textContent = 'Complete!';
         
         // Update success overlay stats
-        if (successPages) {
-            successPages.textContent = result.page_count || '0';
-        }
-        if (successChars) {
-            successChars.textContent = result.char_count?.toLocaleString() || '0';
-        }
-        if (successSize) {
-            successSize.textContent = result.file_size_kb ? result.file_size_kb + ' KB' : 'N/A';
-        }
+        if (successPages) successPages.textContent = result.page_count || '0';
+        if (successChars) successChars.textContent = result.char_count?.toLocaleString() || '0';
+        if (resultSize) resultSize.textContent = result.file_size_kb ? result.file_size_kb + ' KB' : 'N/A';
         
-        // Show preview (first 2000 chars from API)
+        // Show preview
         if (textPreview) {
             textPreview.textContent = result.text || 'No text extracted';
         }
         
-        // Set up download button - FIXED
+        // Set up download button
         if (downloadBtn) {
-            // Clear any previous handlers
-            downloadBtn.onclick = null;
-            downloadBtn.href = '#';
-            downloadBtn.style.pointerEvents = 'auto'; // Ensure clickable
-            
-            if (result.download_url) {
-                // Use server-generated download URL
-                downloadBtn.onclick = function(e) {
-                    e.preventDefault();
-                    console.log("Downloading from:", result.download_url);
-                    
-                    // Create a hidden iframe for download
-                    const iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    iframe.style.width = '0';
-                    iframe.style.height = '0';
-                    iframe.style.border = 'none';
-                    iframe.src = result.download_url;
-                    document.body.appendChild(iframe);
-                    
-                    // Remove iframe after download starts
-                    setTimeout(() => {
-                        if (iframe.parentNode) {
-                            document.body.removeChild(iframe);
-                        }
-                    }, 3000);
-                    
-                    showNotification('Download started! Check your downloads folder.', 'success');
-                };
-            } else {
-                // Fallback: client-side download
-                downloadBtn.onclick = function(e) {
-                    e.preventDefault();
-                    console.log("Client-side download fallback");
-                    
-                    const fullText = result.full_text || result.text || '';
-                    const blob = new Blob([fullText], { type: 'text/plain;charset=utf-8' });
-                    const url = URL.createObjectURL(blob);
-                    
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = result.filename || 'extracted_text.txt';
-                    document.body.appendChild(a);
-                    a.click();
-                    
-                    // Clean up
-                    setTimeout(() => {
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                    }, 100);
-                    
-                    showNotification('Text downloaded!', 'success');
-                };
-            }
+            downloadBtn.onclick = (e) => {
+                e.preventDefault();
+                const blob = new Blob([result.full_text || extractedText], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = result.filename || 'extracted_text.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showNotification('Text downloaded!', 'success');
+            };
         }
         
-        // Show stats section if it exists
-        if (extractStats) {
-            extractStats.style.display = 'block';
-        }
-        
-        // Show result section
-        if (resultSection) {
-            resultSection.style.display = 'block';
-            // Scroll to results
-            setTimeout(() => {
-                resultSection.scrollIntoView({ behavior: 'smooth' });
-            }, 100);
-        }
+        // Hide progress and show results
+        setTimeout(() => {
+            progressOverlay.style.display = 'none';
+            if (resultSection) resultSection.style.display = 'block';
+            if (resultSection) resultSection.scrollIntoView({ behavior: 'smooth' });
+        }, 500);
         
         showNotification('Text extraction successful! Click Download to save.', 'success');
     }
-
-//    // Copy text button
-////    copyTextBtn.addEventListener('click', function() {
-//        const text = textPreview.textContent;
-//        navigator.clipboard.writeText(text).then(() => {
-//            showNotification('Text copied to clipboard!', 'success');
-//        }).catch(err => {
-//            showNotification('Failed to copy text', 'error');
-//        });
-//    });
-
+    
     // New file button
-    newFileBtn.addEventListener('click', resetUI);
-
-    // Reset UI
+    if (newFileBtn) {
+        newFileBtn.addEventListener('click', resetUI);
+    }
+    
     function resetUI() {
         currentFile = null;
+        pdfDoc = null;
+        extractedText = '';
         fileInput.value = '';
-//        optionsSection.style.display = 'none';
-        actionButtons.style.display = 'none';
-        fileInfo.style.display = 'none';
-        resultSection.style.display = 'none';
-        textPreview.textContent = '';
+        if (actionButtons) actionButtons.style.display = 'none';
+        if (fileInfo) fileInfo.style.display = 'none';
+        if (resultSection) resultSection.style.display = 'none';
+        if (extractStats) extractStats.style.display = 'none';
+        if (textPreview) textPreview.textContent = '';
+        if (pageCount) pageCount.textContent = '0';
+        if (charCount) charCount.textContent = '0';
+        if (fileName) fileName.textContent = '---';
+        if (fileSize) fileSize.textContent = '---';
+        
+        showNotification('Ready for new file', 'info');
     }
-
-    // Helper functions
+    
     function formatFileSize(bytes) {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;
@@ -307,29 +289,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
-
+    
     function showNotification(message, type = 'info') {
-        // Use your existing notification system
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
-        notification.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-            <span>${message}</span>
-            <button class="notification-close">&times;</button>
+        notification.style.cssText = `
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#4a6cf7'}; 
+            color: white; padding: 12px 24px; border-radius: 8px;
+            z-index: 9999; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         `;
-        
+        notification.innerHTML = `${message} <button style="margin-left: 12px; background: none; border: none; color: white; cursor: pointer; font-size: 18px;">×</button>`;
         document.body.appendChild(notification);
         
-        setTimeout(() => notification.classList.add('show'), 10);
-        
-        notification.querySelector('.notification-close').addEventListener('click', () => {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 300);
-        });
-        
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 300);
-        }, 5000);
+        notification.querySelector('button').addEventListener('click', () => notification.remove());
+        setTimeout(() => notification.remove(), 4000);
     }
 });
