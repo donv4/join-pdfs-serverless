@@ -2,17 +2,21 @@
 (function() {
     'use strict';
     
-    // DOM Elements
-    const mediaDropzone = document.getElementById('mediaDropzone');
-    const mediaInput = document.getElementById('mediaInput');
-    const mediaPreviewContainer = document.getElementById('mediaPreviewContainer');
-    const previewVideo = document.getElementById('previewVideo');
-    const previewAudio = document.getElementById('previewAudio');
-    const extractAudioBtn = document.getElementById('extractAudioBtn');
-    const captureFrameBtn = document.getElementById('captureFrameBtn');
-    const snapshotCanvas = document.getElementById('snapshotCanvas');
-    const downloadSection = document.getElementById('downloadSection');
-    const downloadLink = document.getElementById('downloadLink');
+    // DEBUG: Log that script is running
+    console.log('AV Toolkit script loaded');
+    
+    // Wait for DOM to be fully ready
+    function waitForDOM() {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    }
+    
+    // DOM Elements (will be set in init)
+    let mediaDropzone, mediaInput, mediaPreviewContainer, previewVideo, previewAudio;
+    let extractAudioBtn, captureFrameBtn, snapshotCanvas, downloadSection, downloadLink;
     
     // State
     let loadedFileBlob = null;
@@ -20,18 +24,49 @@
     
     // Initialize event listeners
     function init() {
+        console.log('AV Toolkit init() called');
+        
+        // Get DOM elements
+        mediaDropzone = document.getElementById('mediaDropzone');
+        mediaInput = document.getElementById('mediaInput');
+        mediaPreviewContainer = document.getElementById('mediaPreviewContainer');
+        previewVideo = document.getElementById('previewVideo');
+        previewAudio = document.getElementById('previewAudio');
+        extractAudioBtn = document.getElementById('extractAudioBtn');
+        captureFrameBtn = document.getElementById('captureFrameBtn');
+        snapshotCanvas = document.getElementById('snapshotCanvas');
+        downloadSection = document.getElementById('downloadSection');
+        downloadLink = document.getElementById('downloadLink');
+        
+        // Debug: Log what we found
+        console.log('mediaDropzone found:', !!mediaDropzone);
+        console.log('extractAudioBtn found:', !!extractAudioBtn);
+        console.log('captureFrameBtn found:', !!captureFrameBtn);
+        
         if (!mediaDropzone) {
-            console.error('Media dropzone not found');
+            console.error('Media dropzone not found - check HTML structure');
             return;
         }
         
-        mediaDropzone.addEventListener('click', () => mediaInput.click());
+        // Add visible indicator that JS is working
+        mediaDropzone.style.border = '3px solid #3b82f6';
+        mediaDropzone.style.backgroundColor = '#eff6ff';
+        
+        mediaDropzone.addEventListener('click', () => {
+            console.log('Dropzone clicked');
+            if (mediaInput) mediaInput.click();
+        });
         
         mediaDropzone.addEventListener('dragover', handleDragOver);
         mediaDropzone.addEventListener('dragleave', handleDragLeave);
         mediaDropzone.addEventListener('drop', handleDrop);
         
-        mediaInput.addEventListener('change', (e) => handleMediaUpload(e.target.files[0]));
+        if (mediaInput) {
+            mediaInput.addEventListener('change', (e) => {
+                console.log('File input changed');
+                if (e.target.files[0]) handleMediaUpload(e.target.files[0]);
+            });
+        }
         
         if (extractAudioBtn) {
             extractAudioBtn.addEventListener('click', handleAudioExtraction);
@@ -40,6 +75,9 @@
         if (captureFrameBtn) {
             captureFrameBtn.addEventListener('click', handleFrameCapture);
         }
+        
+        // Show that we're ready
+        console.log('AV Toolkit ready - click the blue bordered area to select a file');
     }
     
     // Drag and drop handlers
@@ -274,5 +312,5 @@
     }
     
     // Start the app
-    init();
+    waitForDOM();
 })();
