@@ -1,4 +1,52 @@
 // public/_worker.js - EXPANDED SELF-LEARNING CORE ROUTER
+
+// ===== SECURITY HARDENING =====
+const MAX_UPLOAD_SIZE = 50 * 1024 * 1024; // 50MB
+
+// Block malicious path patterns (CVE-2026-3125)
+function isMaliciousPath(path) {
+  return path.includes('\\') ||           // Backslash bypass
+         path.includes('../') ||          // Path traversal
+         path.includes('..\\') ||         // Windows path traversal
+         path.includes('%2e%2e%2f') ||    // URL encoded ../
+         path.includes('%2e%2e%5c');      // URL encoded ..\
+}
+
+// Validate request size
+async function validateRequestSize(request) {
+  const contentLength = request.headers.get('content-length');
+  if (contentLength && parseInt(contentLength) > MAX_UPLOAD_SIZE) {
+    return new Response(JSON.stringify({ error: 'File too large. Maximum size is 50MB.' }), { 
+      status: 413,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  return null;
+}
+
+// Simple rate limiting (using KV if available)
+async function checkRateLimit(env, ip, limit = 60, windowSeconds = 60) {
+  if (!env.JOIN_PDFS_STORE) return true; // Skip if no KV
+  
+  const key = `rate:${ip}`;
+  const now = Math.floor(Date.now() / 1000);
+  const windowKey = `${key}:${Math.floor(now / windowSeconds)}`;
+  
+  try {
+    const current = await env.JOIN_PDFS_STORE.get(windowKey);
+    const count = current ? parseInt(current, 10) : 0;
+    
+    if (count >= limit) return false;
+    
+    await env.JOIN_PDFS_STORE.put(windowKey, (count + 1).toString(), { 
+      expirationTtl: windowSeconds 
+    });
+    return true;
+  } catch (e) {
+    return true; // Fail open if KV error
+  }
+}
+
 const KNOWLEDGE_BASE = {
   // 📄 PDF Core Tools
   "merge": "You can combine multiple PDFs instantly in your browser via our dashboard. It runs locally for maximum document security.",

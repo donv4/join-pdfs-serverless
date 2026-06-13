@@ -1,1 +1,5 @@
 /audio-video-extractor   /av-toolkit   301
+# Security - block common attack paths
+/.env                    /             404
+/.git/config             /             404
+/wp-admin/*              /             404
