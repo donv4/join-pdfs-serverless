@@ -79,6 +79,29 @@ const KNOWLEDGE_BASE = {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
+
+    // SECURITY: Block malicious paths (CVE-2026-3125)
+    if (isMaliciousPath(url.pathname) || isMaliciousPath(url.search)) {
+      return new Response('Bad Request: Invalid path', { status: 400 });
+    }
+
+    // SECURITY: Check file size for POST/PUT requests
+    if (request.method === 'POST' || request.method === 'PUT') {
+      const sizeError = await validateRequestSize(request);
+      if (sizeError) return sizeError;
+    }
+
+    // SECURITY: Rate limiting for API endpoints
+    if (url.pathname.startsWith('/api/')) {
+      const isAllowed = await checkRateLimit(env, clientIp, 60, 60);
+      if (!isAllowed) {
+        return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }), { 
+          status: 429,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    }
 
     // ─── 1. CHAT WITH ASSISTANT ENDPOINT (SELF-IMPROVING) ───
     if (url.pathname === "/api/chat" && request.method === "POST") {
