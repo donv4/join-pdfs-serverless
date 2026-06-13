@@ -3,6 +3,13 @@
 // ===== SECURITY HARDENING =====
 const MAX_UPLOAD_SIZE = 50 * 1024 * 1024; // 50MB
 
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': 'https://join-pdfs.com',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Max-Age': '86400',
+};
+
 // Block malicious path patterns (CVE-2026-3125)
 function isMaliciousPath(path) {
   return path.includes('\\') ||           // Backslash bypass
@@ -47,6 +54,7 @@ async function checkRateLimit(env, ip, limit = 60, windowSeconds = 60) {
   }
 }
 
+
 const KNOWLEDGE_BASE = {
   // 📄 PDF Core Tools
   "merge": "You can combine multiple PDFs instantly in your browser via our dashboard. It runs locally for maximum document security.",
@@ -80,6 +88,15 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
+
+    console.log(`[${new Date().toISOString()}] ${request.method} ${url.pathname} - IP: ${clientIp}`);
+
+        if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: CORS_HEADERS
+      });
+    }
 
     // SECURITY: Block malicious paths (CVE-2026-3125)
     if (isMaliciousPath(url.pathname) || isMaliciousPath(url.search)) {
@@ -169,10 +186,10 @@ export default {
         }
 
         return new Response(JSON.stringify({ response, context: { detectedTopic } }), {
-          status: 200, headers: { 'Content-Type': 'application/json' }
-        });
+          status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } });
       } catch (err) {
-        return new Response(JSON.stringify({ error: 'Invalid message payload processing' }), { status: 500 });
+        return new Response(JSON.stringify({ error: 'Invalid message payload processing' }), { 
+          status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } });
       }
     }
 
@@ -180,20 +197,26 @@ export default {
     if (url.pathname === "/api/verify-key" && request.method === "POST") {
       try {
         const { licenseKey } = await request.json();
-        if (!licenseKey) return new Response(JSON.stringify({ valid: false, error: 'Key missing' }), { status: 400 });
+        if (!licenseKey) return new Response(JSON.stringify({ valid: false, error: 'Key missing' }), { 
+          status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        });
 
         const kvStore = env.JOIN_PDFS_STORE;
-        if (!kvStore) return new Response(JSON.stringify({ valid: false, error: 'DB Offline' }), { status: 500 });
-
+        if (!kvStore) return new Response(JSON.stringify({ valid: false, error: 'DB Offline' }), { 
+          status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        });
         const keyData = await kvStore.get(licenseKey);
-        if (!keyData) return new Response(JSON.stringify({ valid: false, error: 'Invalid license key' }), { status: 404 });
+        if (!keyData) return new Response(JSON.stringify({ valid: false, error: 'Invalid license key' }), { 
+          status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        });
 
         const parsedData = JSON.parse(keyData);
         return new Response(JSON.stringify({ valid: true, plan: parsedData.plan || 'Premium' }), {
-          status: 200, headers: { 'Content-Type': 'application/json' }
+          status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
         });
       } catch (err) {
-        return new Response(JSON.stringify({ valid: false, error: 'Crash' }), { status: 500 });
+        return new Response(JSON.stringify({ valid: false, error: 'Crash' }), { 
+          status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } });
       }
     }
 
@@ -230,10 +253,12 @@ export default {
         }
 
         return new Response(JSON.stringify({ activeKeys, pendingPurchases }), {
-          status: 200, headers: { 'Content-Type': 'application/json' }
+          status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS}
         });
       } catch (err) {
-        return new Response(JSON.stringify({ error: 'Database authentication error' }), { status: 500 });
+        return new Response(JSON.stringify({ error: 'Database authentication error' }), { 
+          status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        });
       }
     }
 
@@ -244,7 +269,6 @@ export default {
     const newHeaders = new Headers(staticResponse.headers);
     
     // Dynamically apply your airtight security whitelists to all structural elements
-    newHeaders.set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://googletagmanager.com https://jsdelivr.net; connect-src 'self' https://*.google-analytics.com https://join-pdfs.com https://*.pages.dev; img-src 'self' data: https://*.google-analytics.com https://googletagmanager.com; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; form-action 'self';");
     newHeaders.set("X-Frame-Options", "DENY");
     newHeaders.set("X-Content-Type-Options", "nosniff");
     newHeaders.set("Referrer-Policy", "strict-origin-when-cross-origin");
