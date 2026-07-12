@@ -1,0 +1,211 @@
+/* public/css/flipbook.css */
+.flipbook-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    margin: 40px auto 0 auto;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    max-width: 950px;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.flipbook-title {
+    color: #ff5d01;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    font-size: 2.5rem;
+}
+
+.stage-wrapper {
+    perspective: 2000px;
+    margin: 2rem auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 500px;
+    overflow: visible;
+}
+
+.book-viewport {
+    position: relative;
+    width: 600px;
+    height: 400px;
+    transform-style: preserve-3d;
+    transition: transform 0.2s ease-out;
+    transform: scale(var(--zoom-factor, 1)); 
+    cursor: grab;
+}
+
+.book-viewport:active {
+    cursor: grabbing;
+}
+
+.flip-page {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    top: 0;
+    transform-style: preserve-3d;
+    transform-origin: left center;
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), z-index 0.1s;
+    user-select: none;
+}
+
+.flip-page.left-side {
+    left: 0;
+    transform-origin: right center;
+}
+
+.flip-page.right-side {
+    left: 50%;
+    transform-origin: left center;
+}
+
+.page-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    backface-visibility: hidden;
+    background: #fff;
+    box-shadow: inset 3px 0 10px rgba(0,0,0,0.05), 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 2px 4px 4px 2px;
+}
+
+.page-face.back {
+    transform: rotateY(180deg);
+}
+
+.page-face canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.flip-page.flipped {
+    transform: rotateY(-180deg);
+    pointer-events: none;
+}
+
+.nav-controls {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.zoom-panel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f1f3f5;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    margin: 0 1rem;
+}
+
+.zoom-slider {
+    accent-color: #ff5d01;
+    cursor: pointer;
+    width: 120px;
+}
+
+.btn-nav {
+    background: #212529;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-nav:disabled {
+    background: #eaecf1;
+    color: #a3a6b5;
+    cursor: not-allowed;
+}
+
+/* Floating Fullscreen HUD Styles */
+.fs-controls-hud {
+    display: none;
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(33, 37, 41, 0.9);
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
+    gap: 1rem;
+    align-items: center;
+    z-index: 100000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+}
+
+.btn-hud {
+    background: #343a40;
+    color: white;
+    border: 1px solid #495057;
+    padding: 0.4rem 1.2rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-hud:hover {
+    background: #ff5d01;
+    border-color: #ff5d01;
+}
+
+.btn-exit-fs {
+    background: #dc3545;
+    border-color: #dc3545;
+}
+
+/* Fullscreen Staging State Engine Activations */
+:fullscreen .stage-wrapper {
+    background: #111111 !important;
+    width: 100vw;
+    height: 100vh;
+    margin: 0 !important;
+    position: relative;
+}
+
+:fullscreen .fs-controls-hud {
+    display: flex !important;
+}
+
+:-webkit-full-screen .stage-wrapper {
+    background: #111111 !important;
+    width: 100vw;
+    height: 100vh;
+    margin: 0 !important;
+}
+
+:-webkit-full-screen .fs-controls-hud {
+    display: flex !important;
+}
+
+/* Anti-aliasing engine parameters for high-magnification scales */
+.page-face canvas {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+}
+
+/* Accessibility button interactive highlights */
+.btn-zoom-adjust {
+    font-size: 0.85rem;
+    transition: transform 0.1s ease;
+    user-select: none;
+}
+.btn-zoom-adjust:active {
+    transform: scale(1.2);
+}

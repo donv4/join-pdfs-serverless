@@ -1,0 +1,38 @@
+---
+// src/pages/meme-bookmaker.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Meme-to-PDF Bookmaker - Join-PDFs" 
+    description="Convert your favorite digital meme collections into custom, high-quality printable PDF Coffee Table Books completely inside your browser."
+>
+    <!-- Map the PDF runtime library infrastructure asset securely -->
+    <script src="/js/lib/pdf-lib.min.js" is:inline slot="extra-head"></script>
+    
+    <!-- Local style routing assets -->
+    <link href="/css/meme_bookmaker.css" rel="stylesheet" slot="extra-head" />
+    <script src="/js/meme_bookmaker.js" is:inline slot="extra-head"></script>
+
+    <div class="meme-container text-start">
+        <h1 class="meme-title">📸 Meme-to-PDF Bookmaker</h1>
+        <p class="text-muted mb-4">Compile your saved funny images, reaction graphics, and screenshots into a stylized, downloadable PDF table book asset instantly.</p>
+        
+        <!-- Interactive Drop Upload Portal -->
+        <div class="drop-zone" id="dropZone">
+            <i class="fas fa-images fa-3x mb-3 text-secondary" style="display:block;"></i>
+            <span class="fw-semibold text-dark">Drag & Drop Meme Files Here</span>
+            <p class="text-muted small mt-1 mb-0">Supports JPEG, JPG, and PNG images</p>
+            <input type="file" id="fileInput" accept="image/png, image/jpeg, image/jpg" multiple style="display: none;" />
+        </div>
+
+        <!-- Render Target Grid -->
+        <div class="preview-grid" id="previewGrid"></div>
+
+        <!-- Final Assembly Trigger Element -->
+        <div class="action-bar">
+            <button class="btn-generate" id="generateBtn" disabled>
+                Compile Meme Book 📚
+            </button>
+        </div>
+    </div>
+</Layout>
