@@ -1,0 +1,56 @@
+---
+// src/pages/resume-optimizer.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Free ATS Resume Optimizer & Checker - Join-PDFs" 
+    description="Drop your resume PDF to instantly test readability scores against standard Applicant Tracking Systems. 100% private, browser-based analysis."
+>
+    <!-- Wire up internal asset routing channels cleanly -->
+    <link href="/css/resume_optimizer.css" rel="stylesheet" slot="extra-head" />
+    <script src="/js/resume_optimizer.js" is:inline slot="extra-head"></script>
+
+    <div class="resume-container text-start">
+        <h1 class="resume-title">📝 ATS Resume Reviewer & Score Card</h1>
+        <p class="text-muted">Optimize your document matrix structure to bypass Applicant Tracking Systems. Processing runs completely offline in your browser layer.</p>
+
+        <!-- Document Selection Input Portal Target Frame -->
+        <div class="drop-zone" id="dropZone">
+            <i class="fas fa-file-invoice fa-3x mb-3 text-secondary" style="display:block;"></i>
+            <span class="fw-semibold text-dark">Select or Drop Your Resume PDF</span>
+            <p class="text-muted small mt-1 mb-0">Analysis is client-side. Your data never touches any server.</p>
+            <input type="file" id="fileInput" accept="application/pdf" style="display: none;" />
+        </div>
+
+        <!-- Render Target Analytics Dashboard Structure -->
+        <div class="scorecard-display" id="scorecardDisplay">
+            <div class="radial-score-box">
+                <div class="score-circle" id="rawScoreLabel">0</div>
+                <div>
+                    <h4 class="fw-bold text-dark m-0">ATS Parsing Index Score</h4>
+                    <p class="text-muted small m-0 mt-1" id="feedbackSummary">Processing data layers...</p>
+                </div>
+            </div>
+
+            <div class="metric-grid">
+                <!-- Word Choice Matrix Card Container -->
+                <div class="checklist-card">
+                    <h5 class="fw-bold text-primary mb-3">🔤 Vocabulary & Key Phrases</h5>
+                    <div id="wordsList"></div>
+                </div>
+
+                <!-- Structural Grid Checklist Container Card -->
+                <div class="checklist-card">
+                    <h5 class="fw-bold text-primary mb-3">🏗️ Structure & File Geometry</h5>
+                    <div id="structureList"></div>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button class="btn btn-secondary px-4 fw-semibold" id="resetBtn">
+                    ✕ Reset & Check Another
+                </button>
+            </div>
+        </div>
+    </div>
+</Layout>
