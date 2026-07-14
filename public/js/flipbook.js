@@ -54,10 +54,52 @@
 
         if (!dropZone) return; // Route safety shield check
 
+        // 1. Handle Click to Upload
         dropZone.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => {
-            if(e.target.files.length > 0) loadPDF(e.target.files);
+            // FIX: Pass the first file [0] instead of the whole container list
+            if (e.target.files.length > 0) {
+                loadPDF(e.target.files[0]);
+            }
         });
+
+        // 2. Drag & Drop Visual State Handlers
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.style.borderColor = '#ff5d01';
+                dropZone.style.background = '#fff5f0';
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.style.borderColor = '#dee2e6';
+                dropZone.style.background = '#f8f9fa';
+            }, false);
+        });
+
+        // 3. Core Drop Data Parser Handler
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const droppedFiles = e.dataTransfer.files;
+            
+            // FIX: Extract the first singular item from the dropped list array
+            if (droppedFiles && droppedFiles.length > 0) {
+                const droppedFile = droppedFiles[0];
+                if (droppedFile.type === "application/pdf" || droppedFile.name.endsWith('.pdf')) {
+                    loadPDF(droppedFile); // Safely passes the binary blob
+                } else {
+                    alert("Please drop a valid PDF document file.");
+                }
+            }
+        });
+
 
         // Unified 400% Zoom Matrix Engine
         function applyZoom(val) {
@@ -111,7 +153,10 @@
             applyZoom(1.0);
 
             const fileReader = new FileReader();
-            fileReader.readAsArrayBuffer(file[0]); // Target explicit file blobs inside list
+            
+            // Reads the single targeted binary file stream cleanly
+            fileReader.readAsArrayBuffer(file); 
+            
             fileReader.onload = async function() {
                 const typedarray = new Uint8Array(this.result);
                 try {
@@ -121,10 +166,11 @@
                     buildFlipbookStructures();
                 } catch (err) {
                     console.error("PDF Parsing Error:", err);
-                    alert("Error loading PDF document layout layers.");
+                    alert("Error loading PDF document format layers.");
                 }
             };
         }
+
 
         async function renderAllPages() {
             renderedPages = [];
