@@ -43,14 +43,15 @@ import Layout from '../layouts/Layout.astro';
             </div>
 
             <!-- Realtime Design Tips Sandbox Layout Panel -->
-            <div class="preview-panel">
+            <div class="preview-panel" style="background: #fff; border: 1px solid #d1d3e2; border-radius: 8px; padding: 2.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); min-height: 600px; max-height: 700px; overflow-y: auto;">
                 <h5 class="fw-bold text-dark mb-3">🎨 Live Template Layout Style</h5>
-                <div style="border: 2px dashed #e3e6f0; border-radius: 6px; padding: 4rem 1rem; text-align: center; color: #a3a6b5;">
-                    <i class="fas fa-file-pdf fa-3x mb-2 text-muted"></i>
-                    <p class="small m-0">Standard Minimalist ATS Template Enabled by Default.</p>
-                    <p class="text-xs text-gray-400 mt-1">Editing fields on the left updates document array buffers instantly.</p>
+                
+                <!-- Dynamic Live Preview Target Anchor Box -->
+                <div id="livePreviewTarget" class="bg-white" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; line-height: 1.5; font-size: 14px;">
+                    <!-- Content maps here instantly via script injections -->
                 </div>
             </div>
+
         </div>
     </div>
 </Layout>

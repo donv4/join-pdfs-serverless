@@ -146,9 +146,24 @@
             // Guard rails to keep score values cleanly between 0 and 100
             const finalScore = Math.max(0, Math.min(100, score));
             rawScoreLabel.innerText = `${finalScore}`;
-            feedbackSummary.innerText = finalScore >= 75 
+
+            // 1. Set the initial text feedback based on score metrics
+            const baselineText = finalScore >= 75 
                 ? "Excellent formatting! Your document aligns beautifully with standard Application Tracking Systems (ATS) crawlers."
                 : "Parsing checklist flags discovered. Apply adjustments below to shield your resume from automated system drops.";
+
+            // 2. Cache the extracted string payload so the Builder route can grab it natively
+            sessionStorage.setItem('resume_extracted_text', text);
+
+            // 3. Render the text AND append your custom interactive bridge link
+            feedbackSummary.innerHTML = `
+                <span>${baselineText}</span>
+                <div style="margin-top:15px;">
+                    <a href="/resume-builder" class="btn btn-primary btn-sm fw-bold text-white px-3" style="background:#0d6efd; border-radius:4px; text-decoration:none; padding:6px 12px; display:inline-block;">
+                        ✨ Auto-Fix & Re-Design My Resume Now
+                    </a>
+                </div>
+            `;
         }
 
         function addChecklistItem(container, isPassed, text) {
