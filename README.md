@@ -1,18 +1,20 @@
-markdown
 # Join-PDFs Serverless Platform
 
 [![Deploy to Cloudflare Pages](https://img.shields.io/badge/Deploy%20to-Cloudflare%20Pages-F38020?logo=cloudflare)](https://pages.cloudflare.com/)
 [![Astro](https://img.shields.io/badge/Built%20with-Astro-FF5D01?logo=astro)](https://astro.build)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**Join-PDFs** is a free, serverless media processing platform that runs entirely in your browser. Merge, split, compress, and convert PDFs, create logos, make collages, extract audio from videos, and more — all without uploading files to any server.
+**Join-PDFs** is a free, serverless media processing platform that runs entirely in your browser. Merge, split, compress, and convert PDFs, create logos, make collages, extract audio from videos, optimize resumes, and view documents in 3D — all without uploading files to any server.
 
 🔗 **Live Site:** [https://join-pdfs.com](https://join-pdfs.com)
 
 ## ✨ Features
 
-### PDF Tools
+### PDF & Document Tools
 - 🔒 **100% Client-Side Processing** - Your files never leave your computer
+- 📖 **3D Digital Flipbook Previewer** - Turn static PDFs into interactive 3D digital spreads with canvas drag physics and 400% accessible zoom configurations
+- 📄 **DOCX to PDF Converter** - Extract layout content from Word files and compile text vectors to PDF natively via client-side zip decryptions
+- 📸 **Meme-to-PDF Bookmaker** - Convert image reaction collections and custom text captions directly into printable table books
 - 📄 **Merge PDFs** - Combine multiple PDFs into one document
 - ✂️ **Split PDFs** - Extract specific pages or page ranges
 - 🗜️ **Compress PDFs** - Reduce file size while maintaining quality
@@ -23,16 +25,17 @@ markdown
 - 📽️ **PDF to PowerPoint** - Each page becomes a slide
 - 📄 **PDF to Text** - Extract plain text from PDFs
 
-### Creative Tools
+### Career & Enterprise Tools
+- 📝 **ATS Resume Optimizer & Reviewer** - Test resume strings locally against Applicant Tracking Systems to calculate dynamic optimization scores
+- ✨ **Smart Resume Builder & Redesigner** - Sync text variables in real-time onto minimal ATS-ready document layouts with session data cross-forwarding triggers
+
+### Creative Tools & Media Processing
 - 🎨 **Logo Maker** - Design custom logos with shapes, text, and gradients
 - 🖼️ **Collage Maker** - Create photo collages with customizable layouts
 - 🎬 **AV Toolkit** - Extract audio (WAV) and capture frames from videos
-
-### Media Processing
 - 🎵 **Audio Extraction** - Extract audio tracks as WAV files
 - 📸 **Frame Capture** - Save video frames as JPEG images
 - 🎨 **Image Editor** - Basic image editing tools
-- 🎭 **Collage Maker** - Grid layouts with spacing and borders
 
 ## 🏗️ Project Architecture
 
@@ -41,77 +44,61 @@ markdown
 | **Frontend Framework** | Astro (Static HTML compilation) |
 | **Hosting Platform** | Cloudflare Pages (Edge deployment) |
 | **Backend APIs** | Native Cloudflare Workers (`public/_worker.js`) |
-| **Database** | Cloudflare KV Namespace Store |
+| **Database** | Cloudflare KV Namespace Store / Local Session Storage Matrix |
+| **Merchant of Record** | Paddle Global Buyer Checkout Integration |
 
 ## 📁 Project Structure
 join-pdfs-serverless/
 ├── public/
-│ ├── _worker.js # Cloudflare Worker (APIs)
-│ ├── _headers # CSP & security headers
-│ ├── js/
-│ │ ├── lib/ # PDF libraries (pdf-lib, pdf.js, jszip)
-│ │ ├── av_toolkit.js # AV Toolkit logic
-│ │ ├── collage_maker.js # Collage Maker logic
-│ │ ├── logo_maker.js # Logo Maker logic
-│ │ └── *.js # Other page-specific JS
-│ └── css/ # Stylesheets
+│   ├── _worker.js         # Cloudflare Worker (APIs)
+│   ├── _headers           # CSP & security headers whitelisting AdSense/CDNs
+│   ├── ads.txt            # Verified Google Publisher Credential Record
+│   ├── js/
+│   │   ├── lib/           # Core static libraries (pdf-lib, pdf.js, jszip)
+│   │   ├── flipbook.js    # 3D Flipbook viewport dragging and zoom logic
+│   │   ├── resume_optimizer.js # Resume text keyword scanner array matrix
+│   │   ├── resume_builder.js   # Live preview and PDF generation pipeline
+│   │   ├── docx_converter.js   # JSZip extraction and XML processing engine
+│   │   ├── meme_bookmaker.js   # Image base64 binary byte converter engine
+│   │   ├── av_toolkit.js  # AV Toolkit logic
+│   │   ├── collage_maker.js # Collage Maker logic
+│   │   └── logo_maker.js  # Logo Maker logic
+│   └── css/               # Modular page stylesheets
 ├── src/
-│ ├── layouts/ # Astro layout components
-│ └── pages/ # Astro pages (all tools)
+│   ├── layouts/           # Astro layout components
+│   └── pages/             # Astro dynamic routing paths (38+ views live)
 └── package.json
-
-text
 
 ## 🚀 Quick Deploy
 
 ```powershell
 npm run deploy
-🛠️ Technology Stack
-Library	Version	Purpose
-PDF.js	2.16.105	PDF text extraction
-PDF-lib	1.17.1	PDF creation/manipulation
-SheetJS (XLSX)	0.18.5	Excel file generation
-PptxGenJS	3.12.0	PowerPoint creation
-Fabric.js	5.3.0	Canvas manipulation (Logo Maker)
-🔧 Key Challenges & Solutions
-Challenge	Solution
-PDF-lib dynamic import failing	Load via <script> tag, access via window.PDFLib
-PDF.js module loading	Use CDN with proper worker configuration
-Local libraries not copying	Added copy-libs script in package.json
-CSP blocking resources	Whitelisted unpkg, jsdelivr, cdnjs
-Double file dialog	Removed duplicate inline scripts
-Audio extraction	Web Audio API + WAV encoding
-📚 Library Loading Patterns
-For PDF-lib (Images to PDF, Merge, etc.):
-astro
-<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js" slot="extra-head" />
-javascript
-const { PDFDocument } = window.PDFLib;
-For PDF.js (PDF to Text, Word, Excel):
-astro
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" slot="extra-head"></script>
-<script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-</script>
-For SheetJS (PDF to Excel):
-astro
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" slot="extra-head"></script>
-For PptxGenJS (PDF to PowerPoint):
-astro
-<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js" slot="extra-head"></script>
-🛡️ Security Headers
-CSP configured in public/_headers:
+```
 
-script-src includes all required CDNs
+## 🛠️ Technology Stack
 
-worker-src 'self' blob: for PDF workers
+| Library | Version | Purpose |
+|---------|---------|---------|
+| **PDF.js** | 2.16.105 | PDF text extraction and runtime matrix parsing |
+| **PDF-lib** | 1.17.1 | PDF document template geometry generation |
+| **SheetJS (XLSX)** | 0.18.5 | Excel spreadsheet compilation |
+| **PptxGenJS** | 3.12.0 | PowerPoint slide presentation generation |
+| **Fabric.js** | 5.3.0 | Canvas layout vectors manipulation (Logo Maker) |
+| **JSZip** | 3.10.1 | Client-side archive decompilation for Office files |
 
-X-Frame-Options: DENY
+## 🔧 Key Challenges & Solutions
+- **CSP Asset Blocking Protection:** Configured `public/_headers` rules to safely whitelist `://googlesyndication.com` (AdSense) alongside performance styling CDNs.
+- **Race Condition Sync Freezes:** Unified worker dependencies directly inside `public/js/flipbook.js` execution cycles using explicit execution timing constraints to resolve runtime mapping anomalies.
+- **Base64 String Rejections:** Created custom native array mapping utilities (`base64ToUint8Array`) to convert raw text arrays into byte blocks compatible with `pdf-lib`.
 
-X-Content-Type-Options: nosniff
+## 🛡️ Security Headers
+Content Security Policy (CSP) rules inside `public/_headers` are locked down to secure client configurations while enabling ad delivery scripts, Google Analytics, and style packages natively:
+- `script-src`: Self-hosted code, Google Tag Manager, AdSense iframes
+- `frame-src`: DoubleClick delivery validation streams
+- `style-src`: CDNjs FontAwesome icons, jsDelivr Bootstrap components
 
-📝 Build Scripts
-json
+## 📝 Build Scripts
+```json
 {
   "scripts": {
     "dev": "astro dev",
@@ -120,61 +107,22 @@ json
     "deploy": "npm run build && npx wrangler pages deploy dist --project-name=join-pdfs --branch=main"
   }
 }
-🎯 Tool Status
-Tool	Status	Type
-Images to PDF	✅ Working	PDF-lib
-PDF to Image	✅ Working	PDF.js
-Merge PDF	✅ Working	PDF-lib
-Split PDF	✅ Working	PDF-lib
-Compress PDF	✅ Working	PDF-lib
-PDF to Word	✅ Working	PDF.js
-PDF to Excel	✅ Working	PDF.js + SheetJS
-PDF to PowerPoint	✅ Working	PDF.js + PptxGenJS
-PDF to Text	✅ Working	PDF.js
-Logo Maker	✅ Working	Fabric.js
-Collage Maker	✅ Working	Canvas API
-AV Toolkit	✅ Working	Web Audio API
-🐛 Troubleshooting
-Library not loading?
-Check console for 404 errors
+```
 
-Verify CDN URLs are accessible
+## 🎯 Application Matrix Status
 
-Ensure slot="extra-head" is on script tags
+| Tool / Module | Status | Type | Engine |
+|---|---|---|---|
+| **3D Digital Flipbook** | ✅ Active | Interactive App | `pdf.js` + 3D Transform |
+| **ATS Resume Optimizer** | ✅ Active | Analytics Tool | `pdf.js` Text Mining |
+| **Smart Resume Builder** | ✅ Active | Document Generator | `pdf-lib` + Session Cache |
+| **DOCX to PDF Converter** | ✅ Active | File Processor | `JSZip` + XML Parser |
+| **Meme-to-PDF Bookmaker** | ✅ Active | Assembly Utility | `pdf-lib` + Base64 Bytes |
+| **Images to PDF** | ✅ Active | Core Processing | `pdf-lib` |
+| **PDF to Image** | ✅ Active | Core Processing | `pdf.js` |
+| **Merge PDF / Split PDF** | ✅ Active | Core Processing | `pdf-lib` |
+| **Compress PDF** | ✅ Active | Core Processing | `pdf-lib` |
+| **PDF Conversion Layers** | ✅ Active | Office Suite | `pdf.js` + SheetJS/PptxGenJS |
+| **Creative Suite Apps** | ✅ Active | Layout Systems | Fabric.js / Canvas API / Web Audio |
 
-Double file dialog?
-Remove duplicate inline scripts
-
-Keep only one event listener per button
-
-Audio extraction fails?
-Ensure file contains an audio track
-
-Try a different file format (MP4, WebM)
-
-Check browser console for errors
-
-📄 License
-MIT License
-
-Built with ❤️ by the Join-PDFs team
-
-text
-
-## 🚀 Commit the README
-
-```powershell
-# Add the updated README
-git add README.md
-
-# Commit
-git commit -m "docs: update README with all tools and patterns
-
-- Added AV Toolkit documentation
-- Added PDF to PowerPoint and Excel
-- Updated library versions and patterns
-- Added troubleshooting section
-- Complete tool status table"
-
-# Push
-git push origin main
+📄 Licensed under the MIT Framework. Built with ❤️ by the Join-PDFs Platform Development Team.
