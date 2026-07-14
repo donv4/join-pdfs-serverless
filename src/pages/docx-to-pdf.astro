@@ -1,0 +1,36 @@
+---
+// src/pages/docx-to-pdf.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Free DOCX to PDF Converter - Join-PDFs" 
+    description="Convert Microsoft Word DOCX files to PDF documents instantly. 100% serverless, private, and client-side processing in your browser."
+>
+    <script src="/js/lib/jszip.min.js" is:inline slot="extra-head"></script>
+    <script src="/js/lib/pdf-lib.min.js" is:inline slot="extra-head"></script>
+    
+    <link href="/css/docx_converter.css" rel="stylesheet" slot="extra-head" />
+    <script src="/js/docx_converter.js" is:inline slot="extra-head"></script>
+
+    <div class="container py-5 text-start" style="max-width: 850px; margin-top: 40px; background: rgba(255, 255, 255, 0.95); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+        <h1 class="mb-2 fw-bold text-primary">📄 DOCX to PDF Converter</h1>
+        <p class="text-muted mb-4">Convert Word documents to PDF files instantly. Your files are processed entirely inside your browser and are never uploaded to any server.</p>
+
+        <!-- Interactive Drag Zone -->
+        <div class="drop-zone" id="dropZone" style="border: 3px dashed #dee2e6; border-radius: 10px; padding: 4rem 1rem; text-align: center; background: #f8f9fa; cursor: pointer;">
+            <span class="fw-semibold text-dark d-block mb-1">Select or Drop Word Document</span>
+            <span class="text-muted small">Supports .docx files</span>
+            <input type="file" id="fileInput" accept=".docx" style="display: none;" />
+        </div>
+
+        <!-- Processing Status/Action Card Container -->
+        <div id="actionCard" style="display: none; margin-top: 2rem; background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
+            <h5 class="fw-bold text-dark mb-2" id="statusTitle">Document Loaded Successfully</h5>
+            <p class="text-muted small mb-3" id="statusMeta">Ready to convert.</p>
+            <button class="btn btn-primary px-4 fw-semibold" id="convertBtn" style="background: #0d6efd; color:white; border:0; padding: 0.5rem 1.5rem; border-radius: 4px; cursor:pointer;">
+                Convert to PDF 🚀
+            </button>
+            <button class="btn btn-secondary px-3 ms-2" id="resetBtn" style="background: #6c757d; color:white; border:0; padding: 0.5rem 1.5rem; border-radius: 4px; cursor:pointer;">✕ Reset</button>
+        </div>
+    </div>
+</Layout>
