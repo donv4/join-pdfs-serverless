@@ -1,0 +1,56 @@
+---
+// src/pages/resume-builder.astro
+import Layout from '../layouts/Layout.astro';
+---
+<Layout 
+    title="Instant PDF Resume Builder - Join-PDFs" 
+    description="Regenerate and update your existing resume format into a clean, modern, ATS-ready PDF template instantly inside your web browser."
+>
+    <link href="/css/resume_builder.css" rel="stylesheet" slot="extra-head" />
+    <script src="/js/resume_builder.js" is:inline slot="extra-head"></script>
+
+    <div class="builder-container text-start">
+        <h1 class="builder-title">✨ Smart Resume Builder & Redesigner</h1>
+        <p class="text-muted">Modify, enhance, and optimize your information blocks. Layout compilation runs completely serverless.</p>
+
+        <div class="split-layout">
+            <!-- Form Input Panel Mapping Frame -->
+            <div class="form-panel">
+                <h5 class="fw-bold mb-3 text-dark">✍️ Edit Document Sections</h5>
+                
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="inputName" placeholder="John Doe" value="John Doe" />
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="inputEmail" placeholder="john@example.com" />
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" id="inputPhone" placeholder="(555) 555-5555" />
+                </div>
+                <div class="form-group">
+                    <label>Professional Experience</label>
+                    <textarea id="inputExp" rows="8" placeholder="List your job roles, accomplishments, and action metrics..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Education</label>
+                    <textarea id="inputEdu" rows="4" placeholder="Degrees, certifications, and graduation details..."></textarea>
+                </div>
+
+                <button class="btn-compile" id="compileBtn">Download Updated Resume 🚀</button>
+            </div>
+
+            <!-- Realtime Design Tips Sandbox Layout Panel -->
+            <div class="preview-panel">
+                <h5 class="fw-bold text-dark mb-3">🎨 Live Template Layout Style</h5>
+                <div style="border: 2px dashed #e3e6f0; border-radius: 6px; padding: 4rem 1rem; text-align: center; color: #a3a6b5;">
+                    <i class="fas fa-file-pdf fa-3x mb-2 text-muted"></i>
+                    <p class="small m-0">Standard Minimalist ATS Template Enabled by Default.</p>
+                    <p class="text-xs text-gray-400 mt-1">Editing fields on the left updates document array buffers instantly.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</Layout>
